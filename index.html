@@ -1756,89 +1756,359 @@
             `;
             document.getElementById('careerRecommendations').innerHTML = careersHtml;
 
-            // Add detailed roadmaps
-            const roadmaps = {
-                R: {
-                    title: 'Mechanical Engineer',
-                    steps: [
-                        {title: 'Education (4-6 years)', desc: 'B.Tech in Mechanical Engineering from IIT/NIT. Entrance: JEE Main & Advanced', salary: 'Entry: ₹4-8 LPA'},
-                        {title: 'Specialization (2 years)', desc: 'M.Tech in Robotics, Automotive, or Aerospace. Top: IIT Bombay, IIT Madras', salary: 'Mid: ₹10-18 LPA'},
-                        {title: 'Professional Growth', desc: 'Work at companies like Tata Motors, L&T, Mahindra. Get PE license', salary: 'Senior: ₹25-50+ LPA'}
-                    ]
-                },
-                I: {
-                    title: 'Data Scientist',
-                    steps: [
-                        {title: 'Education (3-4 years)', desc: 'B.Tech/B.Sc in CS/Stats. Learn Python, R, SQL. Top: IIT, BITS', salary: 'Entry: ₹6-12 LPA'},
-                        {title: 'Specialization (1-2 years)', desc: 'M.Sc in Data Science or ML. Certifications: Google, AWS, Azure', salary: 'Mid: ₹15-30 LPA'},
-                        {title: 'Expert Level', desc: 'Work at FAANG, startups. Build portfolio. Kaggle competitions', salary: 'Senior: ₹40-80+ LPA'}
-                    ]
-                },
-                A: {
-                    title: 'UX/UI Designer',
-                    steps: [
-                        {title: 'Education (3-4 years)', desc: 'BDes/B.Arch/BFA. Learn Figma, Adobe XD. Top: NID, IIT IDC', salary: 'Entry: ₹3-7 LPA'},
-                        {title: 'Portfolio Building (1-2 years)', desc: 'Freelance projects, internships. Master design thinking', salary: 'Mid: ₹8-18 LPA'},
-                        {title: 'Senior Designer', desc: 'Lead designer at product companies. Build design systems', salary: 'Senior: ₹20-40+ LPA'}
-                    ]
-                },
-                S: {
-                    title: 'Clinical Psychologist',
-                    steps: [
-                        {title: 'Education (5-6 years)', desc: 'BA Psychology + MA Clinical Psychology. Top: DU, TISS, Christ', salary: 'Entry: ₹3-6 LPA'},
-                        {title: 'Specialization (2-3 years)', desc: 'M.Phil/PhD in Clinical Psychology. RCI license required', salary: 'Mid: ₹8-15 LPA'},
-                        {title: 'Private Practice', desc: 'Open clinic, hospital consultant. Specialize in therapy types', salary: 'Senior: ₹15-35+ LPA'}
-                    ]
-                },
-                E: {
-                    title: 'Business Manager',
-                    steps: [
-                        {title: 'Education (3-5 years)', desc: 'BBA/B.Com + MBA. Entrance: CAT, GMAT. Top: IIM, ISB, XLRI', salary: 'Entry: ₹8-15 LPA'},
-                        {title: 'Management Role (3-5 years)', desc: 'Product/Project Manager. Learn strategy, operations', salary: 'Mid: ₹18-35 LPA'},
-                        {title: 'Senior Leadership', desc: 'VP, Director roles. Lead teams. Strategic decisions', salary: 'Senior: ₹50-100+ LPA'}
-                    ]
-                },
-                C: {
-                    title: 'Chartered Accountant',
-                    steps: [
-                        {title: 'CA Foundation (1 year)', desc: 'After 12th. Register with ICAI. Clear Foundation exam', salary: 'Articleship: ₹2-4 LPA'},
-                        {title: 'CA Intermediate + Articleship (3 years)', desc: 'Work experience + exams. Learn audit, taxation', salary: 'Entry: ₹6-10 LPA'},
-                        {title: 'CA Final + Practice', desc: 'Clear Final. Join Big 4 or start practice. CFO roles', salary: 'Senior: ₹20-60+ LPA'}
-                    ]
-                }
-            };
+            // Determine aptitude band for career recommendations
+            const aptitudeBand = aptitudePercent <= 10 ? 0 :
+                                aptitudePercent <= 20 ? 1 :
+                                aptitudePercent <= 30 ? 2 :
+                                aptitudePercent <= 40 ? 3 : 4;
 
-            const roadmap = roadmaps[dominant[0]];
-            console.log('Generating roadmap for type:', dominant[0], roadmap);
-            
-            const roadmapHtml = `
-                <h3 style="color: #667eea; font-size: 24px; margin-bottom: 20px; text-align: center;">📚 Career Roadmap: ${roadmap.title}</h3>
-                <div class="roadmap-card">
-                    <h4>🎯 Step-by-Step Path to Success</h4>
-                    ${roadmap.steps.map((step, i) => `
-                        <div class="roadmap-step">
-                            <h5>Step ${i + 1}: ${step.title}</h5>
-                            <p>${step.desc}</p>
-                            <div class="salary-info">
-                                <span>${step.salary}</span>
+            // Get comprehensive roadmap based on personality type and aptitude
+            function getComprehensiveRoadmap(type, aptitudeBand) {
+                const roadmaps = {
+                    R: aptitudeBand >= 3 ? `
+                        <h3>🔧 REALISTIC CAREERS - ENGINEERING TRACK</h3>
+                        <div class="roadmap-card">
+                            <h4>ENGINEERING CAREERS:</h4>
+                            <p>• Civil Engineer • Mechanical Engineer • Electrical Engineer<br>
+                            • Aerospace Engineer • Biomedical Engineer • Chemical Engineer</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🏛️ TOP UNIVERSITIES & ADMISSION:</h4>
+                            <p><strong>India:</strong> IIT (JEE Advanced) • NIT (JEE Main) • BITS Pilani (BITSAT)</p>
+                            <p><strong>International:</strong> MIT, Stanford, Caltech (SAT/ACT + Strong Math/Science)</p>
+                            <p><strong>Requirements:</strong> 85%+ in Physics, Chemistry, Math</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📚 LEARNING PATH (4-6 years):</h4>
+                            <div class="roadmap-step">
+                                <h5>Year 1-2: Engineering Fundamentals</h5>
+                                <p>Math, Physics, Engineering basics, CAD software</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 3-4: Specialized Courses</h5>
+                                <p>Core engineering subjects, internships, projects</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 5-6: Advanced Projects</h5>
+                                <p>Industry certifications, research, placement preparation</p>
                             </div>
                         </div>
-                    `).join('')}
-                </div>
-                <div class="roadmap-card">
-                    <h4>🏆 Top Institutes in India</h4>
-                    <p style="line-height: 1.8;">IIT Bombay, IIT Delhi, IIT Madras, BITS Pilani, NIT Trichy, IIM Ahmedabad, IIM Bangalore, AIIMS, TISS, NID</p>
-                </div>
-                <div class="roadmap-card">
-                    <h4>🌍 Top Global Universities</h4>
-                    <p style="line-height: 1.8;">MIT, Stanford, Harvard, Oxford, Cambridge, ETH Zurich, NUS Singapore, University of Toronto</p>
-                </div>
-            `;
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry Level:</strong> ₹6-12 LPA<br>
+                            <strong>Mid Level:</strong> ₹12-25 LPA<br>
+                            <strong>Senior Level:</strong> ₹25-60 LPA</p>
+                        </div>
+                    ` : `
+                        <h3>🔧 REALISTIC CAREERS - SKILLED TRADES</h3>
+                        <div class="roadmap-card">
+                            <h4>SKILLED TECHNICAL ROLES:</h4>
+                            <p>• Electrician • Skilled Technician • Field Worker<br>
+                            • Automotive Technician • Construction Supervisor</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🏫 TECHNICAL EDUCATION:</h4>
+                            <p>• ITI Advanced Courses • Polytechnic Engineering<br>
+                            • NCVT/SCVT Certifications • Industry Apprenticeships</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📚 LEARNING PATH (2-4 years):</h4>
+                            <p><strong>Year 1-2:</strong> Technical foundation, hands-on training<br>
+                            <strong>Year 3-4:</strong> Advanced certifications, supervisory skills</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry:</strong> ₹3-6 LPA | <strong>Mid:</strong> ₹6-12 LPA | <strong>Senior:</strong> ₹12-20 LPA</p>
+                        </div>
+                    `,
+                    I: `
+                        <h3>🔬 INVESTIGATIVE CAREERS & ROADMAPS</h3>
+                        <div class="roadmap-card">
+                            <h4>RESEARCH TRACK:</h4>
+                            <p>• Data Scientist • Research Scientist • Systems Analyst<br>
+                            • Biomedical Researcher • Environmental Scientist • Psychologist</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🏛️ TOP UNIVERSITIES & ADMISSION:</h4>
+                            <p><strong>India:</strong> IISc Bangalore • TIFR • AIIMS (NEET) • IIT (Research Programs)</p>
+                            <p><strong>International:</strong> Harvard, MIT, Stanford (GRE/GMAT + Research Experience)</p>
+                            <p><strong>Requirements:</strong> 90%+ in Science subjects, Research aptitude</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>TECHNOLOGY RESEARCH:</h4>
+                            <p>• AI Researcher • Quantum Computing Specialist • Bioinformatics<br>
+                            • Data Mining Expert • Computational Biology • Robotics Engineer</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📚 LEARNING PATH (6-8 years):</h4>
+                            <div class="roadmap-step">
+                                <h5>Year 1-3: Bachelor's Degree</h5>
+                                <p>Science/Engineering foundation, research methodology</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 4-6: Master's Program</h5>
+                                <p>Research focus, thesis work, publications</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 7-8: PhD or Industry Research</h5>
+                                <p>Advanced research, specialization, industry roles</p>
+                            </div>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry:</strong> ₹4-10 LPA | <strong>Mid:</strong> ₹10-25 LPA | <strong>Senior:</strong> ₹25-60 LPA</p>
+                        </div>
+                    `,
+                    A: `
+                        <h3>🎨 ARTISTIC CAREERS & ROADMAPS</h3>
+                        <div class="roadmap-card">
+                            <h4>DESIGN TRACK:</h4>
+                            <p>• Graphic Designer • UX/UI Designer • Creative Director<br>
+                            • Art Director • Fashion Designer • Interior Designer</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🏛️ TOP UNIVERSITIES & ADMISSION:</h4>
+                            <p><strong>India:</strong> NID Ahmedabad • NIFT • Srishti School of Art</p>
+                            <p><strong>International:</strong> Parsons, RISD, Central Saint Martins (Portfolio + Interview)</p>
+                            <p><strong>Requirements:</strong> Strong portfolio, creativity tests, 75%+ academics</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>MEDIA & ENTERTAINMENT:</h4>
+                            <p>• Film Director • Animator • Game Designer<br>
+                            • Content Creator • Digital Artist • Photographer</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📚 LEARNING PATH (3-5 years):</h4>
+                            <div class="roadmap-step">
+                                <h5>Year 1-2: Foundation</h5>
+                                <p>Drawing, Color theory, Design principles</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 3-4: Specialization</h5>
+                                <p>Digital design, Traditional media, Software mastery</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 5-6: Portfolio Development</h5>
+                                <p>Advanced portfolio, internships, exhibitions</p>
+                            </div>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry:</strong> ₹2-6 LPA | <strong>Mid:</strong> ₹6-18 LPA | <strong>Senior:</strong> ₹18-45 LPA</p>
+                        </div>
+                    `,
+                    S: aptitudeBand >= 4 ? `
+                        <h3>👥 SOCIAL CAREERS - HEALTHCARE LEADERSHIP</h3>
+                        <div class="roadmap-card">
+                            <h4>🏥 HEALTHCARE LEADERSHIP (Aptitude 41-50):</h4>
+                            <p>• Physicians • Surgeons • Psychologists • Dentists<br>
+                            • Medical Directors • Healthcare Executives</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🎓 TOP UNIVERSITIES & ADMISSION:</h4>
+                            <p><strong>Medicine:</strong> Harvard Medical, Johns Hopkins, AIIMS Delhi</p>
+                            <p><strong>Psychology:</strong> Stanford, Yale, Cambridge, NIMHANS</p>
+                            <p><strong>Nursing:</strong> UPenn, Duke, Johns Hopkins</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📋 ADMISSION CRITERIA:</h4>
+                            <p>• Medical School: NEET (India), MCAT (US), BMAT (UK)<br>
+                            • Psychology PhD: GRE, Research experience, Clinical hours<br>
+                            • Requirements: Biology, Chemistry, Physics background<br>
+                            • Clinical Experience: Volunteering, shadowing physicians</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📚 LEARNING PATH (6-12 years):</h4>
+                            <div class="roadmap-step">
+                                <h5>Year 1-3: Pre-med/Bachelor's</h5>
+                                <p>Science foundation, MCAT/NEET preparation</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 4-7: Medical School</h5>
+                                <p>MBBS/MD program, clinical rotations</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 8-11: Residency Training</h5>
+                                <p>Specialization in chosen field</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 12+: Fellowship</h5>
+                                <p>Subspecialization, research, practice</p>
+                            </div>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry:</strong> ₹2-8 LPA | <strong>Mid:</strong> ₹8-25 LPA | <strong>Senior:</strong> ₹25-60 LPA<br>
+                            <strong>Medical Specialists:</strong> ₹60 LPA+</p>
+                        </div>
+                    ` : `
+                        <h3>👥 SOCIAL CAREERS - EDUCATION & COUNSELING</h3>
+                        <div class="roadmap-card">
+                            <h4>🎓 EDUCATION & COUNSELING:</h4>
+                            <p>• Teachers • School Counselors • Educational Administrators<br>
+                            • Mental Health Counselors • Social Workers</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🏫 EDUCATION REQUIREMENTS:</h4>
+                            <p>• Teaching: B.Ed after Bachelor's, TET/CTET certification<br>
+                            • Counseling: Master's in Psychology/Social Work<br>
+                            • Administration: M.Ed + administrative experience</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>👨‍⚕️ HEALTHCARE SUPPORT:</h4>
+                            <p>• Registered Nurses • Physical Therapists • Medical Assistants<br>
+                            • Community Health Workers • Healthcare Technicians</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry:</strong> ₹2-8 LPA | <strong>Mid:</strong> ₹8-25 LPA | <strong>Senior:</strong> ₹25-60 LPA</p>
+                        </div>
+                    `,
+                    E: aptitudeBand >= 4 ? `
+                        <h3>💼 ENTERPRISING CAREERS - EXECUTIVE LEADERSHIP</h3>
+                        <div class="roadmap-card">
+                            <h4>🏢 EXECUTIVE LEADERSHIP (Aptitude 41-50):</h4>
+                            <p>• CEOs • Politicians • Venture Capitalists • Senior Executives<br>
+                            • Chief Executives • Investment Fund Managers</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🎓 TOP UNIVERSITIES & ADMISSION:</h4>
+                            <p><strong>Business:</strong> Harvard Business School, Wharton, Stanford GSB</p>
+                            <p><strong>India:</strong> IIM Ahmedabad, IIM Bangalore, IIM Calcutta</p>
+                            <p><strong>Law:</strong> Yale Law, Harvard Law, Columbia Law</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📋 ADMISSION CRITERIA:</h4>
+                            <p>• MBA: CAT (India), GMAT/GRE (International), Work experience<br>
+                            • Law: CLAT (India), LSAT (US), Strong academic record<br>
+                            • Requirements: Leadership potential, Business acumen<br>
+                            • Experience: 2-5 years professional work experience</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📚 LEARNING PATH (5-8 years):</h4>
+                            <div class="roadmap-step">
+                                <h5>Year 1-3: Bachelor's Degree</h5>
+                                <p>Business/Economics/Engineering foundation</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 4-6: Work Experience</h5>
+                                <p>Professional experience in relevant field</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 7-8: MBA Program</h5>
+                                <p>Top business school, networking, internships</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Advanced: Executive Education</h5>
+                                <p>Leadership programs, continuous learning</p>
+                            </div>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry:</strong> ₹3-10 LPA | <strong>Mid:</strong> ₹10-30 LPA | <strong>Senior:</strong> ₹30-80 LPA<br>
+                            <strong>C-Suite/Entrepreneur:</strong> ₹80 LPA+</p>
+                        </div>
+                    ` : `
+                        <h3>💼 ENTERPRISING CAREERS - MANAGEMENT ROLES</h3>
+                        <div class="roadmap-card">
+                            <h4>💼 MANAGEMENT ROLES:</h4>
+                            <p>• Marketing Managers • Sales Managers • Operations Managers<br>
+                            • Financial Managers • Human Resources Managers</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🏫 BUSINESS EDUCATION:</h4>
+                            <p>• Bachelor's: BBA, B.Com, Economics from top universities<br>
+                            • Certifications: PMP, Six Sigma, Digital Marketing<br>
+                            • Skills: Leadership, Communication, Strategic thinking</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📊 BUSINESS DEVELOPMENT:</h4>
+                            <p>• Sales Representatives • Marketing Specialists • HR Specialists<br>
+                            • Business Analysts • Project Coordinators</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry:</strong> ₹3-10 LPA | <strong>Mid:</strong> ₹10-30 LPA | <strong>Senior:</strong> ₹30-80 LPA</p>
+                        </div>
+                    `,
+                    C: aptitudeBand >= 4 ? `
+                        <h3>📊 CONVENTIONAL CAREERS - FINANCIAL LEADERSHIP</h3>
+                        <div class="roadmap-card">
+                            <h4>💰 FINANCIAL LEADERSHIP (Aptitude 41-50):</h4>
+                            <p>• CFOs • Actuaries • Financial Risk Specialists<br>
+                            • Operations Research Analysts • Senior Compliance Managers</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🎓 TOP UNIVERSITIES & ADMISSION:</h4>
+                            <p><strong>Finance:</strong> Wharton, Chicago Booth, London Business School</p>
+                            <p><strong>Actuarial:</strong> Georgia State, University of Illinois, Boston University</p>
+                            <p><strong>India:</strong> SRCC, LSR, St. Xavier's College</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📋 ADMISSION CRITERIA:</h4>
+                            <p>• Professional Exams: CA, CS, CMA, CFA, FRM<br>
+                            • Actuarial: SOA, CAS professional certifications<br>
+                            • Requirements: Strong mathematics, Statistics background<br>
+                            • Experience: Internships in finance, Analytical projects</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📚 LEARNING PATH (4-7 years):</h4>
+                            <div class="roadmap-step">
+                                <h5>Year 1-3: Bachelor's Degree</h5>
+                                <p>Commerce/Economics/Mathematics foundation</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 4-5: Professional Certifications</h5>
+                                <p>CA/CS/CMA programs, articleship</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 6-7: Advanced Certifications</h5>
+                                <p>CFA/FRM/Actuarial exams, specialization</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Continuous: Professional Development</h5>
+                                <p>Industry updates, networking, leadership</p>
+                            </div>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry:</strong> ₹2-6 LPA | <strong>Mid:</strong> ₹6-20 LPA | <strong>Senior:</strong> ₹20-50 LPA<br>
+                            <strong>C-Level:</strong> ₹50 LPA+</p>
+                        </div>
+                    ` : `
+                        <h3>📊 CONVENTIONAL CAREERS - FINANCIAL ANALYSIS</h3>
+                        <div class="roadmap-card">
+                            <h4>📈 FINANCIAL ANALYSIS:</h4>
+                            <p>• Financial Analysts • Budget Analysts • Compliance Officers<br>
+                            • Database Administrators • Operations Planners</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🏫 PROFESSIONAL EDUCATION:</h4>
+                            <p>• Commerce: B.Com (Hons), Economics, Statistics<br>
+                            • Certifications: CPA, ACCA, CISA, PMP<br>
+                            • Skills: Excel, SQL, Financial modeling, Risk analysis</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📋 ADMINISTRATIVE SUPPORT:</h4>
+                            <p>• Accountants • Bookkeepers • Administrative Officers<br>
+                            • Payroll Associates • Office Managers</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry:</strong> ₹2-6 LPA | <strong>Mid:</strong> ₹6-20 LPA | <strong>Senior:</strong> ₹20-50 LPA</p>
+                        </div>
+                    `
+                };
+                return roadmaps[type] || roadmaps['S'];
+            }
+
+            // Generate comprehensive roadmap based on personality and aptitude
+            const comprehensiveRoadmap = getComprehensiveRoadmap(dominant[0], aptitudeBand);
+            console.log('Generating comprehensive roadmap for type:', dominant[0], 'aptitude band:', aptitudeBand);
             
             const roadmapElement = document.getElementById('roadmapSection');
-            console.log('Roadmap element:', roadmapElement);
-            roadmapElement.innerHTML = roadmapHtml;
-            console.log('Roadmap HTML set successfully');
+            roadmapElement.innerHTML = comprehensiveRoadmap;
+            console.log('Comprehensive roadmap displayed successfully');
 
             showScreen('resultsScreen');
         }

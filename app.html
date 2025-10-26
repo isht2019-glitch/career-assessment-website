@@ -296,6 +296,50 @@
             cursor: pointer;
         }
 
+        /* Auth Modal */
+        .auth-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .auth-modal.active {
+            display: flex;
+        }
+
+        .auth-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .auth-modal h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .auth-modal .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+        }
+
         /* Test Screen */
         .test-container {
             background: white;
@@ -495,6 +539,32 @@
     </style>
 </head>
 <body>
+    <!-- Auth Modals -->
+    <div class="auth-modal" id="googleModal">
+        <button class="close-modal" onclick="closeAuthModal()">×</button>
+        <div class="auth-modal-content">
+            <h2>🔐 Sign in with Google</h2>
+            <div class="input-group">
+                <input type="email" id="googleEmail" placeholder="Enter your email">
+            </div>
+            <button class="btn-primary" onclick="completeGoogleSignIn()">Continue</button>
+        </div>
+    </div>
+
+    <div class="auth-modal" id="phoneModal">
+        <button class="close-modal" onclick="closeAuthModal()">×</button>
+        <div class="auth-modal-content">
+            <h2>📱 Phone Authentication</h2>
+            <div class="input-group">
+                <input type="tel" id="phoneNumber" placeholder="Enter phone number">
+            </div>
+            <div class="input-group" id="otpGroup" style="display:none;">
+                <input type="text" id="otpCode" placeholder="Enter 6-digit OTP" maxlength="6">
+            </div>
+            <button class="btn-primary" id="phoneBtn" onclick="sendOTP()">Send OTP</button>
+        </div>
+    </div>
+
     <!-- Guide System -->
     <div class="guide-overlay" id="guideOverlay"></div>
     <div class="guide-character" id="guideCharacter">
@@ -712,24 +782,59 @@
         }
 
         function googleSignIn() {
-            // Simulate Google Sign-In
-            userName = "Google User";
-            userEmail = "user@gmail.com";
-            alert('Google Sign-In coming soon! For now, please use email signup.');
+            document.getElementById('googleModal').classList.add('active');
+        }
+
+        function completeGoogleSignIn() {
+            const email = document.getElementById('googleEmail').value;
+            if (email && email.includes('@')) {
+                userName = email.split('@')[0];
+                userEmail = email;
+                closeAuthModal();
+                showScreen('testScreen');
+                showTestGuide();
+            } else {
+                alert('Please enter a valid email address');
+            }
         }
 
         function phoneAuth() {
-            // Simulate Phone Auth
-            const phone = prompt('Enter your phone number:');
-            if (phone) {
-                const otp = prompt('Enter OTP (any 6 digits):');
-                if (otp && otp.length === 6) {
-                    userName = "Phone User";
-                    userEmail = phone + "@phone.com";
-                    showScreen('testScreen');
-                    showTestGuide();
-                }
+            document.getElementById('phoneModal').classList.add('active');
+        }
+
+        function sendOTP() {
+            const phone = document.getElementById('phoneNumber').value;
+            if (phone && phone.length >= 10) {
+                document.getElementById('otpGroup').style.display = 'block';
+                document.getElementById('phoneBtn').textContent = 'Verify OTP';
+                document.getElementById('phoneBtn').onclick = verifyOTP;
+                alert('OTP sent! Enter any 6 digits to continue.');
+            } else {
+                alert('Please enter a valid phone number');
             }
+        }
+
+        function verifyOTP() {
+            const otp = document.getElementById('otpCode').value;
+            const phone = document.getElementById('phoneNumber').value;
+            if (otp && otp.length === 6) {
+                userName = "User_" + phone.slice(-4);
+                userEmail = phone + "@phone.com";
+                closeAuthModal();
+                showScreen('testScreen');
+                showTestGuide();
+            } else {
+                alert('Please enter a valid 6-digit OTP');
+            }
+        }
+
+        function closeAuthModal() {
+            document.getElementById('googleModal').classList.remove('active');
+            document.getElementById('phoneModal').classList.remove('active');
+            // Reset phone modal
+            document.getElementById('otpGroup').style.display = 'none';
+            document.getElementById('phoneBtn').textContent = 'Send OTP';
+            document.getElementById('phoneBtn').onclick = sendOTP;
         }
 
         function startTest() {

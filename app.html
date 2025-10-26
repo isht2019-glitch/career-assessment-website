@@ -590,6 +590,13 @@
             margin-top: 30px;
         }
 
+        .roadmap-section h3 {
+            color: #667eea;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
         .roadmap-card {
             background: #f8f9ff;
             padding: 20px;
@@ -1648,8 +1655,10 @@
             };
 
             const roadmap = roadmaps[dominant[0]];
+            console.log('Generating roadmap for type:', dominant[0], roadmap);
+            
             const roadmapHtml = `
-                <h3>📚 Career Roadmap: ${roadmap.title}</h3>
+                <h3 style="color: #667eea; font-size: 24px; margin-bottom: 20px; text-align: center;">📚 Career Roadmap: ${roadmap.title}</h3>
                 <div class="roadmap-card">
                     <h4>🎯 Step-by-Step Path to Success</h4>
                     ${roadmap.steps.map((step, i) => `
@@ -1664,14 +1673,18 @@
                 </div>
                 <div class="roadmap-card">
                     <h4>🏆 Top Institutes in India</h4>
-                    <p>IIT Bombay, IIT Delhi, IIT Madras, BITS Pilani, NIT Trichy, IIM Ahmedabad, IIM Bangalore, AIIMS, TISS, NID</p>
+                    <p style="line-height: 1.8;">IIT Bombay, IIT Delhi, IIT Madras, BITS Pilani, NIT Trichy, IIM Ahmedabad, IIM Bangalore, AIIMS, TISS, NID</p>
                 </div>
                 <div class="roadmap-card">
                     <h4>🌍 Top Global Universities</h4>
-                    <p>MIT, Stanford, Harvard, Oxford, Cambridge, ETH Zurich, NUS Singapore, University of Toronto</p>
+                    <p style="line-height: 1.8;">MIT, Stanford, Harvard, Oxford, Cambridge, ETH Zurich, NUS Singapore, University of Toronto</p>
                 </div>
             `;
-            document.getElementById('roadmapSection').innerHTML = roadmapHtml;
+            
+            const roadmapElement = document.getElementById('roadmapSection');
+            console.log('Roadmap element:', roadmapElement);
+            roadmapElement.innerHTML = roadmapHtml;
+            console.log('Roadmap HTML set successfully');
 
             showScreen('resultsScreen');
             setTimeout(() => {

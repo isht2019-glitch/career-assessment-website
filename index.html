@@ -2,9 +2,89 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Career Roadmap Explorer - Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Career Roadmap Explorer - Find Your Perfect Career</title>
     <link rel="stylesheet" href="career-demo.css">
+    <style>
+        /* Mobile-First Responsive Overrides */
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+                margin: 0;
+            }
+            
+            .container {
+                margin: 0;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+            
+            .header {
+                padding: 20px 15px;
+                border-radius: 0;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .tagline {
+                font-size: 14px;
+            }
+            
+            .search-container {
+                padding: 20px 15px;
+            }
+            
+            .search-container h2 {
+                font-size: 22px;
+            }
+            
+            .search-box {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .search-box input {
+                width: 100%;
+                font-size: 16px;
+            }
+            
+            .search-btn {
+                width: 100%;
+                padding: 15px;
+            }
+            
+            .filter-options {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .filter-options select {
+                width: 100%;
+            }
+            
+            .careers-grid {
+                grid-template-columns: 1fr;
+                padding: 15px;
+                gap: 15px;
+            }
+            
+            .career-card {
+                padding: 20px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 20px auto;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">

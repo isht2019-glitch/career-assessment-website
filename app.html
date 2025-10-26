@@ -1003,38 +1003,102 @@
     <!-- PAYMENT SCREEN -->
     <div id="paymentScreen" class="screen">
         <div class="payment-container">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <div style="width: 80px; height: 80px; margin: 0 auto 15px; border-radius: 50%; overflow: hidden; border: 3px solid #667eea;">
-                    <img src="assets/velly-bandaar.jpeg" alt="Velly" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">
+            <!-- Step 1: Email Submission -->
+            <div id="emailSubmissionStep">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="width: 100px; height: 100px; margin: 0 auto 15px; border-radius: 50%; overflow: hidden; border: 3px solid #667eea;">
+                        <img src="assets/velly-bandaar.jpeg" alt="Velly" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">
+                    </div>
+                    <h2 style="color: #667eea; margin-bottom: 10px;">🐵 Velly Bandaar Says:</h2>
+                    <div style="background: #f8f9ff; padding: 20px; border-radius: 15px; border-left: 5px solid #667eea; margin: 20px 0;">
+                        <p style="color: #333; font-size: 16px; line-height: 1.6; margin: 0;">
+                            "Arre bhai! 🙏 First give me your email, then I'll send you payment details. 
+                            Pay karo, and I'll personally approve you to take the test! 
+                            Simple hai! 💰✨"
+                        </p>
+                    </div>
                 </div>
-                <h2 style="color: #667eea; margin-bottom: 10px;">🎯 Unlock Your Career Path</h2>
-                <p style="color: #666; font-size: 14px; font-style: italic;">
-                    "Psst! Just ₹1 to discover your future! 🐵💰<br>
-                    (That's less than a samosa, and way more useful!)"
-                </p>
+                
+                <div class="plan-card">
+                    <h3 style="text-decoration: line-through; opacity: 0.6;">₹99</h3>
+                    <h3 style="font-size: 48px; margin-top: 10px;">₹1</h3>
+                    <p style="font-size: 20px; font-weight: bold;">Limited Time Offer! 🎉</p>
+                    <div class="plan-features">
+                        <p>✅ Complete Career Assessment</p>
+                        <p>✅ Detailed RIASEC Analysis</p>
+                        <p>✅ Personalized Roadmaps</p>
+                        <p>✅ Top Institutes & Salaries</p>
+                        <p>✅ Lifetime Access</p>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <input type="email" id="paymentEmail" placeholder="📧 Enter your email" style="text-align: center;">
+                </div>
+                
+                <button class="btn-primary" onclick="submitEmailForPayment()">Submit Email 📨</button>
             </div>
-            
-            <div class="plan-card">
-                <h3 style="text-decoration: line-through; opacity: 0.6;">₹99</h3>
-                <h3 style="font-size: 48px; margin-top: 10px;">₹1</h3>
-                <p style="font-size: 20px; font-weight: bold;">Limited Time Offer! 🎉</p>
-                <div class="plan-features">
-                    <p>✅ Complete Career Assessment</p>
-                    <p>✅ Detailed RIASEC Analysis</p>
-                    <p>✅ Personalized Roadmaps</p>
-                    <p>✅ Top Institutes & Salaries</p>
-                    <p>✅ Lifetime Access</p>
+
+            <!-- Step 2: Waiting for Approval -->
+            <div id="waitingApprovalStep" style="display: none;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="width: 100px; height: 100px; margin: 0 auto 15px; border-radius: 50%; overflow: hidden; border: 3px solid #667eea; animation: bounce 2s infinite;">
+                        <img src="assets/velly-bandaar.jpeg" alt="Velly" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">
+                    </div>
+                    <h2 style="color: #667eea; margin-bottom: 10px;">💌 Payment Instructions Sent!</h2>
+                </div>
+
+                <div style="background: #f8f9ff; padding: 25px; border-radius: 15px; border-left: 5px solid #667eea; margin: 20px 0;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">🐵 Velly Bandaar's Message:</h3>
+                    <p style="color: #333; font-size: 16px; line-height: 1.8; margin-bottom: 15px;">
+                        "Check your email: <strong id="submittedEmail" style="color: #667eea;"></strong>"
+                    </p>
+                    <p style="color: #333; font-size: 16px; line-height: 1.8; margin-bottom: 15px;">
+                        📧 I've sent you payment details!<br>
+                        💰 Pay the ₹1 using the information provided<br>
+                        ⏳ Once I verify your payment, I'll approve you<br>
+                        ✅ Then you can start the test!
+                    </p>
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 10px; border-left: 4px solid #ffc107; margin-top: 20px;">
+                        <p style="color: #856404; font-size: 14px; margin: 0;">
+                            ⚠️ <strong>Important:</strong> Don't close this page! 
+                            Refresh to check if you've been approved.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <div style="font-size: 48px; margin-bottom: 10px;">⏳</div>
+                    <h3 style="color: #666;">Waiting for Approval...</h3>
+                    <p style="color: #999; font-size: 14px;">Velly Bandaar is checking your payment</p>
+                    <button class="btn-primary" onclick="checkApprovalStatus()" style="margin-top: 20px;">
+                        🔄 Check Approval Status
+                    </button>
                 </div>
             </div>
 
-            <div class="input-group">
-                <input type="email" id="paymentEmail" placeholder="📧 Enter your email for receipt" style="text-align: center;">
+            <!-- Step 3: Approved -->
+            <div id="approvedStep" style="display: none;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="width: 100px; height: 100px; margin: 0 auto 15px; border-radius: 50%; overflow: hidden; border: 3px solid #28a745;">
+                        <img src="assets/velly-bandaar.jpeg" alt="Velly" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">
+                    </div>
+                    <h2 style="color: #28a745; margin-bottom: 10px;">✅ Approved!</h2>
+                </div>
+
+                <div style="background: #d4edda; padding: 25px; border-radius: 15px; border-left: 5px solid #28a745; margin: 20px 0;">
+                    <h3 style="color: #155724; margin-bottom: 15px;">🎉 Velly Bandaar Says:</h3>
+                    <p style="color: #155724; font-size: 16px; line-height: 1.8; margin: 0;">
+                        "Shabash! Payment received! 💰✨<br>
+                        You're all set to discover your perfect career path!<br>
+                        Let's gooooo! 🚀"
+                    </p>
+                </div>
+
+                <button class="btn-primary" onclick="startApprovedTest()" style="background: #28a745;">
+                    Start Test Now! 🚀
+                </button>
             </div>
-            
-            <button class="btn-primary" onclick="proceedToTest()">Pay ₹1 & Start Test 🚀</button>
-            <p style="text-align: center; margin-top: 15px; color: #999; font-size: 12px;">
-                💡 Demo Mode: Click to continue (No actual payment required)
-            </p>
         </div>
     </div>
 
@@ -1430,22 +1494,109 @@
             }
         }
 
-        function proceedToTest() {
-            const paymentEmail = document.getElementById('paymentEmail').value;
+        // Payment Approval System
+        let approvedEmails = []; // You can manually add approved emails here for testing
+        
+        function submitEmailForPayment() {
+            const paymentEmail = document.getElementById('paymentEmail').value.trim();
             
             if (!paymentEmail || !paymentEmail.includes('@')) {
-                alert('🐵 Velly says: "Arre bhai, email toh daal do! Receipt kaise bhejenge?" 😄');
+                alert('🐵 Velly says: "Arre bhai, valid email toh daal do!" 😄');
                 return;
             }
 
-            // Store payment email if different from signup email
+            // Store payment email
             if (!userEmail) {
                 userEmail = paymentEmail;
             }
 
-            console.log('Payment email:', paymentEmail);
+            // Save to localStorage for persistence
+            localStorage.setItem('pendingPaymentEmail', paymentEmail);
+            localStorage.setItem('paymentStatus', 'pending');
+
+            // Show submitted email
+            document.getElementById('submittedEmail').textContent = paymentEmail;
+
+            // Hide email submission, show waiting step
+            document.getElementById('emailSubmissionStep').style.display = 'none';
+            document.getElementById('waitingApprovalStep').style.display = 'block';
+
+            console.log('Payment email submitted:', paymentEmail);
+            
+            // Simulate sending email (in real app, this would call your backend)
+            alert('📧 Payment instructions sent to ' + paymentEmail + '\n\nVelly Bandaar will send you payment details shortly!');
+        }
+
+        function checkApprovalStatus() {
+            const pendingEmail = localStorage.getItem('pendingPaymentEmail');
+            
+            if (!pendingEmail) {
+                alert('🐵 No email found! Please submit your email first.');
+                return;
+            }
+
+            // Check if email is in approved list
+            // In production, this would check your backend/database
+            const isApproved = approvedEmails.includes(pendingEmail);
+            
+            if (isApproved) {
+                localStorage.setItem('paymentStatus', 'approved');
+                showApprovedStep();
+            } else {
+                alert('⏳ Payment not verified yet!\n\nVelly Bandaar is still checking your payment.\nPlease wait or contact support if you\'ve already paid.');
+            }
+        }
+
+        function showApprovedStep() {
+            document.getElementById('waitingApprovalStep').style.display = 'none';
+            document.getElementById('approvedStep').style.display = 'block';
+        }
+
+        function startApprovedTest() {
             showScreen('testScreen');
             showTestGuide();
+        }
+
+        // Check approval status on page load
+        window.addEventListener('load', function() {
+            const paymentStatus = localStorage.getItem('paymentStatus');
+            const pendingEmail = localStorage.getItem('pendingPaymentEmail');
+            
+            if (paymentStatus === 'approved' && pendingEmail) {
+                // User is already approved, show approved step if on payment screen
+                if (document.getElementById('paymentScreen').classList.contains('active')) {
+                    document.getElementById('emailSubmissionStep').style.display = 'none';
+                    document.getElementById('approvedStep').style.display = 'block';
+                }
+            } else if (paymentStatus === 'pending' && pendingEmail) {
+                // User is waiting for approval
+                if (document.getElementById('paymentScreen').classList.contains('active')) {
+                    document.getElementById('submittedEmail').textContent = pendingEmail;
+                    document.getElementById('emailSubmissionStep').style.display = 'none';
+                    document.getElementById('waitingApprovalStep').style.display = 'block';
+                }
+            }
+        });
+
+        // ADMIN FUNCTION: Approve an email (you can call this from browser console)
+        function approveEmail(email) {
+            if (!approvedEmails.includes(email)) {
+                approvedEmails.push(email);
+                console.log('✅ Approved:', email);
+                console.log('Approved emails:', approvedEmails);
+                
+                // If this email is currently pending, update status
+                if (localStorage.getItem('pendingPaymentEmail') === email) {
+                    localStorage.setItem('paymentStatus', 'approved');
+                    alert('✅ Email approved! User can now start the test.');
+                }
+            }
+        }
+
+        // ADMIN FUNCTION: View all pending/approved emails
+        function viewApprovedEmails() {
+            console.log('Approved emails:', approvedEmails);
+            return approvedEmails;
         }
 
         function showScreen(screenId) {

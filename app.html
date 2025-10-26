@@ -1124,13 +1124,46 @@
         let guideStep = 0;
         let analysisCallback = null;
 
-        // Firebase Config (simulated for demo)
+        // Firebase Configuration - Replace with your actual Firebase config
         const firebaseConfig = {
-            apiKey: "demo-key",
-            authDomain: "demo.firebaseapp.com",
-            projectId: "demo-project"
+            apiKey: "AIzaSyDemoKey-ReplaceWithYourActualKey",
+            authDomain: "your-project.firebaseapp.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef123456"
         };
+
+        // Initialize Firebase
+        let app, auth;
+        try {
+            app = firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            console.log('Firebase initialized successfully');
+        } catch (error) {
+            console.log('Firebase initialization error (using demo mode):', error);
+        }
+
         let currentUser = null;
+
+        // Check if user is already logged in
+        if (auth) {
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    currentUser = user;
+                    userName = user.displayName || user.email.split('@')[0];
+                    userEmail = user.email;
+                    console.log('User already logged in:', userName);
+                    
+                    // Skip to payment if already authenticated
+                    if (document.getElementById('splashScreen').classList.contains('active')) {
+                        setTimeout(() => {
+                            showScreen('paymentScreen');
+                        }, 3500);
+                    }
+                }
+            });
+        }
 
         // SPLASH SCREEN - Auto navigate after 3.5 seconds
         setTimeout(() => {
@@ -1220,7 +1253,33 @@
         }
 
         function googleSignIn() {
-            document.getElementById('googleModal').classList.add('active');
+            if (auth) {
+                // Real Firebase Google Sign-In
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.addScope('profile');
+                provider.addScope('email');
+                
+                auth.signInWithPopup(provider)
+                    .then((result) => {
+                        // Successful sign-in
+                        const user = result.user;
+                        currentUser = user;
+                        userName = user.displayName || user.email.split('@')[0];
+                        userEmail = user.email;
+                        
+                        console.log('Google Sign-In successful:', userName);
+                        showScreen('paymentScreen');
+                    })
+                    .catch((error) => {
+                        console.error('Google Sign-In error:', error);
+                        alert('Google Sign-In failed: ' + error.message);
+                        // Fallback to modal
+                        document.getElementById('googleModal').classList.add('active');
+                    });
+            } else {
+                // Fallback to modal if Firebase not initialized
+                document.getElementById('googleModal').classList.add('active');
+            }
         }
 
         function completeGoogleSignIn() {
@@ -1285,8 +1344,43 @@
                 return;
             }
 
-            currentUser = { name: userName, email: userEmail };
-            showScreen('paymentScreen');
+            if (auth) {
+                // Real Firebase Email/Password Sign-Up
+                auth.createUserWithEmailAndPassword(userEmail, password)
+                    .then((userCredential) => {
+                        // Update profile with name
+                        const user = userCredential.user;
+                        return user.updateProfile({
+                            displayName: userName
+                        }).then(() => {
+                            currentUser = user;
+                            console.log('Account created successfully:', userName);
+                            showScreen('paymentScreen');
+                        });
+                    })
+                    .catch((error) => {
+                        if (error.code === 'auth/email-already-in-use') {
+                            // Try to sign in instead
+                            auth.signInWithEmailAndPassword(userEmail, password)
+                                .then((userCredential) => {
+                                    currentUser = userCredential.user;
+                                    userName = currentUser.displayName || userName;
+                                    console.log('Signed in successfully:', userName);
+                                    showScreen('paymentScreen');
+                                })
+                                .catch((signInError) => {
+                                    alert('Email already exists. Please use correct password or try Google Sign-In.');
+                                });
+                        } else {
+                            console.error('Sign-up error:', error);
+                            alert('Sign-up failed: ' + error.message);
+                        }
+                    });
+            } else {
+                // Fallback if Firebase not initialized
+                currentUser = { name: userName, email: userEmail };
+                showScreen('paymentScreen');
+            }
         }
 
         function proceedToTest() {

@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#667eea">
     <title>TheApp - Career Assessment</title>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -30,6 +31,105 @@
         .screen.active {
             display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* SPLASH SCREEN */
+        #splashScreen {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 0;
+        }
+
+        .logo-container {
+            text-align: center;
+        }
+
+        .logo-reveal {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 30px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 5px solid white;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: pulse 2s infinite;
+        }
+
+        .logo-reveal img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .writing-text {
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            animation: typing 2s steps(6) forwards;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 3px solid white;
+            width: 0;
+            margin: 0 auto;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 6ch; }
+        }
+
+        /* PAYMENT SCREEN */
+        .payment-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .payment-container h2 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .plan-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .plan-card h3 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .plan-card p {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        .plan-features {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .plan-features p {
+            margin: 8px 0;
+            font-size: 14px;
         }
 
         /* Login Screen */
@@ -536,6 +636,140 @@
             color: #667eea;
         }
 
+        /* PERSONALITY ANALYSIS MODAL - Matching Android */
+        .analysis-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            animation: fadeIn 0.3s;
+        }
+
+        .analysis-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .analysis-modal {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.4s;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .monkey-character {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            overflow: hidden;
+            border: 3px solid #667eea;
+            animation: bounce 2s infinite;
+        }
+
+        .monkey-character img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .analysis-modal h2 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .analysis-content {
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .analysis-content h3 {
+            color: #764ba2;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .analysis-content p {
+            margin-bottom: 15px;
+        }
+
+        .score-item {
+            background: #f8f9ff;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .score-item strong {
+            color: #667eea;
+            font-size: 18px;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .typing-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: typing-bounce 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing-bounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
         /* Results Screen */
         .results-container {
             background: white;
@@ -634,6 +868,16 @@
     </style>
 </head>
 <body>
+    <!-- SPLASH SCREEN -->
+    <div id="splashScreen" class="screen active">
+        <div class="logo-container">
+            <div class="logo-reveal">
+                <img src="assets/velly-bandaar.jpeg" alt="TheApp" onerror="this.style.display='none'">
+            </div>
+            <div class="writing-text">TheApp</div>
+        </div>
+    </div>
+
     <!-- Auth Modals -->
     <div class="auth-modal" id="googleModal">
         <button class="close-modal" onclick="closeAuthModal()">×</button>
@@ -660,6 +904,23 @@
         </div>
     </div>
 
+    <!-- PERSONALITY ANALYSIS MODAL -->
+    <div class="analysis-overlay" id="analysisOverlay">
+        <div class="analysis-modal">
+            <div class="monkey-character">
+                <img src="assets/velly-bandaar.jpeg" alt="Velly Bandaar" onerror="this.style.display='none'">
+            </div>
+            <div id="typingIndicator" class="typing-indicator" style="display:none;">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+            <h2 id="analysisTitle">🎉 Personality Analysis</h2>
+            <div class="analysis-content" id="analysisContent"></div>
+            <button class="btn-primary" style="margin-top: 20px;" id="analysisBtn" onclick="closeAnalysis()">Continue</button>
+        </div>
+    </div>
+
     <!-- Guide System -->
     <div class="guide-overlay" id="guideOverlay" onclick="closeGuide()"></div>
     <div class="guide-character" id="guideCharacter" onclick="toggleGuide()">
@@ -671,7 +932,7 @@
     </div>
 
     <!-- Login Screen -->
-    <div id="loginScreen" class="screen active">
+    <div id="loginScreen" class="screen">
         <div class="auth-card">
             <div class="logo">
                 <div class="logo-icon">
@@ -707,6 +968,28 @@
                     Phone OTP
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- PAYMENT SCREEN -->
+    <div id="paymentScreen" class="screen">
+        <div class="payment-container">
+            <h2>🎯 Unlock Your Career Path</h2>
+            <div class="plan-card">
+                <h3>₹99</h3>
+                <p>One-time payment</p>
+                <div class="plan-features">
+                    <p>✅ Complete Career Assessment</p>
+                    <p>✅ Detailed RIASEC Analysis</p>
+                    <p>✅ Personalized Roadmaps</p>
+                    <p>✅ Top Institutes & Salaries</p>
+                    <p>✅ Lifetime Access</p>
+                </div>
+            </div>
+            <button class="btn-primary" onclick="proceedToTest()">Proceed to Payment</button>
+            <p style="text-align: center; margin-top: 15px; color: #999; font-size: 14px;">
+                For demo purposes, click to continue
+            </p>
         </div>
     </div>
 
@@ -832,11 +1115,20 @@
         let userName = "";
         let userEmail = "";
         let guideStep = 0;
+        let analysisCallback = null;
 
-        // Show welcome guide on page load
-        window.addEventListener('load', () => {
-            setTimeout(showWelcomeGuide, 1000);
-        });
+        // Firebase Config (simulated for demo)
+        const firebaseConfig = {
+            apiKey: "demo-key",
+            authDomain: "demo.firebaseapp.com",
+            projectId: "demo-project"
+        };
+        let currentUser = null;
+
+        // SPLASH SCREEN - Auto navigate after 3.5 seconds
+        setTimeout(() => {
+            showScreen('loginScreen');
+        }, 3500);
 
         function showWelcomeGuide() {
             const guide = document.getElementById('guideCharacter');
@@ -929,9 +1221,9 @@
             if (email && email.includes('@')) {
                 userName = email.split('@')[0];
                 userEmail = email;
+                currentUser = { name: userName, email: userEmail };
                 closeAuthModal();
-                showScreen('testScreen');
-                showTestGuide();
+                showScreen('paymentScreen');
             } else {
                 alert('Please enter a valid email address');
             }
@@ -959,9 +1251,9 @@
             if (otp && otp.length === 6) {
                 userName = "User_" + phone.slice(-4);
                 userEmail = phone + "@phone.com";
+                currentUser = { name: userName, email: userEmail };
                 closeAuthModal();
-                showScreen('testScreen');
-                showTestGuide();
+                showScreen('paymentScreen');
             } else {
                 alert('Please enter a valid 6-digit OTP');
             }
@@ -986,6 +1278,11 @@
                 return;
             }
 
+            currentUser = { name: userName, email: userEmail };
+            showScreen('paymentScreen');
+        }
+
+        function proceedToTest() {
             showScreen('testScreen');
             showTestGuide();
         }
@@ -1116,13 +1413,108 @@
                 currentQuestion++;
                 loadQuestion();
             } else {
+                // Completed a phase
                 if (currentPhase < 3) {
-                    currentPhase++;
-                    currentQuestion = 0;
-                    loadQuestion();
+                    // Show personality analysis after each 10 personality questions
+                    if (currentPhase < 3) {
+                        showPersonalityAnalysis(currentPhase + 1);
+                    }
                 } else {
+                    // Completed aptitude test
                     showResults();
                 }
+            }
+        }
+
+        function showPersonalityAnalysis(analysisNumber) {
+            // Calculate RIASEC scores for completed questions
+            const startQ = (analysisNumber - 1) * 10;
+            const endQ = analysisNumber * 10;
+            const riasecScores = {R: 0, I: 0, A: 0, S: 0, E: 0, C: 0};
+            
+            for (let i = startQ; i < endQ; i++) {
+                const answer = answers[i];
+                if (answer !== undefined && personalityQuestions[i].types[answer]) {
+                    riasecScores[personalityQuestions[i].types[answer]]++;
+                }
+            }
+
+            // Find dominant type
+            const dominant = Object.entries(riasecScores)
+                .sort((a, b) => b[1] - a[1])[0];
+
+            const typeNames = {
+                R: 'Realistic (Doer)',
+                I: 'Investigative (Thinker)',
+                A: 'Artistic (Creator)',
+                S: 'Social (Helper)',
+                E: 'Enterprising (Persuader)',
+                C: 'Conventional (Organizer)'
+            };
+
+            const insights = {
+                R: 'You prefer hands-on work and practical problem-solving. You enjoy working with tools, machines, and physical activities.',
+                I: 'You love analyzing problems and discovering new things. You enjoy research, learning, and intellectual challenges.',
+                A: 'You have a creative mindset and enjoy expressing yourself. You value originality, imagination, and artistic pursuits.',
+                S: 'You care about helping others and building relationships. You enjoy teaching, counseling, and working with people.',
+                E: 'You are a natural leader who enjoys persuading and managing. You thrive in business, sales, and leadership roles.',
+                C: 'You value organization and structure. You excel at detailed work, following procedures, and maintaining order.'
+            };
+
+            // Show analysis modal
+            const overlay = document.getElementById('analysisOverlay');
+            const title = document.getElementById('analysisTitle');
+            const content = document.getElementById('analysisContent');
+            const typingInd = document.getElementById('typingIndicator');
+
+            overlay.classList.add('active');
+            title.textContent = `🎉 Analysis #${analysisNumber}: Questions ${startQ + 1}-${endQ}`;
+            
+            // Show typing indicator
+            typingInd.style.display = 'flex';
+            content.innerHTML = '';
+
+            setTimeout(() => {
+                typingInd.style.display = 'none';
+                
+                let html = `
+                    <h3>📊 Initial Personality Traits:</h3>
+                    <p>${insights[dominant[0]]}</p>
+                    
+                    <h3>🎯 Your RIASEC Scores So Far:</h3>
+                `;
+
+                Object.entries(riasecScores).forEach(([type, score]) => {
+                    html += `
+                        <div class="score-item">
+                            <span>${type} - ${typeNames[type]}</span>
+                            <strong>${score}</strong>
+                        </div>
+                    `;
+                });
+
+                if (analysisNumber < 3) {
+                    html += `<p style="margin-top: 20px; color: #667eea; font-weight: bold;">Let's continue! ${10 * (3 - analysisNumber)} more personality questions to go! 🚀</p>`;
+                } else {
+                    html += `<p style="margin-top: 20px; color: #667eea; font-weight: bold;">Great! Now let's test your aptitude with 20 questions! 🎯</p>`;
+                }
+
+                content.innerHTML = html;
+            }, 1500);
+
+            // Set callback to continue
+            analysisCallback = () => {
+                currentPhase++;
+                currentQuestion = 0;
+                loadQuestion();
+            };
+        }
+
+        function closeAnalysis() {
+            document.getElementById('analysisOverlay').classList.remove('active');
+            if (analysisCallback) {
+                analysisCallback();
+                analysisCallback = null;
             }
         }
 

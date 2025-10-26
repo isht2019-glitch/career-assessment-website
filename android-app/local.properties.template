@@ -1,0 +1,11 @@
+## This file must *NOT* be checked into Version Control Systems,
+# as it contains information specific to your local configuration.
+#
+# Location of the SDK. This is only used by Gradle.
+# For customization when using a Version Control System, please read the
+# header note.
+#sdk.dir=C\\:\\Users\\USERNAME\\AppData\\Local\\Android\\Sdk
+
+# JDK 11 Override to fix JdkImageTransform errors
+# This forces Gradle to use JDK 11 instead of Android Studio's JBR 21
+org.gradle.java.home=C\\:\\Program Files\\Eclipse Adoptium\\jdk-11.0.28.6-hotspot

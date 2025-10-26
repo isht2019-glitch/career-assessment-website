@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Assessment Results - TheApp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .results-card, .occupation-card, .roadmap-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .personality-section {
+            margin-bottom: 30px;
+        }
+
+        .personality-section h4 {
+            color: #667eea;
+            margin: 20px 0 10px 0;
+            font-size: 18px;
+        }
+
+        .personality-section ul {
+            padding-left: 20px;
+        }
+
+        .personality-section li {
+            margin: 8px 0;
+            color: #555;
+        }
+
+        .problem-solving-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .problem-solving-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .occupation-category {
+            margin-bottom: 40px;
+        }
+
+        .occupation-category h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .occupation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .occupation-btn {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .occupation-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .roadmap-section {
+            margin-bottom: 30px;
+        }
+
+        .roadmap-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .skill-tag, .cert-tag {
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin: 5px;
+            display: inline-block;
+        }
+
+        .career-step {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+
+        .college-item {
+            background: #f8f9fa;
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .salary-item {
+            background: #e8f5e8;
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .score-item {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .score-type {
+            flex: 1;
+            font-weight: 600;
+        }
+
+        .score-bar {
+            flex: 2;
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            margin: 0 15px;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            background: #667eea;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .score-value {
+            font-weight: bold;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Results Container -->
+        <div id="results-container" class="results-card">
+            <h1>🎯 Your Career Assessment Results</h1>
+            
+            <div id="dominant-type"></div>
+            <div id="type-description"></div>
+            <div id="problem-solving-analysis"></div>
+            
+            <h3>📊 Your RIASEC Scores</h3>
+            <div id="riasec-scores"></div>
+            
+            <h3>🧠 Aptitude Score</h3>
+            <div style="font-size: 36px; font-weight: bold; color: #667eea; margin: 15px 0;">
+                <span id="aptitude-score"></span>
+            </div>
+            
+            <div id="occupation-selection" class="hidden">
+                <button class="btn" onclick="showOccupationSelection()">
+                    🚀 Explore Career Options
+                </button>
+            </div>
+        </div>
+
+        <!-- Occupation Selection Container -->
+        <div id="occupation-container" class="occupation-card hidden">
+            <h1>💼 Choose Your Career Path</h1>
+            <p style="margin-bottom: 30px; font-size: 18px; color: #666;">
+                Select an occupation to get a detailed roadmap with college recommendations
+            </p>
+            
+            <div id="occupation-categories"></div>
+            
+            <button class="btn btn-secondary" onclick="goBackToResults()">
+                ← Back to Results
+            </button>
+        </div>
+
+        <!-- Career Roadmap Container -->
+        <div id="roadmap-container" class="roadmap-card hidden">
+            <h1 id="career-title"></h1>
+            
+            <div class="roadmap-section">
+                <h3>📋 Overview</h3>
+                <p id="career-overview"></p>
+            </div>
+            
+            <div class="roadmap-section">
+                <h3>🎓 Education Required</h3>
+                <p id="career-education"></p>
+            </div>
+            
+            <div class="roadmap-section">
+                <h3>🛠️ Key Skills</h3>
+                <div id="career-skills"></div>
+            </div>
+            
+            <div class="roadmap-section">
+                <h3>📈 Career Path</h3>
+                <div id="career-path"></div>
+            </div>
+            
+            <div class="roadmap-section">
+                <h3>💰 Salary Range</h3>
+                <div id="salary-info"></div>
+            </div>
+            
+            <div class="roadmap-section">
+                <h3>🏛️ Top Colleges in India</h3>
+                <div id="colleges-india"></div>
+            </div>
+            
+            <div class="roadmap-section">
+                <h3>🌍 Top International Colleges</h3>
+                <div id="colleges-international"></div>
+            </div>
+            
+            <div class="roadmap-section">
+                <h3>📜 Important Certifications</h3>
+                <div id="certifications"></div>
+            </div>
+            
+            <div class="roadmap-section">
+                <h3>📊 Job Market Outlook</h3>
+                <p id="job-market"></p>
+            </div>
+            
+            <button class="btn btn-secondary" onclick="goBackToOccupations()">
+                ← Choose Different Career
+            </button>
+            <button class="btn" onclick="restartAssessment()">
+                🔄 Take Assessment Again
+            </button>
+        </div>
+    </div>
+
+    <script src="test-data.js"></script>
+    <script>
+        // Navigation functions
+        function goBackToResults() {
+            document.getElementById('occupation-container').classList.add('hidden');
+            document.getElementById('results-container').classList.remove('hidden');
+        }
+
+        function goBackToOccupations() {
+            document.getElementById('roadmap-container').classList.add('hidden');
+            document.getElementById('occupation-container').classList.remove('hidden');
+        }
+
+        function restartAssessment() {
+            window.location.href = 'test.html';
+        }
+
+        function getProblemSolvingLevel(score) {
+            for (const [level, data] of Object.entries(problemSolvingLevels)) {
+                if (score >= data.range[0] && score <= data.range[1]) {
+                    return data;
+                }
+            }
+            return problemSolvingLevels.average;
+        }
+
+        function showOccupationSelection() {
+            document.getElementById('results-container').classList.add('hidden');
+            document.getElementById('occupation-container').classList.remove('hidden');
+            
+            const categoriesHtml = Object.entries(occupationCategories)
+                .map(([category, occupations]) => `
+                    <div class="occupation-category">
+                        <h3>${category}</h3>
+                        <div class="occupation-grid">
+                            ${occupations.map(occupation => `
+                                <button class="occupation-btn" onclick="showCareerRoadmap('${occupation}')">
+                                    ${occupation}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            
+            document.getElementById('occupation-categories').innerHTML = categoriesHtml;
+        }
+
+        function showCareerRoadmap(occupation) {
+            const roadmap = careerRoadmaps[occupation];
+            
+            if (!roadmap) {
+                alert('Detailed roadmap coming soon for this occupation!');
+                return;
+            }
+            
+            document.getElementById('occupation-container').classList.add('hidden');
+            document.getElementById('roadmap-container').classList.remove('hidden');
+            
+            document.getElementById('career-title').textContent = `🎯 ${occupation}`;
+            document.getElementById('career-overview').textContent = roadmap.overview;
+            document.getElementById('career-education').textContent = roadmap.education;
+            
+            // Skills
+            document.getElementById('career-skills').innerHTML = roadmap.skills.map(skill => 
+                `<span class="skill-tag">${skill}</span>`
+            ).join('');
+            
+            // Career path
+            document.getElementById('career-path').innerHTML = roadmap.careerPath.map(step => 
+                `<div class="career-step">${step}</div>`
+            ).join('');
+            
+            // Salary
+            document.getElementById('salary-info').innerHTML = `
+                <div class="salary-item">
+                    <strong>India:</strong> ${roadmap.salary.india}
+                </div>
+                <div class="salary-item">
+                    <strong>International:</strong> ${roadmap.salary.international}
+                </div>
+            `;
+            
+            // Top colleges in India
+            document.getElementById('colleges-india').innerHTML = roadmap.topCollegesIndia.map(college => 
+                `<div class="college-item">🎓 ${college}</div>`
+            ).join('');
+            
+            // Top colleges internationally
+            document.getElementById('colleges-international').innerHTML = roadmap.topCollegesInternational.map(college => 
+                `<div class="college-item">🌍 ${college}</div>`
+            ).join('');
+            
+            // Certifications
+            document.getElementById('certifications').innerHTML = roadmap.certifications.map(cert => 
+                `<span class="cert-tag">${cert}</span>`
+            ).join('');
+            
+            // Job market
+            document.getElementById('job-market').textContent = roadmap.jobMarket;
+        }
+
+        // Load results from URL parameters or localStorage
+        function loadResults() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const riasecScores = JSON.parse(urlParams.get('riasec') || localStorage.getItem('riasecScores') || '{}');
+            const aptitudeScore = parseInt(urlParams.get('aptitude') || localStorage.getItem('aptitudeScore') || '0');
+            
+            if (Object.keys(riasecScores).length > 0) {
+                displayResults(riasecScores, aptitudeScore);
+            } else {
+                // Redirect to test if no results
+                window.location.href = 'test.html';
+            }
+        }
+
+        function displayResults(riasecScores, aptitudeScore) {
+            // Find dominant RIASEC type
+            const dominantType = Object.keys(riasecScores).reduce((a, b) => 
+                riasecScores[a] > riasecScores[b] ? a : b
+            );
+            
+            const typeInfo = riasecDescriptions[dominantType];
+            const problemSolvingLevel = getProblemSolvingLevel(aptitudeScore);
+            
+            // Display personality analysis
+            document.getElementById('dominant-type').innerHTML = `<h2>${typeInfo.title}</h2>`;
+            document.getElementById('type-description').innerHTML = `
+                <div class="personality-section">
+                    <h4>🎯 Your Personality Profile</h4>
+                    <p>${typeInfo.description}</p>
+                    
+                    <h4>🧠 Your Mindset</h4>
+                    <p>${typeInfo.personality}</p>
+                    
+                    <h4>💪 Your Strengths</h4>
+                    <ul>${typeInfo.strengths.map(strength => `<li>${strength}</li>`).join('')}</ul>
+                    
+                    <h4>🏢 Your Work Style</h4>
+                    <p>${typeInfo.workStyle}</p>
+                </div>
+            `;
+            
+            // Display problem-solving assessment
+            document.getElementById('problem-solving-analysis').innerHTML = `
+                <div class="problem-solving-section">
+                    <h3>🧩 ${problemSolvingLevel.title}</h3>
+                    <p>${problemSolvingLevel.description}</p>
+                    <h4>Your Problem-Solving Characteristics:</h4>
+                    <ul>${problemSolvingLevel.characteristics.map(char => `<li>${char}</li>`).join('')}</ul>
+                </div>
+            `;
+            
+            // Display all scores
+            const scoresHtml = Object.entries(riasecScores)
+                .sort(([,a], [,b]) => b - a)
+                .map(([type, score]) => `
+                    <div class="score-item">
+                        <span class="score-type">${riasecDescriptions[type].title}</span>
+                        <div class="score-bar">
+                            <div class="score-fill" style="width: ${(score/5)*100}%"></div>
+                        </div>
+                        <span class="score-value">${score}/5</span>
+                    </div>
+                `).join('');
+            
+            document.getElementById('riasec-scores').innerHTML = scoresHtml;
+            document.getElementById('aptitude-score').textContent = `${aptitudeScore}%`;
+            
+            // Show occupation selection button
+            document.getElementById('occupation-selection').classList.remove('hidden');
+        }
+
+        // Initialize on page load
+        window.onload = loadResults;
+    </script>
+</body>
+</html>

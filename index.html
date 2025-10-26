@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheApp - Career Assessment Platform</title>
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="guide-system.css">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com">
+</head>
+<body>
+    <div class="container">
+        <div class="auth-card">
+            <div class="logo">
+                <div style="width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 15px; background: linear-gradient(45deg, #8B4513, #D2691E); display: flex; align-items: center; justify-content: center; border: 3px solid #667eea; position: relative; overflow: hidden;">
+                    <div style="font-size: 40px;">🐵</div>
+                    <div style="position: absolute; bottom: 10px; right: 10px; font-size: 20px; transform: rotate(-15deg);">🔫</div>
+                </div>
+                <h1>TheApp</h1>
+                <p>Join thousands of users today</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="tab-btn active" data-tab="signup">Sign Up</button>
+                <button class="tab-btn" data-tab="signin">Sign In</button>
+            </div>
+
+            <!-- Sign Up Form -->
+            <div id="signup" class="auth-form active">
+                <form id="signupForm">
+                    <div class="input-group">
+                        <input type="text" id="fullName" placeholder="Full Name" required>
+                        <i class="icon user-icon"></i>
+                    </div>
+                    
+                    <div class="input-group">
+                        <input type="email" id="email" placeholder="Email Address" required>
+                        <i class="icon email-icon"></i>
+                    </div>
+                    
+                    <div class="input-group">
+                        <input type="tel" id="phone" placeholder="Phone Number" required>
+                        <i class="icon phone-icon"></i>
+                    </div>
+                    
+                    <div class="input-group">
+                        <input type="password" id="password" placeholder="Password" required>
+                        <i class="icon password-icon"></i>
+                    </div>
+                    
+                    <div class="input-group">
+                        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+                        <i class="icon password-icon"></i>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">Create Account</button>
+                </form>
+
+                <div class="divider">
+                    <span>or continue with</span>
+                </div>
+
+                <div class="social-auth">
+                    <button class="btn-google" id="googleSignIn">
+                        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
+                        Google
+                    </button>
+                    
+                    <button class="btn-phone" id="phoneAuth">
+                        <span>📱</span>
+                        Phone OTP
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sign In Form -->
+            <div id="signin" class="auth-form">
+                <form id="signinForm">
+                    <div class="input-group">
+                        <input type="email" id="signinEmail" placeholder="Email Address" required>
+                        <i class="icon email-icon"></i>
+                    </div>
+                    
+                    <div class="input-group">
+                        <input type="password" id="signinPassword" placeholder="Password" required>
+                        <i class="icon password-icon"></i>
+                    </div>
+                    
+                    <div class="forgot-password">
+                        <a href="#" id="forgotPassword">Forgot Password?</a>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">Sign In</button>
+                </form>
+
+                <div class="divider">
+                    <span>or continue with</span>
+                </div>
+
+                <div class="social-auth">
+                    <button class="btn-google" id="googleSignInLogin">
+                        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
+                        Google
+                    </button>
+                    
+                    <button class="btn-phone" id="phoneAuthLogin">
+                        <span>📱</span>
+                        Phone OTP
+                    </button>
+                </div>
+            </div>
+
+            <div class="terms">
+                <p>By signing up, you agree to our <a href="#" class="link">Terms of Service</a> and <a href="#" class="link">Privacy Policy</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- OTP Modal -->
+    <div id="otpModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Verify Phone Number</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Enter the 6-digit code sent to <span id="phoneNumber"></span></p>
+                <div class="otp-inputs">
+                    <input type="text" maxlength="1" class="otp-input">
+                    <input type="text" maxlength="1" class="otp-input">
+                    <input type="text" maxlength="1" class="otp-input">
+                    <input type="text" maxlength="1" class="otp-input">
+                    <input type="text" maxlength="1" class="otp-input">
+                    <input type="text" maxlength="1" class="otp-input">
+                </div>
+                <button class="btn-primary" id="verifyOtp">Verify</button>
+                <p class="resend-text">Didn't receive code? <a href="#" id="resendOtp" class="link">Resend</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="guide-system.js"></script>
+</body>
+</html>

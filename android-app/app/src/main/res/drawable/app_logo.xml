@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="80dp"
+    android:viewportWidth="200"
+    android:viewportHeight="80">
+    
+    <!-- Black background -->
+    <path
+        android:fillColor="#1a1a1a"
+        android:pathData="M0,0 L200,0 L200,80 L0,80 Z"/>
+    
+    <!-- "the app" text with gradient effect -->
+    <group>
+        <!-- "the" text -->
+        <path
+            android:fillColor="#D2691E"
+            android:pathData="M20,25 Q22,23 25,25 L30,25 Q32,27 30,29 L28,29 L28,45 Q28,47 26,47 L24,47 Q22,45 24,43 L24,29 L22,29 Q20,27 20,25 Z"/>
+        
+        <path
+            android:fillColor="#D2691E"
+            android:pathData="M35,25 Q37,23 40,25 L40,35 L45,35 L45,25 Q45,23 47,25 L49,25 Q51,27 49,29 L49,43 Q49,45 47,45 L45,45 L45,39 L40,39 L40,43 Q40,45 38,45 L36,45 Q34,43 36,41 L36,29 Q34,27 35,25 Z"/>
+        
+        <path
+            android:fillColor="#D2691E"
+            android:pathData="M55,25 Q57,23 60,25 L65,25 Q67,27 65,29 L62,29 L62,41 L65,41 Q67,43 65,45 L60,45 Q58,43 60,41 L60,29 Q58,27 55,25 Z"/>
+        
+        <!-- "app" text -->
+        <path
+            android:fillColor="#CD853F"
+            android:pathData="M85,25 Q87,23 90,25 L95,25 Q97,27 95,29 L92,29 L92,35 L95,35 Q97,37 95,39 L92,39 L92,43 Q92,45 90,45 L88,45 Q86,43 88,41 L88,29 Q86,27 85,25 Z"/>
+        
+        <path
+            android:fillColor="#CD853F"
+            android:pathData="M105,25 Q107,23 110,25 L115,25 Q120,25 120,30 L120,35 Q120,40 115,40 L112,40 L112,43 Q112,45 110,45 L108,45 Q106,43 108,41 L108,29 Q106,27 105,25 Z M112,29 L112,36 L115,36 Q116,36 116,35 L116,30 Q116,29 115,29 L112,29 Z"/>
+        
+        <path
+            android:fillColor="#CD853F"
+            android:pathData="M130,25 Q132,23 135,25 L140,25 Q145,25 145,30 L145,35 Q145,40 140,40 L137,40 L137,43 Q137,45 135,45 L133,45 Q131,43 133,41 L133,29 Q131,27 130,25 Z M137,29 L137,36 L140,36 Q141,36 141,35 L141,30 Q141,29 140,29 L137,29 Z"/>
+    </group>
+</vector>

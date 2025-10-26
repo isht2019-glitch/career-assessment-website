@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    
+    <!-- Background circle -->
+    <path
+        android:pathData="M60,60m-58,0a58,58 0,1 1,116 0a58,58 0,1 1,-116 0"
+        android:fillColor="#8B4513"
+        android:strokeColor="#D2691E"
+        android:strokeWidth="4"/>
+    
+    <!-- Monkey face -->
+    <path
+        android:pathData="M60,35C70,35 78,43 78,53C78,63 70,71 60,71C50,71 42,63 42,53C42,43 50,35 60,35Z"
+        android:fillColor="#CD853F"/>
+    
+    <!-- Eyes -->
+    <path
+        android:pathData="M52,48m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0"
+        android:fillColor="#000000"/>
+    <path
+        android:pathData="M68,48m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0"
+        android:fillColor="#000000"/>
+    
+    <!-- Nose -->
+    <path
+        android:pathData="M58,52L62,52L60,56Z"
+        android:fillColor="#8B4513"/>
+    
+    <!-- Mouth -->
+    <path
+        android:pathData="M55,60Q60,65 65,60"
+        android:strokeColor="#8B4513"
+        android:strokeWidth="2"
+        android:fillColor="#00000000"/>
+    
+    <!-- Hat -->
+    <path
+        android:pathData="M45,35L75,35L73,25L47,25Z"
+        android:fillColor="#654321"/>
+    <path
+        android:pathData="M40,35L80,35"
+        android:strokeColor="#654321"
+        android:strokeWidth="3"/>
+    
+    <!-- Suit collar -->
+    <path
+        android:pathData="M45,75L60,85L75,75L75,95L45,95Z"
+        android:fillColor="#2F4F4F"/>
+    
+    <!-- Tie -->
+    <path
+        android:pathData="M58,75L62,75L64,90L56,90Z"
+        android:fillColor="#8B0000"/>
+    
+    <!-- Water gun -->
+    <path
+        android:pathData="M85,85L95,82L98,85L95,88L85,85Z"
+        android:fillColor="#FF4500"/>
+    <path
+        android:pathData="M85,85L80,87L80,83L85,85Z"
+        android:fillColor="#1E90FF"/>
+    <path
+        android:pathData="M98,85L105,85"
+        android:strokeColor="#FF4500"
+        android:strokeWidth="2"/>
+    
+</vector>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheApp - Choose Your Plan</title>
+    <link rel="stylesheet" href="payment-styles.css">
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <h1>TheApp</h1>
+            </div>
+            <div class="user-info">
+                <span>Welcome back!</span>
+                <button class="btn-logout" id="logout">Logout</button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="pricing-section">
+                <div class="section-header">
+                    <h2>Choose Your Perfect Plan</h2>
+                    <p>Start your journey with TheApp today</p>
+                </div>
+
+                <div class="billing-toggle">
+                    <span class="toggle-label">Monthly</span>
+                    <label class="switch">
+                        <input type="checkbox" id="billingToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="toggle-label">
+                        Yearly 
+                        <span class="discount-badge">Save 20%</span>
+                    </span>
+                </div>
+
+                <div class="pricing-cards">
+                    <!-- Free Plan -->
+                    <div class="pricing-card">
+                        <div class="plan-header">
+                            <h3>Starter</h3>
+                            <div class="price">
+                                <span class="currency">$</span>
+                                <span class="amount" data-monthly="0" data-yearly="0">0</span>
+                                <span class="period">/month</span>
+                            </div>
+                            <p class="plan-description">Perfect for getting started</p>
+                        </div>
+                        <ul class="features">
+                            <li>✓ Basic features</li>
+                            <li>✓ Up to 3 projects</li>
+                            <li>✓ Community support</li>
+                            <li>✓ 1GB storage</li>
+                        </ul>
+                        <button class="btn-plan current-plan" data-plan="free">Current Plan</button>
+                    </div>
+
+                    <!-- Pro Plan -->
+                    <div class="pricing-card popular">
+                        <div class="popular-badge">Most Popular</div>
+                        <div class="plan-header">
+                            <h3>Pro</h3>
+                            <div class="price">
+                                <span class="currency">₹</span>
+                                <span class="amount" data-monthly="1" data-yearly="1">1</span>
+                                <span class="period">/month</span>
+                            </div>
+                            <p class="plan-description">For growing businesses</p>
+                        </div>
+                        <ul class="features">
+                            <li>✓ Everything in Starter</li>
+                            <li>✓ Unlimited projects</li>
+                            <li>✓ Priority support</li>
+                            <li>✓ 100GB storage</li>
+                            <li>✓ Advanced analytics</li>
+                            <li>✓ Team collaboration</li>
+                        </ul>
+                        <button class="btn-plan btn-primary" data-plan="pro" onclick="console.log('Pro button clicked'); alert('Pro button clicked');">Choose Pro</button>
+                    </div>
+
+                    <!-- Enterprise Plan -->
+                    <div class="pricing-card">
+                        <div class="plan-header">
+                            <h3>Enterprise</h3>
+                            <div class="price">
+                                <span class="currency">₹</span>
+                                <span class="amount" data-monthly="1" data-yearly="1">1</span>
+                                <span class="period">/month</span>
+                            </div>
+                            <p class="plan-description">For large organizations</p>
+                        </div>
+                        <ul class="features">
+                            <li>✓ Everything in Pro</li>
+                            <li>✓ Unlimited team members</li>
+                            <li>✓ 24/7 phone support</li>
+                            <li>✓ 1TB storage</li>
+                            <li>✓ Custom integrations</li>
+                            <li>✓ Advanced security</li>
+                            <li>✓ Dedicated account manager</li>
+                        </ul>
+                        <button class="btn-plan" data-plan="enterprise">Choose Enterprise</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Modal -->
+            <div id="paymentModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Complete Your Purchase</h3>
+                        <span class="close">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div class="order-summary">
+                            <h4>Order Summary</h4>
+                            <div class="summary-item">
+                                <span id="selectedPlan">Pro Plan</span>
+                                <span id="planPrice">₹1/month</span>
+                            </div>
+                            <div class="summary-item discount" id="discountRow" style="display: none;">
+                                <span>Yearly Discount (20%)</span>
+                                <span id="discountAmount">₹0</span>
+                            </div>
+                            <hr>
+                            <div class="summary-item total">
+                                <span>Total</span>
+                                <span id="totalPrice">₹1/month</span>
+                            </div>
+                        </div>
+
+                        <div class="payment-methods">
+                            <h4>Choose Payment Method</h4>
+                            
+                            <div class="payment-options">
+                                <div class="payment-option active" data-method="card">
+                                    <div class="option-header">
+                                        <input type="radio" name="paymentMethod" value="card" checked>
+                                        <span class="option-title">💳 Credit/Debit Card</span>
+                                    </div>
+                                </div>
+
+                                <div class="payment-option" data-method="paypal">
+                                    <div class="option-header">
+                                        <input type="radio" name="paymentMethod" value="paypal">
+                                        <span class="option-title">🅿️ PayPal</span>
+                                    </div>
+                                </div>
+
+                                <div class="payment-option" data-method="razorpay">
+                                    <div class="option-header">
+                                        <input type="radio" name="paymentMethod" value="razorpay">
+                                        <span class="option-title">💰 UPI/Razorpay</span>
+                                    </div>
+                                </div>
+
+                                <div class="payment-option" data-method="crypto">
+                                    <div class="option-header">
+                                        <input type="radio" name="paymentMethod" value="crypto">
+                                        <span class="option-title">₿ Cryptocurrency</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card Payment Form -->
+                            <div id="cardPayment" class="payment-form active">
+                                <div class="form-group">
+                                    <label>Card Number</label>
+                                    <div id="card-number" class="stripe-element"></div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Expiry Date</label>
+                                        <div id="card-expiry" class="stripe-element"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>CVC</label>
+                                        <div id="card-cvc" class="stripe-element"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Cardholder Name</label>
+                                    <input type="text" id="cardholderName" placeholder="John Doe">
+                                </div>
+                            </div>
+
+                            <!-- Other payment method placeholders -->
+                            <div id="paypalPayment" class="payment-form">
+                                <div class="payment-placeholder">
+                                    <p>You will be redirected to PayPal to complete your payment securely.</p>
+                                </div>
+                            </div>
+
+                            <div id="razorpayPayment" class="payment-form">
+                                <div class="payment-placeholder">
+                                    <p>Pay using UPI, Net Banking, or other Indian payment methods via Razorpay.</p>
+                                </div>
+                            </div>
+
+                            <div id="cryptoPayment" class="payment-form">
+                                <div class="payment-placeholder">
+                                    <p>Pay with Bitcoin, Ethereum, or other cryptocurrencies.</p>
+                                    <div class="crypto-options">
+                                        <button class="crypto-btn">₿ Bitcoin</button>
+                                        <button class="crypto-btn">Ξ Ethereum</button>
+                                        <button class="crypto-btn">₳ Cardano</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="security-info">
+                            <p>🔒 Your payment information is encrypted and secure</p>
+                        </div>
+
+                        <button class="btn-pay" id="payButton">
+                            Complete Payment
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success Modal -->
+            <div id="successModal" class="modal">
+                <div class="modal-content success-content">
+                    <div class="success-icon">✅</div>
+                    <h3>Payment Successful!</h3>
+                    <p>Welcome to TheApp Pro! Your subscription is now active.</p>
+                    <div class="success-details">
+                        <p><strong>Plan:</strong> <span id="successPlan">Pro Plan</span></p>
+                        <p><strong>Amount:</strong> <span id="successAmount">₹1/month</span></p>
+                        <p><strong>Next billing:</strong> <span id="nextBilling">March 2, 2025</span></p>
+                    </div>
+                    <button class="btn-primary" id="continueToApp">Continue to App</button>
+                    <button class="btn-primary" onclick="window.location.href='test.html'" style="margin-top: 10px; background: #28a745;">Direct Test Link</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="payment-script.js"></script>
+</body>
+</html>

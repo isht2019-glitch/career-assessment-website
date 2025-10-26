@@ -1,0 +1,28 @@
+{
+  "name": "theapp",
+  "version": "1.0.0",
+  "description": "TheApp - A modern web application with authentication and payment features",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server . -p 8080",
+    "build": "echo 'No build step required for static site'",
+    "dev": "npx http-server . -p 3000 -o"
+  },
+  "keywords": [
+    "web-app",
+    "authentication",
+    "payment",
+    "subscription"
+  ],
+  "author": "TheApp Team",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "firebase-tools": "^13.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/theapp.git"
+  },
+  "homepage": "https://theapp.work"
+}

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    
+    <!-- Background circle -->
+    <path
+        android:fillColor="#667eea"
+        android:pathData="M60,60m-50,0a50,50 0,1 1,100 0a50,50 0,1 1,-100 0" />
+    
+    <!-- App icon - stylized "A" for TheApp -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M45,85L55,85L58,75L62,75L65,85L75,85L60,35L45,85ZM59,55L61,65L59,65L59,55Z" />
+    
+    <!-- Accent dot -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M60,45m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0" />
+</vector>

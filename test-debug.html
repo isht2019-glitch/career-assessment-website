@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Debug</title>
+</head>
+<body>
+    <h1>Debug Test Results</h1>
+    <button onclick="testResults()">Test Results Function</button>
+    <div id="output"></div>
+    
+    <script>
+    function testResults() {
+        const mockScores = {R: 8, I: 6, A: 4, S: 7, E: 9, C: 5};
+        const mockAptitude = 75;
+        
+        // Save to localStorage
+        localStorage.setItem('riasecScores', JSON.stringify(mockScores));
+        localStorage.setItem('aptitudeScore', mockAptitude.toString());
+        
+        document.getElementById('output').innerHTML = 
+            '<p>Data saved to localStorage</p>' +
+            '<button onclick="goToRoadmap()">Go to Career Roadmap</button>';
+    }
+    
+    function goToRoadmap() {
+        window.location.href = 'career-roadmap.html';
+    }
+    </script>
+</body>
+</html>

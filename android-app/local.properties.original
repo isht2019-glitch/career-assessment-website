@@ -1,0 +1,11 @@
+## This file must *NOT* be checked into Version Control Systems,
+# as it contains information specific to your local configuration.
+#
+# Location of the SDK. This is only used by Gradle.
+# For customization when using a 3rd party IDE, see the documentation:
+# https://developer.android.com/studio/intro/studio-config.html
+
+sdk.dir=C\:\\Users\\isht2\\AppData\\Local\\Android\\Sdk
+
+# Commented out problematic JBR 21 to use system default JDK
+# org.gradle.java.home=C\:\\Program Files\\Android\\Android Studio\\jbr

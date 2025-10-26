@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Background circle -->
+    <path
+        android:fillColor="#1a1a1a"
+        android:pathData="M54,54m-50,0a50,50 0,1 1,100 0a50,50 0,1 1,-100 0"/>
+    
+    <!-- "the app" text for launcher icon -->
+    <group android:translateX="54" android:translateY="54">
+        <!-- "t" -->
+        <path
+            android:fillColor="#D4A574"
+            android:pathData="M-35,-8 Q-33,-12 -30,-8 Q-30,-5 -30,3 Q-30,8 -33,10 Q-35,12 -37,10 Q-40,8 -40,3 Q-40,-5 -40,-8 Q-40,-12 -37,-14 Q-35,-16 -33,-14 Q-30,-12 -30,-8 Z" />
+        <path
+            android:fillColor="#D4A574"
+            android:pathData="M-42,-10 L-28,-10 Q-26,-8 -28,-6 L-42,-6 Q-44,-8 -42,-10 Z" />
+        
+        <!-- "h" -->
+        <path
+            android:fillColor="#D4A574"
+            android:pathData="M-22,-14 Q-20,-16 -18,-14 Q-18,-10 -18,8 Q-20,12 -22,8 Q-22,5 -22,1 Q-18,0 -14,1 Q-14,5 -14,8 Q-12,12 -14,8 Q-14,5 -14,1 Q-18,-1 -22,0 Q-22,-10 -22,-14 Z" />
+        
+        <!-- "e" -->
+        <path
+            android:fillColor="#D4A574"
+            android:pathData="M-8,-3 Q-4,-6 0,-3 Q2,-1 0,0 L-6,0 Q-8,1 -6,3 Q-4,5 0,3 Q2,5 0,6 Q-6,8 -8,3 Q-10,0 -8,-3 Z" />
+        
+        <!-- "a" -->
+        <path
+            android:fillColor="#CD853F"
+            android:pathData="M30,-8 Q32,-10 35,-8 L40,-8 Q45,-8 45,-3 L45,2 Q45,7 40,7 L37,7 L37,6 Q37,8 35,8 L33,8 Q31,6 33,4 L33,-4 Q31,-6 30,-8 Z M37,-4 L37,3 L40,3 Q41,3 41,2 L41,-3 Q41,-4 40,-4 L37,-4 Z"/>
+        
+        <path
+            android:fillColor="#CD853F"
+            android:pathData="M50,-8 Q52,-10 55,-8 L60,-8 Q65,-8 65,-3 L65,2 Q65,7 60,7 L57,7 L57,6 Q57,8 55,8 L53,8 Q51,6 53,4 L53,-4 Q51,-6 50,-8 Z M57,-4 L57,3 L60,3 Q61,3 61,2 L61,-3 Q61,-4 60,-4 L57,-4 Z"/>
+    </group>
+</vector>

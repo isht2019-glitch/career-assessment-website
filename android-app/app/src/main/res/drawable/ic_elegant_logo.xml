@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="300dp"
+    android:height="100dp"
+    android:viewportWidth="300"
+    android:viewportHeight="100">
+    
+    <!-- Black background -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M0,0 L300,0 L300,100 L0,100 Z" />
+    
+    <!-- "the app" in elegant script using text paths -->
+    <group android:translateX="150" android:translateY="50">
+        
+        <!-- "t" in script style -->
+        <path
+            android:fillColor="#D4A574"
+            android:strokeWidth="2"
+            android:strokeColor="#D4A574"
+            android:pathData="M-100,-20 Q-98,-25 -95,-20 Q-95,-15 -95,15 Q-97,20 -100,15 Q-103,10 -103,5 Q-103,-15 -103,-20 Q-103,-25 -100,-28 Q-97,-30 -95,-28 Q-92,-25 -95,-20" />
+        <!-- t crossbar -->
+        <path
+            android:fillColor="#D4A574"
+            android:pathData="M-108,-22 L-88,-22 Q-86,-20 -88,-18 L-108,-18 Q-110,-20 -108,-22" />
+        
+        <!-- "h" in script style -->
+        <path
+            android:fillColor="#D4A574"
+            android:strokeWidth="2"
+            android:strokeColor="#D4A574"
+            android:pathData="M-80,-30 Q-78,-32 -75,-30 Q-75,-25 -75,15 Q-77,20 -80,15 Q-80,10 -80,5 Q-75,3 -70,5 Q-70,10 -70,15 Q-68,20 -70,15 Q-70,10 -70,5 Q-75,2 -80,5 Q-80,-25 -80,-30" />
+        
+        <!-- "e" in script style -->
+        <path
+            android:fillColor="#D4A574"
+            android:strokeWidth="2"
+            android:strokeColor="#D4A574"
+            android:pathData="M-55,0 Q-50,-8 -42,0 Q-40,3 -42,5 L-52,5 Q-55,7 -52,10 Q-50,12 -42,10 Q-40,12 -42,15 Q-52,18 -55,10 Q-58,5 -55,0" />
+        
+        <!-- Space -->
+        
+        <!-- "a" in script style -->
+        <path
+            android:fillColor="#D4A574"
+            android:strokeWidth="2"
+            android:strokeColor="#D4A574"
+            android:pathData="M-15,0 Q-10,-8 -2,0 Q0,3 -2,5 Q-5,7 -8,5 Q-8,7 -8,12 Q-2,15 0,12 Q2,15 0,18 Q-8,22 -15,15 Q-18,12 -15,8 Q-15,5 -15,0" />
+        
+        <!-- "p" in script style -->
+        <path
+            android:fillColor="#D4A574"
+            android:strokeWidth="2"
+            android:strokeColor="#D4A574"
+            android:pathData="M15,0 Q17,-3 20,0 Q20,3 20,25 Q18,30 15,25 Q15,20 15,15 Q20,17 25,15 Q27,12 25,10 Q23,7 20,10 Q18,7 15,10 Q15,3 15,0" />
+        
+        <!-- "p" in script style -->
+        <path
+            android:fillColor="#D4A574"
+            android:strokeWidth="2"
+            android:strokeColor="#D4A574"
+            android:pathData="M40,0 Q42,-3 45,0 Q45,3 45,25 Q43,30 40,25 Q40,20 40,15 Q45,17 50,15 Q52,12 50,10 Q48,7 45,10 Q43,7 40,10 Q40,3 40,0" />
+    </group>
+</vector>

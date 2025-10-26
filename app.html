@@ -1215,11 +1215,11 @@
             overlay.classList.add('active');
 
             content.innerHTML = `
-                <h3>Namaste! I'm Velly Bandaar 🐵</h3>
-                <p>I work for the legendary "Badmash Patandar Samajvadi Party" 💀</p>
-                <p>We help illuminate career paths worldwide! ✨</p>
-                <p>Ready to discover YOUR perfect career? Let's go! 🚀</p>
-                <button onclick="closeGuide()">Let's Start!</button>
+                <h3>Hi! My name is "Velly Bandaar" 🐵</h3>
+                <p>I work for the gang called "Badmash Patandar Samajvadi Party" 💀</p>
+                <p>This group helps in illumination of the world. ✨</p>
+                <p>What's your name? 🤔</p>
+                <button onclick="closeGuide()">Got it!</button>
             `;
         }
 
@@ -1251,23 +1251,19 @@
             if (currentScreen === 'testScreen') {
                 const totalQ = 50;
                 const answered = answers.filter(a => a !== undefined).length;
-                const percentage = Math.round((answered / totalQ) * 100);
                 content.innerHTML = `
-                    <h3>📊 Progress Check!</h3>
-                    <p><strong>Completed:</strong> ${answered}/${totalQ} (${percentage}%)</p>
+                    <h3>📊 Your Progress</h3>
+                    <p><strong>Answered:</strong> ${answered} / ${totalQ} questions</p>
                     <p><strong>Time Left:</strong> ${Math.floor(timeLeft/60)}:${(timeLeft%60).toString().padStart(2,'0')}</p>
-                    <p>💡 <strong>Pro Tip:</strong> Click numbered circles to jump between questions!</p>
-                    <p>🐵 Keep going, you're doing great!</p>
+                    <p>💡 <strong>Tip:</strong> Click on the numbered circles to jump to any question!</p>
                     <button onclick="closeGuide()">Continue Test</button>
                 `;
             } else if (currentScreen === 'resultsScreen') {
                 content.innerHTML = `
-                    <h3>🎉 Shabash! Well Done!</h3>
-                    <p>You've completed the full assessment! 🏆</p>
-                    <p>Scroll down to see:</p>
-                    <p>📚 Detailed career roadmaps<br>💰 Salary ranges<br>🎓 Top institutes</p>
-                    <p>Your future starts here! 🚀</p>
-                    <button onclick="closeGuide()">Explore Results!</button>
+                    <h3>🎉 Congratulations!</h3>
+                    <p>You've completed the assessment!</p>
+                    <p>Scroll down to see your detailed career roadmaps with education paths, salary info, and top institutes! 📚</p>
+                    <button onclick="closeGuide()">Got it!</button>
                 `;
             }
         }
@@ -1281,12 +1277,12 @@
             overlay.classList.add('active');
 
             content.innerHTML = `
-                <h3>🎯 Ready for the Test?</h3>
-                <p><strong>Part 1:</strong> 30 Personality Questions<br>(You'll get insights after every 10!)</p>
-                <p><strong>Part 2:</strong> 20 Aptitude Questions</p>
-                <p><strong>⏱️ Time:</strong> 50 minutes total</p>
-                <p>🐵 <strong>Velly's Tip:</strong> Be honest, no right or wrong answers!</p>
-                <button onclick="closeGuide(); loadQuestion(); startTimer();">Start Test! 🚀</button>
+                <h3>📋 Test Structure</h3>
+                <p><strong>1️⃣ Personality Test:</strong> 30 questions (in 3 sets of 10)</p>
+                <p><strong>2️⃣ Aptitude Test:</strong> 20 questions</p>
+                <p>You'll get personality insights after every 10 questions! 🧠</p>
+                <p><strong>⏱️ Total Time:</strong> 50 minutes for all 50 questions</p>
+                <button onclick="closeGuide(); loadQuestion(); startTimer();">Let's Start!</button>
             `;
         }
 

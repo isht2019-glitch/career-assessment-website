@@ -215,6 +215,12 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             z-index: 1001;
             animation: bounce 2s infinite;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .guide-character:hover {
+            transform: scale(1.1);
         }
 
         .guide-character img {
@@ -441,6 +447,95 @@
             cursor: not-allowed;
         }
 
+        .question-review {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 8px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+
+        .question-dot {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .question-dot:hover {
+            transform: scale(1.1);
+        }
+
+        .question-dot.answered {
+            background: #667eea;
+            color: white;
+        }
+
+        .question-dot.current {
+            background: #764ba2;
+            color: white;
+            border: 3px solid #667eea;
+        }
+
+        .roadmap-section {
+            margin-top: 30px;
+        }
+
+        .roadmap-card {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .roadmap-card h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .roadmap-step {
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid #764ba2;
+        }
+
+        .roadmap-step h5 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .roadmap-step p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .salary-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .salary-info span {
+            font-weight: bold;
+            color: #667eea;
+        }
+
         /* Results Screen */
         .results-container {
             background: white;
@@ -566,8 +661,8 @@
     </div>
 
     <!-- Guide System -->
-    <div class="guide-overlay" id="guideOverlay"></div>
-    <div class="guide-character" id="guideCharacter">
+    <div class="guide-overlay" id="guideOverlay" onclick="closeGuide()"></div>
+    <div class="guide-character" id="guideCharacter" onclick="toggleGuide()">
         <img src="assets/velly-bandaar.jpeg" alt="Velly Bandaar" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%2250%22 font-size=%2260%22>🐵</text></svg>'">
     </div>
     <div class="speech-bubble" id="speechBubble">
@@ -630,6 +725,8 @@
                 <div class="progress-fill" id="progressBar"></div>
             </div>
 
+            <div class="question-review" id="questionReview"></div>
+
             <div class="question-card">
                 <div class="question-text" id="questionText"></div>
                 <div class="options" id="optionsContainer"></div>
@@ -663,6 +760,8 @@
             </div>
 
             <div class="career-list" id="careerRecommendations"></div>
+
+            <div class="roadmap-section" id="roadmapSection"></div>
         </div>
     </div>
 
@@ -761,6 +860,46 @@
         function closeGuide() {
             document.getElementById('speechBubble').classList.remove('active');
             document.getElementById('guideOverlay').classList.remove('active');
+        }
+
+        function toggleGuide() {
+            const bubble = document.getElementById('speechBubble');
+            const overlay = document.getElementById('guideOverlay');
+            
+            if (bubble.classList.contains('active')) {
+                closeGuide();
+            } else {
+                showContextualGuide();
+            }
+        }
+
+        function showContextualGuide() {
+            const content = document.getElementById('speechContent');
+            const bubble = document.getElementById('speechBubble');
+            const overlay = document.getElementById('guideOverlay');
+            const currentScreen = document.querySelector('.screen.active').id;
+
+            bubble.classList.add('active');
+            overlay.classList.add('active');
+
+            if (currentScreen === 'testScreen') {
+                const totalQ = 50;
+                const answered = answers.filter(a => a !== undefined).length;
+                content.innerHTML = `
+                    <h3>📊 Your Progress</h3>
+                    <p><strong>Answered:</strong> ${answered} / ${totalQ} questions</p>
+                    <p><strong>Time Left:</strong> ${Math.floor(timeLeft/60)}:${(timeLeft%60).toString().padStart(2,'0')}</p>
+                    <p>💡 <strong>Tip:</strong> Click on the numbered circles to jump to any question!</p>
+                    <button onclick="closeGuide()">Continue Test</button>
+                `;
+            } else if (currentScreen === 'resultsScreen') {
+                content.innerHTML = `
+                    <h3>🎉 Congratulations!</h3>
+                    <p>You've completed the assessment!</p>
+                    <p>Scroll down to see your detailed career roadmaps with education paths, salary info, and top institutes! 📚</p>
+                    <button onclick="closeGuide()">Got it!</button>
+                `;
+            }
         }
 
         function showTestGuide() {
@@ -871,6 +1010,45 @@
             }, 1000);
         }
 
+        function updateQuestionReview() {
+            const reviewContainer = document.getElementById('questionReview');
+            const isAptitude = currentPhase === 3;
+            const startQ = isAptitude ? 30 : currentPhase * 10;
+            const endQ = isAptitude ? 50 : (currentPhase + 1) * 10;
+            
+            reviewContainer.innerHTML = '';
+            
+            for (let i = startQ; i < endQ; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'question-dot';
+                dot.textContent = i + 1;
+                
+                if (answers[i] !== undefined) {
+                    dot.classList.add('answered');
+                }
+                
+                const currentOverall = currentPhase * 10 + currentQuestion;
+                if (i === currentOverall) {
+                    dot.classList.add('current');
+                }
+                
+                dot.onclick = () => jumpToQuestion(i);
+                reviewContainer.appendChild(dot);
+            }
+        }
+
+        function jumpToQuestion(index) {
+            const isAptitude = index >= 30;
+            if (isAptitude) {
+                currentPhase = 3;
+                currentQuestion = index - 30;
+            } else {
+                currentPhase = Math.floor(index / 10);
+                currentQuestion = index % 10;
+            }
+            loadQuestion();
+        }
+
         function loadQuestion() {
             const isAptitude = currentPhase === 3;
             const questions = isAptitude ? aptitudeQuestions : personalityQuestions;
@@ -898,6 +1076,8 @@
                 `Question ${currentPhase * 10 + currentQuestion + 1} of ${totalQuestions}`;
             document.getElementById('progressBar').style.width = overallProgress + '%';
             document.getElementById('questionText').textContent = question.q;
+
+            updateQuestionReview();
 
             const optionsContainer = document.getElementById('optionsContainer');
             optionsContainer.innerHTML = '';
@@ -1023,7 +1203,88 @@
             `;
             document.getElementById('careerRecommendations').innerHTML = careersHtml;
 
+            // Add detailed roadmaps
+            const roadmaps = {
+                R: {
+                    title: 'Mechanical Engineer',
+                    steps: [
+                        {title: 'Education (4-6 years)', desc: 'B.Tech in Mechanical Engineering from IIT/NIT. Entrance: JEE Main & Advanced', salary: 'Entry: ₹4-8 LPA'},
+                        {title: 'Specialization (2 years)', desc: 'M.Tech in Robotics, Automotive, or Aerospace. Top: IIT Bombay, IIT Madras', salary: 'Mid: ₹10-18 LPA'},
+                        {title: 'Professional Growth', desc: 'Work at companies like Tata Motors, L&T, Mahindra. Get PE license', salary: 'Senior: ₹25-50+ LPA'}
+                    ]
+                },
+                I: {
+                    title: 'Data Scientist',
+                    steps: [
+                        {title: 'Education (3-4 years)', desc: 'B.Tech/B.Sc in CS/Stats. Learn Python, R, SQL. Top: IIT, BITS', salary: 'Entry: ₹6-12 LPA'},
+                        {title: 'Specialization (1-2 years)', desc: 'M.Sc in Data Science or ML. Certifications: Google, AWS, Azure', salary: 'Mid: ₹15-30 LPA'},
+                        {title: 'Expert Level', desc: 'Work at FAANG, startups. Build portfolio. Kaggle competitions', salary: 'Senior: ₹40-80+ LPA'}
+                    ]
+                },
+                A: {
+                    title: 'UX/UI Designer',
+                    steps: [
+                        {title: 'Education (3-4 years)', desc: 'BDes/B.Arch/BFA. Learn Figma, Adobe XD. Top: NID, IIT IDC', salary: 'Entry: ₹3-7 LPA'},
+                        {title: 'Portfolio Building (1-2 years)', desc: 'Freelance projects, internships. Master design thinking', salary: 'Mid: ₹8-18 LPA'},
+                        {title: 'Senior Designer', desc: 'Lead designer at product companies. Build design systems', salary: 'Senior: ₹20-40+ LPA'}
+                    ]
+                },
+                S: {
+                    title: 'Clinical Psychologist',
+                    steps: [
+                        {title: 'Education (5-6 years)', desc: 'BA Psychology + MA Clinical Psychology. Top: DU, TISS, Christ', salary: 'Entry: ₹3-6 LPA'},
+                        {title: 'Specialization (2-3 years)', desc: 'M.Phil/PhD in Clinical Psychology. RCI license required', salary: 'Mid: ₹8-15 LPA'},
+                        {title: 'Private Practice', desc: 'Open clinic, hospital consultant. Specialize in therapy types', salary: 'Senior: ₹15-35+ LPA'}
+                    ]
+                },
+                E: {
+                    title: 'Business Manager',
+                    steps: [
+                        {title: 'Education (3-5 years)', desc: 'BBA/B.Com + MBA. Entrance: CAT, GMAT. Top: IIM, ISB, XLRI', salary: 'Entry: ₹8-15 LPA'},
+                        {title: 'Management Role (3-5 years)', desc: 'Product/Project Manager. Learn strategy, operations', salary: 'Mid: ₹18-35 LPA'},
+                        {title: 'Senior Leadership', desc: 'VP, Director roles. Lead teams. Strategic decisions', salary: 'Senior: ₹50-100+ LPA'}
+                    ]
+                },
+                C: {
+                    title: 'Chartered Accountant',
+                    steps: [
+                        {title: 'CA Foundation (1 year)', desc: 'After 12th. Register with ICAI. Clear Foundation exam', salary: 'Articleship: ₹2-4 LPA'},
+                        {title: 'CA Intermediate + Articleship (3 years)', desc: 'Work experience + exams. Learn audit, taxation', salary: 'Entry: ₹6-10 LPA'},
+                        {title: 'CA Final + Practice', desc: 'Clear Final. Join Big 4 or start practice. CFO roles', salary: 'Senior: ₹20-60+ LPA'}
+                    ]
+                }
+            };
+
+            const roadmap = roadmaps[dominant[0]];
+            const roadmapHtml = `
+                <h3>📚 Career Roadmap: ${roadmap.title}</h3>
+                <div class="roadmap-card">
+                    <h4>🎯 Step-by-Step Path to Success</h4>
+                    ${roadmap.steps.map((step, i) => `
+                        <div class="roadmap-step">
+                            <h5>Step ${i + 1}: ${step.title}</h5>
+                            <p>${step.desc}</p>
+                            <div class="salary-info">
+                                <span>${step.salary}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="roadmap-card">
+                    <h4>🏆 Top Institutes in India</h4>
+                    <p>IIT Bombay, IIT Delhi, IIT Madras, BITS Pilani, NIT Trichy, IIM Ahmedabad, IIM Bangalore, AIIMS, TISS, NID</p>
+                </div>
+                <div class="roadmap-card">
+                    <h4>🌍 Top Global Universities</h4>
+                    <p>MIT, Stanford, Harvard, Oxford, Cambridge, ETH Zurich, NUS Singapore, University of Toronto</p>
+                </div>
+            `;
+            document.getElementById('roadmapSection').innerHTML = roadmapHtml;
+
             showScreen('resultsScreen');
+            setTimeout(() => {
+                showContextualGuide();
+            }, 1000);
         }
     </script>
 </body>

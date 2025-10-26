@@ -305,18 +305,22 @@
 
         .guide-character {
             position: fixed;
-            top: 60px;
-            right: 15px;
-            width: 90px;
-            height: 90px;
+            bottom: 20px;
+            left: 20px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             overflow: hidden;
-            border: 3px solid white;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            z-index: 1001;
-            animation: bounce 2s infinite;
             cursor: pointer;
-            transition: transform 0.3s;
+            z-index: 1000;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            border: 3px solid white;
+            animation: bounce 2s infinite;
+            display: none;
+        }
+
+        .guide-character.active {
+            display: block;
         }
 
         .guide-character:hover {
@@ -1171,11 +1175,18 @@
         // Initialize Firebase
         let app, auth;
         try {
-            app = firebase.initializeApp(firebaseConfig);
-            auth = firebase.auth();
-            console.log('Firebase initialized successfully');
+            // Only initialize if config looks valid
+            if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('Demo')) {
+                app = firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                console.log('Firebase initialized successfully');
+            } else {
+                console.log('Firebase not configured - using demo mode');
+                auth = null;
+            }
         } catch (error) {
             console.log('Firebase initialization error (using demo mode):', error);
+            auth = null;
         }
 
         let currentUser = null;
@@ -1202,6 +1213,8 @@
         // SPLASH SCREEN - Auto navigate after 3.5 seconds
         setTimeout(() => {
             showScreen('loginScreen');
+            // Show welcome guide after splash
+            setTimeout(showWelcomeGuide, 1000);
         }, 3500);
 
         function showWelcomeGuide() {
@@ -1210,7 +1223,7 @@
             const overlay = document.getElementById('guideOverlay');
             const content = document.getElementById('speechContent');
 
-            guide.style.display = 'block';
+            guide.classList.add('active');
             bubble.classList.add('active');
             overlay.classList.add('active');
 

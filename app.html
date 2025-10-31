@@ -7,6 +7,7 @@
     <title>TheApp - Career Assessment</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -1237,20 +1238,23 @@
         };
 
         // Initialize Firebase
-        let app, auth;
+        let app, auth, db;
         try {
             // Only initialize if config looks valid
             if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('Demo')) {
                 app = firebase.initializeApp(firebaseConfig);
                 auth = firebase.auth();
+                db = firebase.firestore();
                 console.log('Firebase initialized successfully');
             } else {
                 console.log('Firebase not configured - using demo mode');
                 auth = null;
+                db = null;
             }
         } catch (error) {
             console.log('Firebase initialization error (using demo mode):', error);
             auth = null;
+            db = null;
         }
 
         let currentUser = null;
@@ -1494,11 +1498,10 @@
             }
         }
 
-        // Payment Approval System
-        // Load approved emails from localStorage on page load
+        // Payment Approval System with Firebase Firestore
         let approvedEmails = JSON.parse(localStorage.getItem('approvedEmailsList') || '[]');
         
-        function submitEmailForPayment() {
+        async function submitEmailForPayment() {
             const paymentEmail = document.getElementById('paymentEmail').value.trim();
             
             if (!paymentEmail || !paymentEmail.includes('@')) {
@@ -1511,24 +1514,75 @@
                 userEmail = paymentEmail;
             }
 
-            // Save to localStorage for persistence
-            localStorage.setItem('pendingPaymentEmail', paymentEmail);
-            localStorage.setItem('paymentStatus', 'pending');
+            try {
+                // Save to Firestore
+                if (db) {
+                    await db.collection('paymentRequests').add({
+                        email: paymentEmail,
+                        userName: userName || 'Unknown',
+                        status: 'pending',
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        userAgent: navigator.userAgent
+                    });
+                    console.log('Payment request saved to Firestore');
+                }
 
-            // Show submitted email
-            document.getElementById('submittedEmail').textContent = paymentEmail;
+                // Save to localStorage for persistence
+                localStorage.setItem('pendingPaymentEmail', paymentEmail);
+                localStorage.setItem('paymentStatus', 'pending');
+                localStorage.setItem('requestSubmittedAt', new Date().toISOString());
 
-            // Hide email submission, show waiting step
-            document.getElementById('emailSubmissionStep').style.display = 'none';
-            document.getElementById('waitingApprovalStep').style.display = 'block';
+                // Show submitted email
+                document.getElementById('submittedEmail').textContent = paymentEmail;
 
-            console.log('Payment email submitted:', paymentEmail);
-            
-            // Simulate sending email (in real app, this would call your backend)
-            alert('📧 Payment instructions sent to ' + paymentEmail + '\n\nVelly Bandaar will send you payment details shortly!');
+                // Hide email submission, show waiting step
+                document.getElementById('emailSubmissionStep').style.display = 'none';
+                document.getElementById('waitingApprovalStep').style.display = 'block';
+
+                console.log('Payment email submitted:', paymentEmail);
+                
+                alert('📧 Request submitted!\n\nVelly Bandaar will send you payment details shortly!\nYour request will be saved for 24+ hours.');
+                
+                // Start checking for approval
+                startApprovalPolling();
+            } catch (error) {
+                console.error('Error submitting request:', error);
+                alert('Error submitting request. Please try again.');
+            }
         }
 
-        function checkApprovalStatus() {
+        // Poll Firestore for approval status
+        let approvalPollingInterval;
+        
+        function startApprovalPolling() {
+            if (!db) return;
+            
+            const pendingEmail = localStorage.getItem('pendingPaymentEmail');
+            if (!pendingEmail) return;
+
+            // Check every 10 seconds
+            approvalPollingInterval = setInterval(async () => {
+                try {
+                    const snapshot = await db.collection('paymentRequests')
+                        .where('email', '==', pendingEmail)
+                        .where('status', '==', 'approved')
+                        .limit(1)
+                        .get();
+                    
+                    if (!snapshot.empty) {
+                        // User is approved!
+                        clearInterval(approvalPollingInterval);
+                        localStorage.setItem('paymentStatus', 'approved');
+                        showApprovedStep();
+                        alert('🎉 You\'ve been approved! You can now start the test!');
+                    }
+                } catch (error) {
+                    console.error('Error checking approval:', error);
+                }
+            }, 10000); // Check every 10 seconds
+        }
+
+        async function checkApprovalStatus() {
             const pendingEmail = localStorage.getItem('pendingPaymentEmail');
             
             if (!pendingEmail) {
@@ -1543,8 +1597,27 @@
                 return;
             }
 
-            // Check if email is in approved list
-            // In production, this would check your backend/database
+            // Check Firestore for approval
+            if (db) {
+                try {
+                    const snapshot = await db.collection('paymentRequests')
+                        .where('email', '==', pendingEmail)
+                        .where('status', '==', 'approved')
+                        .limit(1)
+                        .get();
+                    
+                    if (!snapshot.empty) {
+                        // User is approved!
+                        localStorage.setItem('paymentStatus', 'approved');
+                        showApprovedStep();
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Error checking Firestore:', error);
+                }
+            }
+
+            // Check if email is in approved list (fallback)
             const isApproved = approvedEmails.includes(pendingEmail);
             
             if (isApproved) {
@@ -1582,6 +1655,9 @@
                     document.getElementById('submittedEmail').textContent = pendingEmail;
                     document.getElementById('emailSubmissionStep').style.display = 'none';
                     document.getElementById('waitingApprovalStep').style.display = 'block';
+                    
+                    // Start polling for approval
+                    startApprovalPolling();
                 }
             }
         });

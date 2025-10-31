@@ -1495,7 +1495,8 @@
         }
 
         // Payment Approval System
-        let approvedEmails = []; // You can manually add approved emails here for testing
+        // Load approved emails from localStorage on page load
+        let approvedEmails = JSON.parse(localStorage.getItem('approvedEmailsList') || '[]');
         
         function submitEmailForPayment() {
             const paymentEmail = document.getElementById('paymentEmail').value.trim();
@@ -1532,6 +1533,13 @@
             
             if (!pendingEmail) {
                 alert('🐵 No email found! Please submit your email first.');
+                return;
+            }
+
+            // Check localStorage first (in case admin approved on same browser)
+            const localApprovalStatus = localStorage.getItem('paymentStatus');
+            if (localApprovalStatus === 'approved') {
+                showApprovedStep();
                 return;
             }
 
@@ -1585,10 +1593,21 @@
                 console.log('✅ Approved:', email);
                 console.log('Approved emails:', approvedEmails);
                 
+                // Store in localStorage for persistence
+                const approvedList = JSON.parse(localStorage.getItem('approvedEmailsList') || '[]');
+                if (!approvedList.includes(email)) {
+                    approvedList.push(email);
+                    localStorage.setItem('approvedEmailsList', JSON.stringify(approvedList));
+                }
+                
                 // If this email is currently pending, update status
                 if (localStorage.getItem('pendingPaymentEmail') === email) {
                     localStorage.setItem('paymentStatus', 'approved');
                     alert('✅ Email approved! User can now start the test.');
+                    // Auto-refresh to show approved state
+                    location.reload();
+                } else {
+                    alert('✅ Email approved! When user checks status, they will be approved.');
                 }
             }
         }

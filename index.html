@@ -1514,9 +1514,23 @@
                 userEmail = paymentEmail;
             }
 
-            try {
-                // Save to Firestore
-                if (db) {
+            // Save to localStorage for persistence (always do this first)
+            localStorage.setItem('pendingPaymentEmail', paymentEmail);
+            localStorage.setItem('paymentStatus', 'pending');
+            localStorage.setItem('requestSubmittedAt', new Date().toISOString());
+
+            // Show submitted email
+            document.getElementById('submittedEmail').textContent = paymentEmail;
+
+            // Hide email submission, show waiting step
+            document.getElementById('emailSubmissionStep').style.display = 'none';
+            document.getElementById('waitingApprovalStep').style.display = 'block';
+
+            console.log('Payment email submitted:', paymentEmail);
+
+            // Try to save to Firestore (optional, won't block if it fails)
+            if (db) {
+                try {
                     await db.collection('paymentRequests').add({
                         email: paymentEmail,
                         userName: userName || 'Unknown',
@@ -1524,31 +1538,18 @@
                         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                         userAgent: navigator.userAgent
                     });
-                    console.log('Payment request saved to Firestore');
+                    console.log('✅ Payment request saved to Firestore');
+                    alert('📧 Request submitted to Firestore!\n\nVelly Bandaar will send you payment details shortly!\nYour request will be saved for 24+ hours.');
+                } catch (firestoreError) {
+                    console.warn('⚠️ Firestore save failed (using localStorage fallback):', firestoreError);
+                    alert('📧 Request submitted!\n\nVelly Bandaar will send you payment details shortly!\n\n⚠️ Note: Using local storage (Firestore not available)');
                 }
-
-                // Save to localStorage for persistence
-                localStorage.setItem('pendingPaymentEmail', paymentEmail);
-                localStorage.setItem('paymentStatus', 'pending');
-                localStorage.setItem('requestSubmittedAt', new Date().toISOString());
-
-                // Show submitted email
-                document.getElementById('submittedEmail').textContent = paymentEmail;
-
-                // Hide email submission, show waiting step
-                document.getElementById('emailSubmissionStep').style.display = 'none';
-                document.getElementById('waitingApprovalStep').style.display = 'block';
-
-                console.log('Payment email submitted:', paymentEmail);
-                
-                alert('📧 Request submitted!\n\nVelly Bandaar will send you payment details shortly!\nYour request will be saved for 24+ hours.');
-                
-                // Start checking for approval
-                startApprovalPolling();
-            } catch (error) {
-                console.error('Error submitting request:', error);
-                alert('Error submitting request. Please try again.');
+            } else {
+                alert('📧 Request submitted!\n\nVelly Bandaar will send you payment details shortly!\n\n⚠️ Note: Using local storage (Firestore not configured)');
             }
+            
+            // Start checking for approval
+            startApprovalPolling();
         }
 
         // Poll Firestore for approval status

@@ -2112,19 +2112,30 @@
         function nextQuestion() {
             const isAptitude = currentPhase === 3;
             const questionsInPhase = isAptitude ? 20 : 10;
+            const phaseOffset = isAptitude ? 30 : currentPhase * 10;
+            const questionIndex = phaseOffset + currentQuestion;
+            
+            // Check if answer is selected
+            if (answers[questionIndex] === undefined) {
+                alert('⚠️ Please select an answer before proceeding!');
+                return;
+            }
+            
+            console.log('Next clicked - Phase:', currentPhase, 'Question:', currentQuestion, 'of', questionsInPhase);
             
             if (currentQuestion < questionsInPhase - 1) {
                 currentQuestion++;
                 loadQuestion();
             } else {
                 // Completed a phase
+                console.log('Phase completed!');
                 if (currentPhase < 3) {
                     // Show personality analysis after each 10 personality questions
-                    if (currentPhase < 3) {
-                        showPersonalityAnalysis(currentPhase + 1);
-                    }
+                    showPersonalityAnalysis(currentPhase + 1);
                 } else {
                     // Completed aptitude test
+                    console.log('🎉 All tests completed! Showing results...');
+                    alert('✅ Test completed! Calculating results...');
                     showResults();
                 }
             }
@@ -2295,6 +2306,14 @@
                 </ul>
             `;
             document.getElementById('careerRecommendations').innerHTML = careersHtml;
+            
+            // Populate occupation dropdown
+            populateOccupationDropdown(dominant[0]);
+            
+            // Show results screen
+            console.log('📺 Showing results screen...');
+            showScreen('resultsScreen');
+            console.log('✅ Results screen should be visible now');
         }
 
         async function showResults() {

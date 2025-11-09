@@ -1469,6 +1469,12 @@
             }
         }
 
+        // Show splash screen immediately on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📱 Page loaded - showing splash screen');
+            document.getElementById('splashScreen').classList.add('active');
+        });
+        
         // SPLASH SCREEN - Auto navigate after 3.5 seconds
         setTimeout(() => {
             showScreen('loginScreen');

@@ -1437,7 +1437,7 @@
                                     } else {
                                         // Payment approved but no test results yet, go to test
                                         setTimeout(() => {
-                                            showScreen('welcomeScreen');
+                                            showScreen('testScreen');
                                         }, 3500);
                                         return;
                                     }
@@ -2112,8 +2112,8 @@
                     if (!paymentSnapshot.empty) {
                         console.log('✅ Payment already approved! Skipping payment screen...');
                         localStorage.setItem('paymentApproved', 'true');
-                        // Skip to welcome screen instead
-                        screenId = 'welcomeScreen';
+                        // Skip to test screen instead
+                        screenId = 'testScreen';
                     }
                 } catch (error) {
                     console.log('Error checking payment status:', error);

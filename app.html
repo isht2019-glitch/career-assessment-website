@@ -2854,22 +2854,21 @@
             
             console.log(`📚 Found ${relevantSlugs.length} relevant careers for ${primaryType}${secondaryType ? '+' + secondaryType : ''}`);
             
-            // Build dropdown
-            select.innerHTML = `<option value="">-- Choose a career (${relevantSlugs.length} recommended) --</option>`;
+            // Limit to top 20-30 most relevant careers to avoid overwhelming user
+            const maxRelevant = secondaryType ? 30 : 20; // More options for dual personality
+            const topRelevant = relevantSlugs.slice(0, maxRelevant);
             
-            // Add recommended careers section
-            if (relevantSlugs.length > 0) {
-                const recommendedGroup = document.createElement('optgroup');
-                recommendedGroup.label = `✨ Recommended for You (${relevantSlugs.length})`;
-                relevantSlugs.forEach(slug => {
-                    const option = document.createElement('option');
-                    option.value = slug;
-                    const displayName = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-                    option.textContent = displayName;
-                    recommendedGroup.appendChild(option);
-                });
-                select.appendChild(recommendedGroup);
-            }
+            // Build dropdown with ONLY relevant careers
+            select.innerHTML = `<option value="">-- Choose a career (${topRelevant.length} best matches) --</option>`;
+            
+            // Add only the most relevant careers
+            topRelevant.forEach(slug => {
+                const option = document.createElement('option');
+                option.value = slug;
+                const displayName = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                option.textContent = displayName;
+                select.appendChild(option);
+            });
             
             // Add separator
             const separator = document.createElement('option');
@@ -2877,25 +2876,13 @@
             separator.textContent = '──────────────────────────────';
             select.appendChild(separator);
             
-            // Add other careers section
-            const otherGroup = document.createElement('optgroup');
-            otherGroup.label = `📋 All Other Careers (${otherSlugs.length})`;
-            otherSlugs.forEach(slug => {
-                const option = document.createElement('option');
-                option.value = slug;
-                const displayName = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-                option.textContent = displayName;
-                otherGroup.appendChild(option);
-            });
-            select.appendChild(otherGroup);
-            
-            // Add "View All" option at the end
+            // Add "View All" option for those who want to explore more
             const allOption = document.createElement('option');
             allOption.value = 'all';
-            allOption.textContent = '────── 📚 View Complete List of All 386 Careers ──────';
+            allOption.textContent = '📚 View Complete List of All 386 Careers';
             select.appendChild(allOption);
 
-            console.log(`✅ Dropdown populated: ${relevantSlugs.length} recommended + ${otherSlugs.length} others`);
+            console.log(`✅ Dropdown populated with ${topRelevant.length} most relevant careers (filtered from ${relevantSlugs.length})`);
         }
 
         // View selected roadmap

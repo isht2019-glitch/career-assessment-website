@@ -2134,6 +2134,18 @@
                 targetScreen.classList.add('active');
                 targetScreen.style.display = 'flex';
                 console.log('✅ Screen displayed:', screenId);
+                
+                // Initialize test if showing test screen
+                if (screenId === 'testScreen') {
+                    console.log('🎯 Initializing test...');
+                    currentPhase = 0;
+                    currentQuestion = 0;
+                    answers = [];
+                    timeLeft = 50 * 60;
+                    loadQuestion();
+                    startTimer();
+                    console.log('✅ Test initialized');
+                }
             } else {
                 console.error('❌ Screen not found:', screenId);
             }

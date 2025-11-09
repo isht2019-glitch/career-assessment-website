@@ -2323,22 +2323,44 @@
             };
 
             const careers = {
-                R: ['Mechanical Engineers', 'Civil Engineers', 'Electricians', 'Aircraft Pilots'],
-                I: ['Data Scientists', 'Software Developers', 'Physicians', 'Biochemists'],
-                A: ['Graphic Designers', 'Writers and Authors', 'Musicians and Singers', 'Interior Designers'],
-                S: ['Elementary School Teachers', 'Clinical Psychologists', 'Nurse Anesthetists', 'Social Workers'],
-                E: ['Lawyers', 'Sales Managers', 'Marketing Managers', 'Chief Executives'],
-                C: ['Accountants and Auditors', 'Financial Analysts', 'Budget Analysts', 'Database Administrators']
+                R: ['Mechanical Engineers', 'Civil Engineers', 'Electricians', 'Aircraft Pilots', 'Architects', 'Automotive Technicians'],
+                I: ['Data Scientists', 'Software Developers', 'Physicians', 'Biochemists', 'Research Scientists', 'Psychologists'],
+                A: ['Graphic Designers', 'Writers and Authors', 'Musicians and Singers', 'Interior Designers', 'Artists', 'Photographers'],
+                S: ['Elementary School Teachers', 'Clinical Psychologists', 'Nurse Anesthetists', 'Social Workers', 'Counselors', 'Therapists'],
+                E: ['Lawyers', 'Sales Managers', 'Marketing Managers', 'Chief Executives', 'Entrepreneurs', 'Business Consultants'],
+                C: ['Accountants and Auditors', 'Financial Analysts', 'Budget Analysts', 'Database Administrators', 'Administrative Managers', 'Compliance Officers']
             };
 
-            // Find dominant type
-            const dominant = Object.entries(riasecScores)
-                .sort((a, b) => b[1] - a[1])[0];
+            // Sort scores to find dominant types
+            const sortedScores = Object.entries(riasecScores)
+                .sort((a, b) => b[1] - a[1]);
+            
+            const dominant = sortedScores[0];
+            const secondary = sortedScores[1];
+            
+            // Check if there's a tie or close scores (dual personality)
+            const isDualPersonality = dominant[1] === secondary[1] || 
+                                     (dominant[1] - secondary[1] <= 1 && dominant[1] >= 7);
+            
+            console.log('🎯 Personality Analysis:', {
+                dominant: `${dominant[0]}: ${dominant[1]}`,
+                secondary: `${secondary[0]}: ${secondary[1]}`,
+                isDualPersonality: isDualPersonality
+            });
 
-            document.getElementById('personalityType').textContent = 
-                `${dominant[0]} - ${typeNames[dominant[0]]}`;
-            document.getElementById('personalityDesc').textContent = 
-                `You scored highest in ${typeNames[dominant[0]]} traits`;
+            // Display personality type
+            if (isDualPersonality) {
+                document.getElementById('personalityType').textContent = 
+                    `${dominant[0]}${secondary[0]} - ${typeNames[dominant[0]]} & ${typeNames[secondary[0]]}`;
+                document.getElementById('personalityDesc').textContent = 
+                    `You have a dual personality! Strong in both ${typeNames[dominant[0]]} and ${typeNames[secondary[0]]} traits`;
+            } else {
+                document.getElementById('personalityType').textContent = 
+                    `${dominant[0]} - ${typeNames[dominant[0]]}`;
+                document.getElementById('personalityDesc').textContent = 
+                    `You scored highest in ${typeNames[dominant[0]]} traits`;
+            }
+            
             document.getElementById('aptitudeScore').textContent = aptitudePercent + '%';
 
             const scoresHtml = Object.entries(riasecScores)
@@ -2351,16 +2373,23 @@
                 `).join('');
             document.getElementById('riasecScores').innerHTML = scoresHtml;
 
+            // Show careers for both types if dual personality
+            let recommendedCareers = [...careers[dominant[0]]];
+            if (isDualPersonality) {
+                recommendedCareers = [...careers[dominant[0]], ...careers[secondary[0]]];
+            }
+            
             const careersHtml = `
-                <h3>🎯 Recommended Careers</h3>
+                <h3>🎯 Recommended Careers ${isDualPersonality ? '(Dual Personality)' : ''}</h3>
+                ${isDualPersonality ? `<p style="color: #667eea; margin-bottom: 10px;">Based on your ${typeNames[dominant[0]]} & ${typeNames[secondary[0]]} strengths:</p>` : ''}
                 <ul>
-                    ${careers[dominant[0]].map(c => `<li>${c}</li>`).join('')}
+                    ${recommendedCareers.map(c => `<li>${c}</li>`).join('')}
                 </ul>
             `;
             document.getElementById('careerRecommendations').innerHTML = careersHtml;
             
-            // Populate occupation dropdown
-            populateOccupationDropdown(dominant[0]);
+            // Populate occupation dropdown with relevant careers
+            populateOccupationDropdown(dominant[0], isDualPersonality ? secondary[0] : null);
             
             // Show results screen
             console.log('📺 Showing results screen...');
@@ -2779,46 +2808,94 @@
             showScreen('resultsScreen');
         }
 
-        // Populate occupation dropdown with ALL 386 occupations from database
-        function populateOccupationDropdown(personalityType) {
+        // Populate occupation dropdown with relevant careers based on personality
+        function populateOccupationDropdown(primaryType, secondaryType = null) {
             const select = document.getElementById('occupationSelect');
-            select.innerHTML = '<option value="">-- Choose an occupation (386 available) --</option>';
-
+            
             // Check if database is loaded
             if (typeof finalCompleteRoadmaps === 'undefined') {
                 console.error('❌ Database not loaded!');
-                const option = document.createElement('option');
-                option.value = '';
-                option.textContent = 'Error: Database not loaded. Please refresh.';
-                select.appendChild(option);
+                select.innerHTML = '<option value="">Error: Database not loaded. Please refresh.</option>';
                 return;
             }
 
-            // Get all occupation slugs from database and sort them alphabetically
+            // Career keywords for each RIASEC type
+            const typeKeywords = {
+                R: ['engineer', 'mechanic', 'technician', 'pilot', 'architect', 'construction', 'automotive', 'electrical', 'industrial', 'manufacturing'],
+                I: ['scientist', 'researcher', 'analyst', 'physician', 'doctor', 'psychologist', 'data', 'software', 'developer', 'mathematician', 'physicist', 'chemist', 'biologist'],
+                A: ['designer', 'artist', 'writer', 'musician', 'photographer', 'interior', 'graphic', 'creative', 'animator', 'illustrator', 'actor', 'director'],
+                S: ['teacher', 'counselor', 'therapist', 'social', 'nurse', 'healthcare', 'education', 'psychologist', 'worker', 'coordinator', 'instructor'],
+                E: ['manager', 'executive', 'sales', 'marketing', 'business', 'entrepreneur', 'director', 'administrator', 'consultant', 'lawyer', 'agent'],
+                C: ['accountant', 'auditor', 'analyst', 'administrator', 'clerk', 'financial', 'budget', 'database', 'compliance', 'inspector', 'coordinator']
+            };
+
+            // Get all occupation slugs
             const allSlugs = Object.keys(finalCompleteRoadmaps).sort();
             
-            console.log('📚 Loading all', allSlugs.length, 'occupations into dropdown');
-
-            // Add all occupations to dropdown
+            // Filter occupations based on personality type(s)
+            let relevantSlugs = [];
+            let otherSlugs = [];
+            
+            const primaryKeywords = typeKeywords[primaryType] || [];
+            const secondaryKeywords = secondaryType ? (typeKeywords[secondaryType] || []) : [];
+            const allKeywords = [...primaryKeywords, ...secondaryKeywords];
+            
             allSlugs.forEach(slug => {
+                const lowerSlug = slug.toLowerCase();
+                const matchesPrimary = primaryKeywords.some(keyword => lowerSlug.includes(keyword));
+                const matchesSecondary = secondaryType && secondaryKeywords.some(keyword => lowerSlug.includes(keyword));
+                
+                if (matchesPrimary || matchesSecondary) {
+                    relevantSlugs.push(slug);
+                } else {
+                    otherSlugs.push(slug);
+                }
+            });
+            
+            console.log(`📚 Found ${relevantSlugs.length} relevant careers for ${primaryType}${secondaryType ? '+' + secondaryType : ''}`);
+            
+            // Build dropdown
+            select.innerHTML = `<option value="">-- Choose a career (${relevantSlugs.length} recommended) --</option>`;
+            
+            // Add recommended careers section
+            if (relevantSlugs.length > 0) {
+                const recommendedGroup = document.createElement('optgroup');
+                recommendedGroup.label = `✨ Recommended for You (${relevantSlugs.length})`;
+                relevantSlugs.forEach(slug => {
+                    const option = document.createElement('option');
+                    option.value = slug;
+                    const displayName = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                    option.textContent = displayName;
+                    recommendedGroup.appendChild(option);
+                });
+                select.appendChild(recommendedGroup);
+            }
+            
+            // Add separator
+            const separator = document.createElement('option');
+            separator.disabled = true;
+            separator.textContent = '──────────────────────────────';
+            select.appendChild(separator);
+            
+            // Add other careers section
+            const otherGroup = document.createElement('optgroup');
+            otherGroup.label = `📋 All Other Careers (${otherSlugs.length})`;
+            otherSlugs.forEach(slug => {
                 const option = document.createElement('option');
                 option.value = slug;
-                // Convert slug to display name (e.g., "graphic-designers" -> "Graphic Designers")
-                const displayName = slug
-                    .split('-')
-                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                    .join(' ');
+                const displayName = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
                 option.textContent = displayName;
-                select.appendChild(option);
+                otherGroup.appendChild(option);
             });
-
+            select.appendChild(otherGroup);
+            
             // Add "View All" option at the end
             const allOption = document.createElement('option');
             allOption.value = 'all';
-            allOption.textContent = '────── View All 386 Occupations List ──────';
+            allOption.textContent = '────── 📚 View Complete List of All 386 Careers ──────';
             select.appendChild(allOption);
 
-            console.log('✅ Populated dropdown with all', allSlugs.length, 'occupations');
+            console.log(`✅ Dropdown populated: ${relevantSlugs.length} recommended + ${otherSlugs.length} others`);
         }
 
         // View selected roadmap

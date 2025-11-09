@@ -2088,6 +2088,8 @@
         }
 
         async function showScreen(screenId) {
+            console.log('📺 showScreen called with:', screenId);
+            
             // If trying to show payment screen, check if payment is already approved
             if (screenId === 'paymentScreen' && currentUser && db) {
                 try {
@@ -2118,8 +2120,23 @@
                 }
             }
             
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
+            console.log('🔄 Switching to screen:', screenId);
+            
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(s => {
+                s.classList.remove('active');
+                s.style.display = 'none';
+            });
+            
+            // Show target screen
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+                targetScreen.style.display = 'flex';
+                console.log('✅ Screen displayed:', screenId);
+            } else {
+                console.error('❌ Screen not found:', screenId);
+            }
         }
 
         function startTimer() {

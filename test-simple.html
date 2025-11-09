@@ -3,114 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Test Results</title>
+    <title>Simple Test</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
             margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-        }
-        .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .logo-circle {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            margin: 0 auto 15px;
-            background: linear-gradient(45deg, #8B4513, #D2691E);
-            display: flex;
+        .screen {
+            display: none;
+            min-height: 100vh;
             align-items: center;
             justify-content: center;
-            border: 3px solid #667eea;
-            position: relative;
-            overflow: hidden;
+            flex-direction: column;
         }
-        .monkey {
-            font-size: 40px;
+        .screen.active {
+            display: flex;
         }
-        .gun {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            font-size: 20px;
-            transform: rotate(-15deg);
-        }
-        .btn {
-            background: #667eea;
+        #splash {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 10px;
-            transition: all 0.3s ease;
         }
-        .btn:hover {
-            background: #5a67d8;
-            transform: translateY(-2px);
-        }
-        .results {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 20px 0;
+        #login {
+            background: #f0f0f0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">
-            <div class="logo-circle">
-                <div class="monkey">🐵</div>
-                <div class="gun">🔫</div>
-            </div>
-            <h1>TheApp Career Test</h1>
-        </div>
-        
-        <div class="results">
-            <h2>Your Test Results</h2>
-            <p><strong>Personality Type:</strong> Enterprising (The Persuader)</p>
-            <p><strong>Aptitude Score:</strong> 85%</p>
-            <p>You are ambitious and energetic with natural leadership abilities.</p>
-        </div>
-        
-        <div style="text-align: center;">
-            <button class="btn" onclick="exploreRoadmaps()">🚀 Explore Career Roadmaps</button>
-            <button class="btn" onclick="takeTest()">🔄 Take Full Test</button>
-        </div>
+    <div id="splash" class="screen active">
+        <h1>SPLASH SCREEN</h1>
+        <p>Should transition in 3 seconds...</p>
+        <p id="countdown">3</p>
+    </div>
+    
+    <div id="login" class="screen">
+        <h1>LOGIN SCREEN</h1>
+        <p>Success! Transition worked.</p>
     </div>
 
     <script>
-        function exploreRoadmaps() {
-            // Save mock results
-            const mockScores = {R: 6, I: 7, A: 5, S: 8, E: 9, C: 4};
-            const mockAptitude = 85;
-            
-            localStorage.setItem('riasecScores', JSON.stringify(mockScores));
-            localStorage.setItem('aptitudeScore', mockAptitude.toString());
-            
-            console.log('Saved mock data:', mockScores, mockAptitude);
-            
-            // Redirect to career roadmap
-            window.location.href = 'career-roadmap.html';
-        }
+        console.log('🚀 Page loaded');
         
-        function takeTest() {
-            window.location.href = 'test.html';
-        }
+        let count = 3;
+        const countdownEl = document.getElementById('countdown');
+        
+        const countInterval = setInterval(() => {
+            count--;
+            countdownEl.textContent = count;
+            console.log('Countdown:', count);
+            
+            if (count <= 0) {
+                clearInterval(countInterval);
+            }
+        }, 1000);
+        
+        setTimeout(() => {
+            console.log('⏰ 3 seconds passed - switching screens...');
+            
+            const splash = document.getElementById('splash');
+            const login = document.getElementById('login');
+            
+            console.log('Splash element:', splash);
+            console.log('Login element:', login);
+            
+            splash.classList.remove('active');
+            login.classList.add('active');
+            
+            console.log('✅ Screen switched!');
+        }, 3000);
     </script>
 </body>
 </html>

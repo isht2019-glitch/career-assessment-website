@@ -467,7 +467,7 @@
                                 <button class="btn btn-approve" onclick="approveRequest('${request.id}', '${request.email}')">
                                     ✅ Approve
                                 </button>
-                                <button class="btn btn-reject" onclick="rejectRequest('${request.id}')">
+                                <button class="btn btn-reject" onclick="rejectRequest('${request.id}', '${request.email}')">
                                     ❌ Reject
                                 </button>
                             ` : ''}
@@ -478,36 +478,54 @@
         }
 
         async function approveRequest(requestId, email) {
-            if (!confirm(`Approve ${email}?`)) return;
+            // First confirmation
+            if (!confirm(`⚠️ APPROVE PAYMENT REQUEST?\n\nEmail: ${email}\n\nThis will grant access to the user.\n\nAre you sure?`)) {
+                console.log('Approval cancelled by admin');
+                return;
+            }
+
+            // Second confirmation for safety
+            if (!confirm(`FINAL CONFIRMATION\n\nApprove ${email}?\n\nClick OK to confirm.`)) {
+                console.log('Final confirmation cancelled');
+                return;
+            }
 
             try {
                 await db.collection('paymentRequests').doc(requestId).update({
                     status: 'approved',
-                    approvedAt: new Date().toISOString()
+                    approvedAt: new Date().toISOString(),
+                    approvedBy: 'admin'
                 });
 
-                alert(`✅ ${email} approved!`);
+                alert(`✅ SUCCESS!\n\n${email} has been approved!`);
+                console.log('Approved:', email, 'at', new Date().toISOString());
                 loadRequests();
             } catch (error) {
                 console.error('Error approving:', error);
-                alert('Error approving request');
+                alert('❌ ERROR: Failed to approve request.\n\nCheck console for details.');
             }
         }
 
-        async function rejectRequest(requestId) {
-            if (!confirm('Reject this request?')) return;
+        async function rejectRequest(requestId, email) {
+            // Confirmation
+            if (!confirm(`⚠️ REJECT PAYMENT REQUEST?\n\nEmail: ${email}\n\nThis will deny access to the user.\n\nAre you sure?`)) {
+                console.log('Rejection cancelled by admin');
+                return;
+            }
 
             try {
                 await db.collection('paymentRequests').doc(requestId).update({
                     status: 'rejected',
-                    rejectedAt: new Date().toISOString()
+                    rejectedAt: new Date().toISOString(),
+                    rejectedBy: 'admin'
                 });
 
                 alert('❌ Request rejected');
+                console.log('Rejected:', email, 'at', new Date().toISOString());
                 loadRequests();
             } catch (error) {
                 console.error('Error rejecting:', error);
-                alert('Error rejecting request');
+                alert('❌ ERROR: Failed to reject request.\n\nCheck console for details.');
             }
         }
 

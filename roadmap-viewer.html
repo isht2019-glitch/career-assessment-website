@@ -6,8 +6,8 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Career Roadmap Viewer</title>
-    <script src="FINAL_COMPLETE_ALL_ROADMAPS.js"></script>
+    <title>AI Career Roadmap Generator</title>
+    <!-- AI-Powered Roadmap Generation - No static database needed -->
     <style>
         * {
             margin: 0;
@@ -119,102 +119,139 @@
     </div>
 
     <script>
+        // AI-Powered Roadmap Generator using Google Gemini API (FREE)
+        const GEMINI_API_KEY = 'AIzaSyDGVR8rG_9xqKxH5vYZ8wN3jL4mP2sT6uE'; // FREE API Key
+        
+        async function generateAIRoadmap(occupationName) {
+            const prompt = `Create a comprehensive, detailed career roadmap for "${occupationName}" in India and internationally. Include:
+
+1. **Education Requirements:**
+   - Specific institutes/universities in India (with names like NSD, FTII, IITs, AIIMS, etc.)
+   - International options with countries
+   - Degree requirements and duration
+   - Entrance exams if applicable
+
+2. **Skills Required:**
+   - Technical/professional skills specific to ${occupationName}
+   - Soft skills needed
+   - Certifications or training programs
+
+3. **Career Path:**
+   - Entry-level positions and how to get started
+   - Mid-career progression
+   - Senior-level opportunities
+   - Realistic timeline (years)
+
+4. **Salary Expectations (India 2025):**
+   - Entry level (0-2 years): Realistic INR range
+   - Mid-level (3-7 years): Realistic INR range
+   - Senior (8+ years): Realistic INR range
+   - Note: Mention if income is variable/uncertain
+
+5. **Platforms & Resources:**
+   - Job platforms specific to this field (not generic ones like Unstop if irrelevant)
+   - Portfolio websites if applicable
+   - Networking communities
+   - Learning resources
+
+6. **Reality Check:**
+   - Job market reality (competitive? stable? uncertain?)
+   - Success rate and challenges
+   - Alternative career paths
+   - Important considerations
+
+Format with clear sections, emojis, and be HONEST about challenges and uncertainties. Make it specific to ${occupationName}, not generic.`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: prompt
+                            }]
+                        }],
+                        generationConfig: {
+                            temperature: 0.7,
+                            maxOutputTokens: 4096,
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+                    return data.candidates[0].content.parts[0].text;
+                } else {
+                    throw new Error('Invalid response from AI');
+                }
+            } catch (error) {
+                console.error('AI Generation Error:', error);
+                throw error;
+            }
+        }
+
         // Wait for page to fully load
-        window.addEventListener('load', function() {
-            // Get slug from URL parameter
+        window.addEventListener('load', async function() {
             const urlParams = new URLSearchParams(window.location.search);
             const slug = urlParams.get('slug');
-            const occupationName = urlParams.get('name');
+            const occupationName = urlParams.get('name') || slug;
 
-            console.log('🎯 Roadmap Viewer loaded');
-            console.log('📍 Slug:', slug);
-            console.log('📝 Name:', occupationName);
-            console.log('💾 Database loaded:', typeof finalCompleteRoadmaps !== 'undefined');
-            
-            if (typeof finalCompleteRoadmaps !== 'undefined') {
-                console.log('✅ Database has', Object.keys(finalCompleteRoadmaps).length, 'roadmaps');
-            }
+            console.log('🎯 AI Roadmap Generator loaded');
+            console.log('📝 Occupation:', occupationName);
             
             // Show occupation name
-            if (!slug) {
-                document.getElementById('occupationName').innerHTML = '<span style="color: red;">ERROR: No slug provided</span>';
-            } else {
-                document.getElementById('occupationName').textContent = occupationName || slug;
+            if (!occupationName) {
+                document.getElementById('occupationName').innerHTML = '<span style="color: red;">ERROR: No occupation provided</span>';
+                document.getElementById('roadmapContent').innerHTML = `
+                    <div class="error">
+                        <h3>❌ Error: No Occupation Selected</h3>
+                        <p>Please select an occupation from the dropdown menu.</p>
+                    </div>
+                `;
+                return;
             }
 
-            if (!slug) {
+            document.getElementById('occupationName').textContent = occupationName;
+            
+            // Show loading state
             document.getElementById('roadmapContent').innerHTML = `
-                <div class="error">
-                    <h3>❌ Error: No Occupation Selected</h3>
-                    <p>Please select an occupation from the dropdown menu.</p>
+                <div class="success">
+                    <h3>🤖 Generating AI-Powered Roadmap...</h3>
+                    <p>Creating a personalized, detailed career roadmap for <strong>${occupationName}</strong></p>
+                    <p style="margin-top: 10px;">⏳ This may take 10-20 seconds...</p>
                 </div>
             `;
-        } else if (typeof finalCompleteRoadmaps === 'undefined') {
-            document.getElementById('roadmapContent').innerHTML = `
-                <div class="error">
-                    <h3>❌ Error: Database Not Loaded</h3>
-                    <p>The roadmaps database failed to load. Please refresh the page.</p>
-                    <p style="margin-top: 10px;"><strong>Debug Info:</strong></p>
-                    <p>Slug: ${slug}</p>
-                    <p>Database Status: Not Loaded</p>
-                </div>
-            `;
-        } else {
-            // Try to get roadmap from database
-            const roadmap = finalCompleteRoadmaps[slug];
 
-            if (roadmap) {
-                console.log('✅ Roadmap found! Length:', roadmap.length);
+            try {
+                // Generate roadmap using AI
+                const roadmap = await generateAIRoadmap(occupationName);
                 
-                // Check if it has updated content
-                const hasUnstop = roadmap.includes('Unstop');
-                const hasInternshala = roadmap.includes('Internshala');
-                const hasReddit = roadmap.includes('Reddit') || roadmap.includes('r/');
-
-                let statusHtml = '';
-                if (hasUnstop && hasInternshala && hasReddit) {
-                    statusHtml = `
-                        <div class="success">
-                            <strong>✅ Updated 2025 Roadmap</strong><br>
-                            Includes: Unstop.com, Internshala.com, Reddit Communities, International Options
-                        </div>
-                    `;
-                }
-
                 document.getElementById('roadmapContent').innerHTML = `
-                    ${statusHtml}
-                    <pre>${roadmap}</pre>
+                    <div class="success">
+                        <strong>✅ AI-Generated Roadmap (2025)</strong><br>
+                        Personalized career guidance powered by Google Gemini AI
+                    </div>
+                    <pre style="white-space: pre-wrap; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; line-height: 1.6;">${roadmap}</pre>
                 `;
-            } else {
-                console.error('❌ Roadmap not found for slug:', slug);
-                console.log('Available slugs (first 20):', Object.keys(finalCompleteRoadmaps).slice(0, 20));
                 
-                // Try to find similar slugs
-                const allSlugs = Object.keys(finalCompleteRoadmaps);
-                const similarSlugs = allSlugs.filter(s => s.includes(slug) || slug.includes(s.split('-')[0]));
+                console.log('✅ AI Roadmap generated successfully');
+            } catch (error) {
+                console.error('❌ Failed to generate roadmap:', error);
                 
                 document.getElementById('roadmapContent').innerHTML = `
                     <div class="error">
-                        <h3>❌ Roadmap Not Found</h3>
-                        <p>Sorry, we couldn't find a roadmap for: <strong>${occupationName || slug}</strong></p>
-                        <p style="margin-top: 10px;"><strong>Debug Info:</strong></p>
-                        <p><strong>Slug searched:</strong> "${slug}"</p>
-                        <p><strong>Total Roadmaps Available:</strong> ${Object.keys(finalCompleteRoadmaps).length}</p>
-                        ${similarSlugs.length > 0 ? `
-                            <p style="margin-top: 15px;"><strong>Similar slugs found:</strong></p>
-                            <ul style="margin-left: 20px; margin-top: 10px;">
-                                ${similarSlugs.slice(0, 10).map(s => `<li>${s}</li>`).join('')}
-                            </ul>
-                        ` : ''}
-                        <p style="margin-top: 15px;"><strong>First 20 Available Slugs:</strong></p>
-                        <ul style="margin-left: 20px; margin-top: 10px;">
-                            ${Object.keys(finalCompleteRoadmaps).slice(0, 20).map(s => `<li>${s}</li>`).join('')}
-                        </ul>
+                        <h3>❌ Failed to Generate Roadmap</h3>
+                        <p>Sorry, we couldn't generate the AI roadmap at this time.</p>
+                        <p style="margin-top: 10px;"><strong>Error:</strong> ${error.message}</p>
+                        <p style="margin-top: 10px;">Please try again or contact support if the issue persists.</p>
                     </div>
                 `;
             }
-        }
-        }); // End of window.addEventListener('load')
+        });
     </script>
 </body>
 </html>

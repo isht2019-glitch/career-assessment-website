@@ -120,7 +120,8 @@
 
     <script>
         // AI-Powered Roadmap Generator using Google Gemini API (FREE)
-        const GEMINI_API_KEY = 'AIzaSyDGVR8rG_9xqKxH5vYZ8wN3jL4mP2sT6uE'; // FREE API Key
+        // Get your FREE API key from: https://makersuite.google.com/app/apikey
+        const GEMINI_API_KEY = 'YOUR_API_KEY_HERE'; // Replace with your FREE Gemini API key
         
         async function generateAIRoadmap(occupationName) {
             const prompt = `Create a comprehensive, detailed career roadmap for "${occupationName}" in India and internationally. Include:
@@ -216,6 +217,31 @@ Format with clear sections, emojis, and be HONEST about challenges and uncertain
             }
 
             document.getElementById('occupationName').textContent = occupationName;
+            
+            // Check if API key is set
+            if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_API_KEY_HERE') {
+                document.getElementById('roadmapContent').innerHTML = `
+                    <div class="error">
+                        <h3>⚙️ API Key Required</h3>
+                        <p>To use AI-powered roadmap generation, you need a FREE Google Gemini API key.</p>
+                        
+                        <h4 style="margin-top: 20px;">📝 How to get your FREE API key:</h4>
+                        <ol style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                            <li>Go to: <a href="https://makersuite.google.com/app/apikey" target="_blank" style="color: #667eea; font-weight: bold;">Google AI Studio</a></li>
+                            <li>Sign in with your Google account</li>
+                            <li>Click "Create API Key"</li>
+                            <li>Copy the API key</li>
+                            <li>Open <code>roadmap-viewer.html</code> and replace <code>YOUR_API_KEY_HERE</code> with your key</li>
+                        </ol>
+                        
+                        <p style="margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 8px;">
+                            <strong>💡 Note:</strong> The API is completely FREE with generous limits (60 requests/minute).
+                            No credit card required!
+                        </p>
+                    </div>
+                `;
+                return;
+            }
             
             // Show loading state
             document.getElementById('roadmapContent').innerHTML = `

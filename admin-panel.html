@@ -407,35 +407,78 @@
         }
 
         async function loadRequests() {
+            console.log('📥 Starting to load payment requests...');
+            
+            // Show loading state
+            document.getElementById('requestsList').innerHTML = `
+                <div class="empty-state">
+                    <p>⏳ Loading payment requests...</p>
+                </div>
+            `;
+            
             try {
-                console.log('📥 Loading payment requests...');
+                // Test Firebase connection first
+                console.log('🔍 Testing Firebase connection...');
+                await db.collection('_test').doc('ping').set({ test: true });
+                await db.collection('_test').doc('ping').delete();
+                console.log('✅ Firebase connection working');
+                
                 let snapshot;
                 
                 try {
                     // Try with orderBy first
+                    console.log('📥 Attempting to load with orderBy...');
                     snapshot = await db.collection('paymentRequests')
                         .orderBy('timestamp', 'desc')
                         .get();
+                    console.log('✅ OrderBy successful');
                 } catch (orderError) {
-                    console.warn('⚠️ OrderBy failed (index might be missing), loading without order:', orderError.message);
+                    console.warn('⚠️ OrderBy failed, trying without order...');
+                    console.warn('OrderBy error:', orderError.message);
+                    
                     // Fallback: load without orderBy
                     snapshot = await db.collection('paymentRequests').get();
+                    console.log('✅ Loaded without orderBy');
                 }
                 
                 console.log(`📊 Found ${snapshot.size} payment requests`);
                 
+                if (snapshot.empty) {
+                    console.log('⚠️ No payment requests found in database');
+                    document.getElementById('requestsList').innerHTML = `
+                        <div class="empty-state">
+                            <h3>📭 No Payment Requests Yet</h3>
+                            <p>No payment requests have been submitted.</p>
+                            <p style="margin-top: 15px;">Users need to:</p>
+                            <ol style="text-align: left; margin: 10px auto; max-width: 300px;">
+                                <li>Complete the assessment</li>
+                                <li>Submit payment request</li>
+                                <li>Wait for admin approval</li>
+                            </ol>
+                        </div>
+                    `;
+                    updateStats();
+                    return;
+                }
+                
                 allRequests = [];
-                const seenUserIds = new Map(); // Track userId -> first doc
+                const seenUserIds = new Map();
                 const duplicatesToDelete = [];
                 
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     const userId = data.userId || data.email;
                     
+                    console.log('Processing request:', {
+                        id: doc.id,
+                        email: data.email,
+                        userId: userId,
+                        status: data.status
+                    });
+                    
                     // Check for duplicate user IDs
                     if (seenUserIds.has(userId)) {
-                        console.warn('⚠️ Duplicate user ID found:', userId, '- Marking for deletion');
-                        // Keep the first one (most recent), delete this duplicate
+                        console.warn('⚠️ Duplicate found:', userId);
                         duplicatesToDelete.push(doc.id);
                     } else {
                         seenUserIds.set(userId, doc.id);
@@ -447,40 +490,78 @@
                     }
                 });
                 
+                console.log(`✅ Loaded ${allRequests.length} unique requests`);
+                
                 // Auto-delete duplicates
                 if (duplicatesToDelete.length > 0) {
-                    console.log(`🗑️ Auto-deleting ${duplicatesToDelete.length} duplicate requests...`);
-                    const deletePromises = duplicatesToDelete.map(docId => 
-                        db.collection('paymentRequests').doc(docId).delete()
-                    );
-                    await Promise.all(deletePromises);
-                    console.log('✅ Duplicates deleted successfully');
+                    console.log(`🗑️ Deleting ${duplicatesToDelete.length} duplicates...`);
+                    try {
+                        const deletePromises = duplicatesToDelete.map(docId => 
+                            db.collection('paymentRequests').doc(docId).delete()
+                        );
+                        await Promise.all(deletePromises);
+                        console.log('✅ Duplicates deleted');
+                    } catch (deleteError) {
+                        console.error('⚠️ Could not delete duplicates:', deleteError.message);
+                    }
                 }
 
                 updateStats();
                 displayRequests();
-                console.log('✅ Requests loaded successfully');
+                console.log('✅ Display complete');
+                
             } catch (error) {
-                console.error('❌ Error loading requests:', error);
-                console.error('Error details:', error.message);
+                console.error('❌ FATAL ERROR:', error);
+                console.error('Error message:', error.message);
                 console.error('Error code:', error.code);
+                console.error('Full error object:', error);
+                
+                let errorMsg = error.message;
+                let errorCode = error.code || 'unknown';
+                let suggestions = [];
+                
+                if (errorCode === 'permission-denied') {
+                    suggestions = [
+                        'Firestore rules are blocking access',
+                        'Go to Firebase Console → Firestore → Rules',
+                        'Set rules to allow read/write (see instructions above)'
+                    ];
+                } else if (errorMsg.includes('index')) {
+                    suggestions = [
+                        'Firestore index is missing',
+                        'Click the link in console to create index',
+                        'Or wait and it will load without ordering'
+                    ];
+                } else {
+                    suggestions = [
+                        'Check internet connection',
+                        'Verify Firebase project ID is correct',
+                        'Check browser console for details'
+                    ];
+                }
                 
                 document.getElementById('requestsList').innerHTML = `
                     <div class="empty-state">
                         <h3 style="color: #dc3545;">❌ Error Loading Requests</h3>
-                        <p><strong>Error:</strong> ${error.message}</p>
-                        <p><strong>Code:</strong> ${error.code || 'Unknown'}</p>
-                        <p style="margin-top: 20px;">Please check:</p>
-                        <ul style="text-align: left; margin: 10px auto; max-width: 400px;">
-                            <li>Firebase connection is working</li>
-                            <li>Firestore rules allow admin access</li>
-                            <li>Collection 'paymentRequests' exists</li>
-                        </ul>
+                        <p><strong>Error:</strong> ${errorMsg}</p>
+                        <p><strong>Code:</strong> ${errorCode}</p>
+                        <div style="margin-top: 20px; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto;">
+                            <p><strong>Possible solutions:</strong></p>
+                            <ul>
+                                ${suggestions.map(s => `<li>${s}</li>`).join('')}
+                            </ul>
+                        </div>
                         <button class="btn" onclick="loadRequests()" style="margin-top: 20px; width: auto; padding: 10px 30px;">
                             🔄 Retry
                         </button>
                     </div>
                 `;
+                
+                // Reset stats to 0
+                document.getElementById('totalRequests').textContent = '0';
+                document.getElementById('pendingRequests').textContent = '0';
+                document.getElementById('approvedRequests').textContent = '0';
+                document.getElementById('rejectedRequests').textContent = '0';
             }
         }
 

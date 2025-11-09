@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Connection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            max-height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-box">
+        <h1>🔥 Firebase Connection Test</h1>
+        <p>This page will test your Firebase connection and show all payment requests.</p>
+        
+        <button onclick="testConnection()">🔍 Test Connection</button>
+        <button onclick="loadPayments()">📥 Load Payment Requests</button>
+        <button onclick="createTestPayment()">➕ Create Test Payment</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBTKTpC8uoYTDjU83EKyRrjN2cmr0iI-Fk",
+            authDomain: "theapp-project-76bed.firebaseapp.com",
+            projectId: "theapp-project-76bed",
+            storageBucket: "theapp-project-76bed.firebasestorage.app",
+            messagingSenderId: "24433567597",
+            appId: "1:24433567597:web:bbaada260de8ee4d971c64"
+        };
+
+        // Initialize Firebase
+        let db;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            console.log('✅ Firebase initialized successfully');
+        } catch (error) {
+            console.error('❌ Firebase initialization failed:', error);
+        }
+
+        function showResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            results.innerHTML += `<div class="status ${type}">${message}</div>`;
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        async function testConnection() {
+            clearResults();
+            showResult('🔍 Testing Firebase connection...', 'info');
+            
+            try {
+                // Test basic connection
+                const testDoc = await db.collection('_test').doc('connection').set({
+                    timestamp: new Date(),
+                    test: 'connection'
+                });
+                showResult('✅ Firebase connection successful!', 'success');
+                
+                // Delete test doc
+                await db.collection('_test').doc('connection').delete();
+                showResult('✅ Write/Delete permissions working', 'success');
+                
+            } catch (error) {
+                showResult(`❌ Connection failed: ${error.message}`, 'error');
+                console.error('Full error:', error);
+            }
+        }
+
+        async function loadPayments() {
+            clearResults();
+            showResult('📥 Loading payment requests...', 'info');
+            
+            try {
+                const snapshot = await db.collection('paymentRequests').get();
+                
+                showResult(`✅ Found ${snapshot.size} payment requests`, 'success');
+                
+                if (snapshot.empty) {
+                    showResult('⚠️ No payment requests found. Create a test payment first.', 'info');
+                } else {
+                    let html = '<pre>';
+                    snapshot.forEach((doc, index) => {
+                        const data = doc.data();
+                        html += `\n--- Request ${index + 1} ---\n`;
+                        html += `ID: ${doc.id}\n`;
+                        html += `Email: ${data.email || 'N/A'}\n`;
+                        html += `User ID: ${data.userId || 'N/A'}\n`;
+                        html += `Status: ${data.status || 'N/A'}\n`;
+                        html += `Name: ${data.userName || 'N/A'}\n`;
+                        html += `Timestamp: ${data.timestamp ? data.timestamp.toDate() : 'N/A'}\n`;
+                    });
+                    html += '</pre>';
+                    document.getElementById('results').innerHTML += html;
+                }
+                
+            } catch (error) {
+                showResult(`❌ Error loading payments: ${error.message}`, 'error');
+                showResult(`Error code: ${error.code}`, 'error');
+                console.error('Full error:', error);
+                
+                if (error.code === 'permission-denied') {
+                    showResult('⚠️ Permission denied. Update Firestore rules to allow read access.', 'error');
+                }
+            }
+        }
+
+        async function createTestPayment() {
+            clearResults();
+            showResult('➕ Creating test payment request...', 'info');
+            
+            try {
+                const testPayment = {
+                    email: 'test@example.com',
+                    userId: 'test-user-' + Date.now(),
+                    userName: 'Test User',
+                    phone: '+91 9876543210',
+                    status: 'pending',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                const docRef = await db.collection('paymentRequests').add(testPayment);
+                showResult(`✅ Test payment created with ID: ${docRef.id}`, 'success');
+                showResult('Now try loading payment requests again!', 'info');
+                
+            } catch (error) {
+                showResult(`❌ Error creating payment: ${error.message}`, 'error');
+                console.error('Full error:', error);
+            }
+        }
+
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            showResult('🚀 Page loaded. Click buttons to test Firebase.', 'info');
+        });
+    </script>
+</body>
+</html>

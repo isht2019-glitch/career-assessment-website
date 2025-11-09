@@ -261,6 +261,31 @@
             border-radius: 10px;
             font-size: 16px;
         }
+
+        .duplicate-warning {
+            border-left: 4px solid #ff6b6b !important;
+            background: #fff5f5 !important;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .request-item {
+                flex-direction: column;
+            }
+
+            .request-actions {
+                width: 100%;
+                margin-top: 15px;
+            }
+
+            .filter-tabs {
+                flex-wrap: wrap;
+            }
+        }
     </style>
 </head>
 <body>
@@ -388,10 +413,24 @@
                     .get();
                 
                 allRequests = [];
+                const seenUserIds = new Set();
+                
                 snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const userId = data.userId || data.email;
+                    
+                    // Check for duplicate user IDs
+                    if (seenUserIds.has(userId)) {
+                        console.warn('⚠️ Duplicate user ID found:', userId);
+                        data.isDuplicate = true;
+                    } else {
+                        seenUserIds.add(userId);
+                        data.isDuplicate = false;
+                    }
+                    
                     allRequests.push({
                         id: doc.id,
-                        ...doc.data()
+                        ...data
                     });
                 });
 
@@ -452,13 +491,16 @@
                 const timeAgo = getTimeAgo(request.timestamp?.toDate());
                 
                 return `
-                    <div class="request-item ${request.status}">
+                    <div class="request-item ${request.status} ${request.isDuplicate ? 'duplicate-warning' : ''}">
                         <div class="request-info">
                             <h4>
                                 ${request.email}
                                 <span class="badge ${request.status}">${request.status.toUpperCase()}</span>
+                                ${request.isDuplicate ? '<span class="badge" style="background: #ff6b6b; color: white;">⚠️ DUPLICATE</span>' : ''}
                             </h4>
+                            <p><strong>User ID:</strong> ${request.userId || request.email}</p>
                             <p><strong>Name:</strong> ${request.userName || 'N/A'}</p>
+                            <p><strong>Phone:</strong> ${request.phone || 'N/A'}</p>
                             <p><strong>Submitted:</strong> ${date} (${timeAgo})</p>
                             ${request.approvedAt ? `<p><strong>Approved:</strong> ${new Date(request.approvedAt).toLocaleString()}</p>` : ''}
                         </div>

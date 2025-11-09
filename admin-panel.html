@@ -408,9 +408,21 @@
 
         async function loadRequests() {
             try {
-                const snapshot = await db.collection('paymentRequests')
-                    .orderBy('timestamp', 'desc')
-                    .get();
+                console.log('📥 Loading payment requests...');
+                let snapshot;
+                
+                try {
+                    // Try with orderBy first
+                    snapshot = await db.collection('paymentRequests')
+                        .orderBy('timestamp', 'desc')
+                        .get();
+                } catch (orderError) {
+                    console.warn('⚠️ OrderBy failed (index might be missing), loading without order:', orderError.message);
+                    // Fallback: load without orderBy
+                    snapshot = await db.collection('paymentRequests').get();
+                }
+                
+                console.log(`📊 Found ${snapshot.size} payment requests`);
                 
                 allRequests = [];
                 const seenUserIds = new Map(); // Track userId -> first doc
@@ -447,11 +459,26 @@
 
                 updateStats();
                 displayRequests();
+                console.log('✅ Requests loaded successfully');
             } catch (error) {
-                console.error('Error loading requests:', error);
+                console.error('❌ Error loading requests:', error);
+                console.error('Error details:', error.message);
+                console.error('Error code:', error.code);
+                
                 document.getElementById('requestsList').innerHTML = `
                     <div class="empty-state">
-                        <p>Error loading requests. Check console.</p>
+                        <h3 style="color: #dc3545;">❌ Error Loading Requests</h3>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p><strong>Code:</strong> ${error.code || 'Unknown'}</p>
+                        <p style="margin-top: 20px;">Please check:</p>
+                        <ul style="text-align: left; margin: 10px auto; max-width: 400px;">
+                            <li>Firebase connection is working</li>
+                            <li>Firestore rules allow admin access</li>
+                            <li>Collection 'paymentRequests' exists</li>
+                        </ul>
+                        <button class="btn" onclick="loadRequests()" style="margin-top: 20px; width: auto; padding: 10px 30px;">
+                            🔄 Retry
+                        </button>
                     </div>
                 `;
             }

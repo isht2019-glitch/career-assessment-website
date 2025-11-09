@@ -413,7 +413,8 @@
                     .get();
                 
                 allRequests = [];
-                const seenUserIds = new Set();
+                const seenUserIds = new Map(); // Track userId -> first doc
+                const duplicatesToDelete = [];
                 
                 snapshot.forEach(doc => {
                     const data = doc.data();
@@ -421,18 +422,28 @@
                     
                     // Check for duplicate user IDs
                     if (seenUserIds.has(userId)) {
-                        console.warn('⚠️ Duplicate user ID found:', userId);
-                        data.isDuplicate = true;
+                        console.warn('⚠️ Duplicate user ID found:', userId, '- Marking for deletion');
+                        // Keep the first one (most recent), delete this duplicate
+                        duplicatesToDelete.push(doc.id);
                     } else {
-                        seenUserIds.add(userId);
-                        data.isDuplicate = false;
+                        seenUserIds.set(userId, doc.id);
+                        allRequests.push({
+                            id: doc.id,
+                            ...data,
+                            isDuplicate: false
+                        });
                     }
-                    
-                    allRequests.push({
-                        id: doc.id,
-                        ...data
-                    });
                 });
+                
+                // Auto-delete duplicates
+                if (duplicatesToDelete.length > 0) {
+                    console.log(`🗑️ Auto-deleting ${duplicatesToDelete.length} duplicate requests...`);
+                    const deletePromises = duplicatesToDelete.map(docId => 
+                        db.collection('paymentRequests').doc(docId).delete()
+                    );
+                    await Promise.all(deletePromises);
+                    console.log('✅ Duplicates deleted successfully');
+                }
 
                 updateStats();
                 displayRequests();

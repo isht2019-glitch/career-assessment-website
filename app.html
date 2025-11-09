@@ -1394,15 +1394,28 @@
                                 userTestResults = userData.testResults;
                                 console.log('✅ Found saved test results');
                                 
-                                // Check payment approval status
-                                const paymentSnapshot = await db.collection('paymentRequests')
+                                // Check payment approval status by userId
+                                let paymentSnapshot = await db.collection('paymentRequests')
                                     .where('userId', '==', user.uid)
                                     .where('status', '==', 'approved')
                                     .limit(1)
                                     .get();
                                 
+                                // Also check by email as fallback
+                                if (paymentSnapshot.empty && user.email) {
+                                    paymentSnapshot = await db.collection('paymentRequests')
+                                        .where('email', '==', user.email)
+                                        .where('status', '==', 'approved')
+                                        .limit(1)
+                                        .get();
+                                }
+                                
                                 if (!paymentSnapshot.empty) {
-                                    console.log('✅ Payment already approved - skipping to results');
+                                    console.log('✅ Payment already approved for this user');
+                                    // Save payment status to localStorage
+                                    localStorage.setItem('paymentApproved', 'true');
+                                    localStorage.setItem('approvedUserId', user.uid);
+                                    
                                     // User has approved payment, show results directly
                                     if (userTestResults) {
                                         loadSavedResults(userTestResults);
@@ -1410,7 +1423,16 @@
                                             showScreen('resultsScreen');
                                         }, 3500);
                                         return;
+                                    } else {
+                                        // Payment approved but no test results yet, go to test
+                                        setTimeout(() => {
+                                            showScreen('welcomeScreen');
+                                        }, 3500);
+                                        return;
                                     }
+                                } else {
+                                    console.log('⚠️ No approved payment found for this user');
+                                    localStorage.removeItem('paymentApproved');
                                 }
                             }
                         } catch (error) {
@@ -1991,7 +2013,37 @@
             return approvedEmails;
         }
 
-        function showScreen(screenId) {
+        async function showScreen(screenId) {
+            // If trying to show payment screen, check if payment is already approved
+            if (screenId === 'paymentScreen' && currentUser && db) {
+                try {
+                    console.log('🔍 Checking payment status before showing payment screen...');
+                    let paymentSnapshot = await db.collection('paymentRequests')
+                        .where('userId', '==', currentUser.uid)
+                        .where('status', '==', 'approved')
+                        .limit(1)
+                        .get();
+                    
+                    // Also check by email
+                    if (paymentSnapshot.empty && currentUser.email) {
+                        paymentSnapshot = await db.collection('paymentRequests')
+                            .where('email', '==', currentUser.email)
+                            .where('status', '==', 'approved')
+                            .limit(1)
+                            .get();
+                    }
+                    
+                    if (!paymentSnapshot.empty) {
+                        console.log('✅ Payment already approved! Skipping payment screen...');
+                        localStorage.setItem('paymentApproved', 'true');
+                        // Skip to welcome screen instead
+                        screenId = 'welcomeScreen';
+                    }
+                } catch (error) {
+                    console.log('Error checking payment status:', error);
+                }
+            }
+            
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
         }

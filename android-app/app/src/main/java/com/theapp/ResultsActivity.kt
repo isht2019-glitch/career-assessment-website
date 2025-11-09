@@ -684,20 +684,36 @@ class ResultsActivity : AppCompatActivity() {
         }
     }
     
+    private var showingAllOccupations = false
+    
     private fun setupOccupationSelection() {
         try {
-            // Get all available occupations based on personality type
-            val occupations = getAllOccupations()
+            // Get filtered occupations based on personality type
+            val filteredOccupations = getFilteredOccupations(currentPersonalityCode)
+            val topSeven = filteredOccupations.take(7)
+            
+            // Add "Show More" option if there are more than 7
+            val displayList = if (filteredOccupations.size > 7) {
+                topSeven + listOf("➕ Show ${filteredOccupations.size - 7} More Relevant Careers")
+            } else {
+                topSeven
+            }
             
             // Setup spinner adapter
-            val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, occupations)
+            val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, displayList)
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.spinnerOccupations.adapter = adapter
             
             // Setup button click listener
             binding.btnShowRoadmap.setOnClickListener {
                 val selectedOccupation = binding.spinnerOccupations.selectedItem.toString()
-                showOccupationRoadmap(selectedOccupation)
+                
+                // Handle "Show More" option
+                if (selectedOccupation.startsWith("➕ Show")) {
+                    expandOccupationList(filteredOccupations)
+                } else {
+                    showOccupationRoadmap(selectedOccupation)
+                }
             }
         } catch (e: Exception) {
             println("Error in setupOccupationSelection: ${e.message}")
@@ -705,22 +721,52 @@ class ResultsActivity : AppCompatActivity() {
         }
     }
     
-    private fun getAllOccupations(): List<String> {
-        return listOf(
-            "Software Engineer", "Data Scientist", "AI/ML Engineer", "Web Developer",
-            "Doctor", "Nurse", "Surgeon", "Pharmacist", "Dentist", "Therapist",
-            "Teacher", "Professor", "School Counselor", "Education Administrator",
-            "Mechanical Engineer", "Civil Engineer", "Electrical Engineer", "Chemical Engineer",
-            "Graphic Designer", "UX/UI Designer", "Artist", "Writer", "Photographer",
-            "Business Analyst", "Marketing Manager", "Sales Manager", "CEO", "Entrepreneur",
-            "Accountant", "Financial Analyst", "Auditor", "Investment Banker", "Actuary",
-            "Lawyer", "Judge", "Police Officer", "Social Worker", "Psychologist",
-            "Architect", "Interior Designer", "Urban Planner", "Construction Manager",
-            "Chef", "Restaurant Manager", "Hotel Manager", "Event Planner",
-            "Pilot", "Air Traffic Controller", "Logistics Manager", "Supply Chain Manager",
-            "Research Scientist", "Laboratory Technician", "Quality Analyst", "Consultant"
-        )
+    private fun expandOccupationList(allOccupations: List<String>) {
+        showingAllOccupations = true
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, allOccupations)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerOccupations.adapter = adapter
+        Toast.makeText(this, "Showing all ${allOccupations.size} relevant careers", Toast.LENGTH_SHORT).show()
     }
+    
+    private fun getFilteredOccupations(personalityCode: String): List<String> {
+        val allOccupations = RoadmapsDatabase.getAllOccupations()
+        
+        // Extract primary and secondary types
+        val types = if (personalityCode.contains("+")) {
+            personalityCode.split("+")
+        } else {
+            listOf(personalityCode)
+        }
+        
+        val primaryType = types[0]
+        val secondaryType = if (types.size > 1) types[1] else null
+        
+        // Career keywords for each RIASEC type
+        val typeKeywords = mapOf(
+            "R" to listOf("engineer", "mechanic", "technician", "pilot", "architect", "construction", "automotive", "electrical", "industrial", "manufacturing"),
+            "I" to listOf("scientist", "researcher", "analyst", "physician", "doctor", "psychologist", "data", "software", "developer", "mathematician", "physicist", "chemist", "biologist"),
+            "A" to listOf("designer", "artist", "writer", "musician", "photographer", "interior", "graphic", "creative", "animator", "illustrator", "actor", "director"),
+            "S" to listOf("teacher", "counselor", "therapist", "social", "nurse", "healthcare", "education", "psychologist", "worker", "coordinator", "instructor"),
+            "E" to listOf("manager", "executive", "sales", "marketing", "business", "entrepreneur", "director", "administrator", "consultant", "lawyer", "agent"),
+            "C" to listOf("accountant", "auditor", "analyst", "administrator", "clerk", "financial", "budget", "database", "compliance", "inspector", "coordinator")
+        )
+        
+        val primaryKeywords = typeKeywords[primaryType] ?: emptyList()
+        val secondaryKeywords = if (secondaryType != null) typeKeywords[secondaryType] ?: emptyList() else emptyList()
+        
+        // Filter occupations
+        val relevantOccupations = allOccupations.filter { occupation ->
+            val lowerOccupation = occupation.lowercase()
+            primaryKeywords.any { keyword -> lowerOccupation.contains(keyword) } ||
+            secondaryKeywords.any { keyword -> lowerOccupation.contains(keyword) }
+        }
+        
+        println("Filtered ${relevantOccupations.size} relevant occupations for $personalityCode")
+        return relevantOccupations.sorted()
+    }
+    
+    // Removed - now using RoadmapsDatabase.getAllOccupations() with filtering
     
     private fun showOccupationRoadmap(occupation: String) {
         // Show toast message

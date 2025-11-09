@@ -1385,6 +1385,7 @@
 
         let currentUser = null;
         let userTestResults = null;
+        let hasNavigatedFromSplash = false; // Prevent multiple navigations
 
         // Check if user is already logged in
         if (auth) {
@@ -1451,7 +1452,8 @@
                     }
                     
                     // Skip to payment if already authenticated but no results yet
-                    if (document.getElementById('splashScreen').classList.contains('active')) {
+                    if (document.getElementById('splashScreen').classList.contains('active') && !hasNavigatedFromSplash) {
+                        hasNavigatedFromSplash = true;
                         setTimeout(() => {
                             showScreen('paymentScreen');
                         }, 3500);
@@ -1509,18 +1511,41 @@
         })();
         
         // SPLASH SCREEN - Auto navigate after 3.5 seconds
-        setTimeout(() => {
+        setTimeout(async () => {
+            if (hasNavigatedFromSplash) {
+                console.log('⏭️ Already navigated from splash (user logged in)');
+                return;
+            }
+            
+            hasNavigatedFromSplash = true;
+            
             try {
-                showScreen('loginScreen');
+                console.log('⏰ 3.5 seconds passed - navigating to login screen...');
+                await showScreen('loginScreen');
+                console.log('✅ Login screen should be visible now');
                 // Show welcome guide after splash
-                setTimeout(showWelcomeGuide, 1000);
+                setTimeout(() => {
+                    try {
+                        showWelcomeGuide();
+                    } catch (e) {
+                        console.log('Guide error (non-critical):', e);
+                    }
+                }, 1000);
             } catch (error) {
                 console.error('❌ Error navigating from splash:', error);
                 // Fallback: show login screen directly
+                console.log('🔄 Using fallback method...');
                 const loginScreen = document.getElementById('loginScreen');
                 if (loginScreen) {
-                    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                    document.querySelectorAll('.screen').forEach(s => {
+                        s.classList.remove('active');
+                        s.style.display = 'none';
+                    });
                     loginScreen.classList.add('active');
+                    loginScreen.style.display = 'flex';
+                    console.log('✅ Login screen shown via fallback');
+                } else {
+                    console.error('❌ Login screen element not found!');
                 }
             }
         }, 3500);

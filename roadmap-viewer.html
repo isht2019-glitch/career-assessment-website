@@ -169,6 +169,8 @@ Format with clear sections, emojis, and be HONEST about challenges and uncertain
                     headers: {
                         'Content-Type': 'application/json',
                     },
+                    mode: 'cors',
+                    cache: 'no-cache',
                     body: JSON.stringify({
                         contents: [{
                             parts: [{
@@ -178,7 +180,25 @@ Format with clear sections, emojis, and be HONEST about challenges and uncertain
                         generationConfig: {
                             temperature: 0.7,
                             maxOutputTokens: 4096,
-                        }
+                        },
+                        safetySettings: [
+                            {
+                                category: "HARM_CATEGORY_HARASSMENT",
+                                threshold: "BLOCK_NONE"
+                            },
+                            {
+                                category: "HARM_CATEGORY_HATE_SPEECH",
+                                threshold: "BLOCK_NONE"
+                            },
+                            {
+                                category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                                threshold: "BLOCK_NONE"
+                            },
+                            {
+                                category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                                threshold: "BLOCK_NONE"
+                            }
+                        ]
                     })
                 });
 
@@ -278,15 +298,26 @@ Format with clear sections, emojis, and be HONEST about challenges and uncertain
                 let errorDetails = error.message;
                 let troubleshooting = '';
                 
-                if (errorDetails.includes('API_KEY_INVALID')) {
+                if (errorDetails.includes('API_KEY_INVALID') || errorDetails.includes('404')) {
                     troubleshooting = `
-                        <h4 style="margin-top: 15px;">🔧 Troubleshooting:</h4>
-                        <p>Your API key may be invalid or restricted. Please:</p>
-                        <ol style="margin-left: 20px; margin-top: 10px;">
-                            <li>Go to <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a></li>
-                            <li>Check if your API key is active</li>
-                            <li>Make sure there are no restrictions on the key</li>
-                            <li>Try creating a new API key if needed</li>
+                        <h4 style="margin-top: 15px;">🔧 Possible Solutions:</h4>
+                        <ol style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                            <li><strong>Enable the API:</strong>
+                                <br>Go to <a href="https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com" target="_blank" style="color: #667eea;">Google Cloud Console</a>
+                                <br>Click "ENABLE" for Generative Language API
+                            </li>
+                            <li><strong>Check API Key:</strong>
+                                <br>Go to <a href="https://makersuite.google.com/app/apikey" target="_blank" style="color: #667eea;">Google AI Studio</a>
+                                <br>Verify your API key is active
+                            </li>
+                            <li><strong>Disable Ad Blocker:</strong>
+                                <br>Ad blockers may block API requests
+                                <br>Try disabling it for this site
+                            </li>
+                            <li><strong>Check Restrictions:</strong>
+                                <br>Go to <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color: #667eea;">API Credentials</a>
+                                <br>Make sure there are no domain restrictions
+                            </li>
                         </ol>
                     `;
                 } else if (errorDetails.includes('quota') || errorDetails.includes('limit')) {
@@ -298,6 +329,16 @@ Format with clear sections, emojis, and be HONEST about challenges and uncertain
                             <li>1,500 requests per day</li>
                         </ul>
                         <p style="margin-top: 10px;">Please wait a few minutes and try again.</p>
+                    `;
+                } else if (errorDetails.includes('BLOCKED') || errorDetails.includes('CORS')) {
+                    troubleshooting = `
+                        <h4 style="margin-top: 15px;">🔧 Troubleshooting:</h4>
+                        <p>The request was blocked. This could be due to:</p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li><strong>Ad Blocker:</strong> Disable ad blocker for this site</li>
+                            <li><strong>Browser Extension:</strong> Try in incognito mode</li>
+                            <li><strong>API Not Enabled:</strong> Enable Generative Language API in Google Cloud Console</li>
+                        </ul>
                     `;
                 }
                 

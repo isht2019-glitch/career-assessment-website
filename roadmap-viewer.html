@@ -184,10 +184,17 @@ Format with clear sections, emojis, and be HONEST about challenges and uncertain
 
                 const data = await response.json();
                 
+                console.log('API Response:', data);
+                
+                if (!response.ok) {
+                    throw new Error(`API Error: ${data.error?.message || 'Unknown error'}`);
+                }
+                
                 if (data.candidates && data.candidates[0] && data.candidates[0].content) {
                     return data.candidates[0].content.parts[0].text;
                 } else {
-                    throw new Error('Invalid response from AI');
+                    console.error('Unexpected API response:', data);
+                    throw new Error(`Invalid response from AI: ${JSON.stringify(data)}`);
                 }
             } catch (error) {
                 console.error('AI Generation Error:', error);
@@ -268,12 +275,42 @@ Format with clear sections, emojis, and be HONEST about challenges and uncertain
             } catch (error) {
                 console.error('❌ Failed to generate roadmap:', error);
                 
+                let errorDetails = error.message;
+                let troubleshooting = '';
+                
+                if (errorDetails.includes('API_KEY_INVALID')) {
+                    troubleshooting = `
+                        <h4 style="margin-top: 15px;">🔧 Troubleshooting:</h4>
+                        <p>Your API key may be invalid or restricted. Please:</p>
+                        <ol style="margin-left: 20px; margin-top: 10px;">
+                            <li>Go to <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a></li>
+                            <li>Check if your API key is active</li>
+                            <li>Make sure there are no restrictions on the key</li>
+                            <li>Try creating a new API key if needed</li>
+                        </ol>
+                    `;
+                } else if (errorDetails.includes('quota') || errorDetails.includes('limit')) {
+                    troubleshooting = `
+                        <h4 style="margin-top: 15px;">🔧 Troubleshooting:</h4>
+                        <p>You may have exceeded the API quota. The free tier allows:</p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>60 requests per minute</li>
+                            <li>1,500 requests per day</li>
+                        </ul>
+                        <p style="margin-top: 10px;">Please wait a few minutes and try again.</p>
+                    `;
+                }
+                
                 document.getElementById('roadmapContent').innerHTML = `
                     <div class="error">
                         <h3>❌ Failed to Generate Roadmap</h3>
                         <p>Sorry, we couldn't generate the AI roadmap at this time.</p>
-                        <p style="margin-top: 10px;"><strong>Error:</strong> ${error.message}</p>
-                        <p style="margin-top: 10px;">Please try again or contact support if the issue persists.</p>
+                        <p style="margin-top: 10px;"><strong>Error:</strong> ${errorDetails}</p>
+                        ${troubleshooting}
+                        <p style="margin-top: 15px;">
+                            <strong>Debug Info:</strong><br>
+                            Check browser console (F12) for detailed error logs.
+                        </p>
                     </div>
                 `;
             }

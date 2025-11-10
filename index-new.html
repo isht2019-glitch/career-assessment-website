@@ -1,0 +1,2697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#667eea">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>TheApp - Career Assessment v4.0 NEW</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <!-- Load Updated Roadmaps Database -->
+    <script src="FINAL_COMPLETE_ALL_ROADMAPS.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .screen {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* SPLASH SCREEN */
+        #splashScreen {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 0;
+        }
+
+        .logo-container {
+            text-align: center;
+        }
+
+        .logo-reveal {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 30px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 5px solid white;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: pulse 2s infinite;
+        }
+
+        .logo-reveal img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .writing-text {
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            animation: typing 2s steps(6) forwards;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 3px solid white;
+            width: 0;
+            margin: 0 auto;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 6ch; }
+        }
+
+        /* PAYMENT SCREEN */
+        .payment-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .payment-container h2 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .plan-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .plan-card h3 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .plan-card p {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        .plan-features {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .plan-features p {
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        /* Login Screen */
+        .auth-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            margin: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            background: linear-gradient(45deg, #8B4513, #D2691E);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #667eea;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .logo-icon .gun-emoji {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            font-size: 24px;
+            transform: rotate(-15deg);
+        }
+
+        .logo h1 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: #e0e0e0;
+        }
+
+        .divider::before {
+            left: 0;
+        }
+
+        .divider::after {
+            right: 0;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 10px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .social-auth {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn-google,
+        .btn-phone {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-google:hover,
+        .btn-phone:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .btn-google img {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Guide System */
+        .guide-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: none;
+        }
+
+        .guide-overlay.active {
+            display: block;
+        }
+
+        .guide-character {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            border: 3px solid white;
+            animation: bounce 2s infinite;
+            display: none;
+        }
+
+        .guide-character.active {
+            display: block;
+        }
+
+        .guide-character:hover {
+            transform: scale(1.1);
+        }
+
+        .guide-character img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .speech-bubble {
+            position: fixed;
+            top: 160px;
+            right: 15px;
+            max-width: 280px;
+            background: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            z-index: 1001;
+            display: none;
+            border: 3px solid #667eea;
+        }
+
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            right: 30px;
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 15px solid #667eea;
+        }
+
+        .speech-bubble.active {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .speech-bubble .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .speech-bubble h3 {
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #667eea;
+        }
+
+        .speech-bubble p {
+            margin-bottom: 8px;
+            line-height: 1.6;
+            font-size: 13px;
+        }
+
+        .speech-bubble button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .speech-bubble button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Auth Modal */
+        .auth-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .auth-modal.active {
+            display: flex;
+        }
+
+        .auth-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .auth-modal h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .auth-modal .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Test Screen */
+        .test-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            margin: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+
+        .question-card {
+            margin-bottom: 30px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 15px;
+            background: #e0e0e0;
+            color: #333;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-secondary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .question-review {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 8px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+
+        .question-dot {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .question-dot:hover {
+            transform: scale(1.1);
+        }
+
+        .question-dot.answered {
+            background: #667eea;
+            color: white;
+        }
+
+        .question-dot.current {
+            background: #764ba2;
+            color: white;
+            border: 3px solid #667eea;
+        }
+
+        .roadmap-section {
+            margin-top: 30px;
+        }
+
+        .roadmap-section h3 {
+            color: #667eea;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .roadmap-card {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .roadmap-card h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .roadmap-step {
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid #764ba2;
+        }
+
+        .roadmap-step h5 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .roadmap-step p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .salary-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .salary-info span {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        /* PERSONALITY ANALYSIS MODAL - Matching Android */
+        .analysis-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            animation: fadeIn 0.3s;
+        }
+
+        .analysis-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .analysis-modal {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.4s;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .monkey-character {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            overflow: hidden;
+            border: 3px solid #667eea;
+            animation: bounce 2s infinite;
+        }
+
+        .monkey-character img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .analysis-modal h2 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .analysis-content {
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .analysis-content h3 {
+            color: #764ba2;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .analysis-content p {
+            margin-bottom: 15px;
+        }
+
+        .score-item {
+            background: #f8f9ff;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .score-item strong {
+            color: #667eea;
+            font-size: 18px;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .typing-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: typing-bounce 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing-bounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Results Screen */
+        .results-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            margin: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .results-header h1 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .score-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .score-card h2 {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .riasec-scores {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .riasec-item {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .riasec-item h3 {
+            color: #667eea;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .career-list {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .career-list h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .career-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .career-list li {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .test-container, .results-container, .auth-card {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .question-text {
+                font-size: 18px;
+            }
+
+            .timer {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- SPLASH SCREEN -->
+    <div id="splashScreen" class="screen active">
+        <div class="logo-container">
+            <div class="logo-reveal">
+                <img src="assets/velly-bandaar.jpeg" alt="TheApp" onerror="this.style.display='none'">
+            </div>
+            <div class="writing-text">TheApp</div>
+        </div>
+    </div>
+
+    <!-- Auth Modals -->
+    <div class="auth-modal" id="googleModal">
+        <button class="close-modal" onclick="closeAuthModal()">×</button>
+        <div class="auth-modal-content">
+            <h2>🔐 Sign in with Google</h2>
+            <div class="input-group">
+                <input type="email" id="googleEmail" placeholder="Enter your email">
+            </div>
+            <button class="btn-primary" onclick="completeGoogleSignIn()">Continue</button>
+        </div>
+    </div>
+
+    <div class="auth-modal" id="phoneModal">
+        <button class="close-modal" onclick="closeAuthModal()">×</button>
+        <div class="auth-modal-content">
+            <h2>📱 Phone Authentication</h2>
+            <div class="input-group">
+                <select id="countryCode" style="width: 30%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; margin-right: 10px;">
+                    <option value="+91">🇮🇳 +91</option>
+                    <option value="+1">🇺🇸 +1</option>
+                    <option value="+44">🇬🇧 +44</option>
+                    <option value="+61">🇦🇺 +61</option>
+                    <option value="+971">🇦🇪 +971</option>
+                </select>
+                <input type="tel" id="phoneNumber" placeholder="Enter phone number" style="width: 65%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px;">
+            </div>
+            <div id="recaptcha-container" style="margin: 15px 0; display: flex; justify-content: center;"></div>
+            <div class="input-group" id="otpGroup" style="display:none;">
+                <input type="text" id="otpCode" placeholder="Enter 6-digit OTP" maxlength="6">
+            </div>
+            <button class="btn-primary" id="phoneBtn" onclick="sendOTP()">Send OTP</button>
+            <p style="margin-top: 10px; font-size: 12px; color: #666; text-align: center;">You'll receive an SMS with a verification code</p>
+        </div>
+    </div>
+
+    <!-- PERSONALITY ANALYSIS MODAL -->
+    <div class="analysis-overlay" id="analysisOverlay">
+        <div class="analysis-modal">
+            <div class="monkey-character">
+                <img src="assets/velly-bandaar.jpeg" alt="Velly Bandaar" onerror="this.style.display='none'">
+            </div>
+            <div id="typingIndicator" class="typing-indicator" style="display:none;">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+            <h2 id="analysisTitle">🎉 Personality Analysis</h2>
+            <div class="analysis-content" id="analysisContent"></div>
+            <button class="btn-primary" style="margin-top: 20px;" id="analysisBtn" onclick="closeAnalysis()">Continue</button>
+        </div>
+    </div>
+
+    <!-- Guide System -->
+    <div class="guide-overlay" id="guideOverlay" onclick="closeGuide()"></div>
+    <div class="guide-character" id="guideCharacter" onclick="toggleGuide()">
+        <img src="assets/velly-bandaar.jpeg" alt="Velly Bandaar" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%2250%22 font-size=%2260%22>🐵</text></svg>'">
+    </div>
+    <div class="speech-bubble" id="speechBubble">
+        <button class="close-btn" onclick="closeGuide()">×</button>
+        <div id="speechContent"></div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="screen">
+        <div class="auth-card">
+            <div class="logo">
+                <div class="logo-icon">
+                    <img src="assets/velly-bandaar.jpeg" alt="Velly Bandaar" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                    <span style="display:none; font-size:40px;">🐵</span>
+                    <span class="gun-emoji">🔫</span>
+                </div>
+                <h1>TheApp</h1>
+                <p>Join thousands of users today</p>
+            </div>
+            <div class="input-group">
+                <input type="text" id="nameInput" placeholder="Full Name" required>
+            </div>
+            <div class="input-group">
+                <input type="email" id="emailInput" placeholder="Email Address" required>
+            </div>
+            <div class="input-group">
+                <input type="password" id="passwordInput" placeholder="Password" required>
+            </div>
+            <button class="btn-primary" onclick="startTest()">Create Account</button>
+            
+            <div class="divider">
+                <span>or continue with</span>
+            </div>
+
+            <div class="social-auth">
+                <button class="btn-google" onclick="googleSignIn()">
+                    <img src="https://www.google.com/favicon.ico" alt="Google">
+                    Google
+                </button>
+                <button class="btn-phone" onclick="phoneAuth()">
+                    <span>📱</span>
+                    Phone OTP
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAYMENT SCREEN -->
+    <div id="paymentScreen" class="screen">
+        <div class="payment-container">
+            <!-- Step 1: Email Submission -->
+            <div id="emailSubmissionStep">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="width: 100px; height: 100px; margin: 0 auto 15px; border-radius: 50%; overflow: hidden; border: 3px solid #667eea;">
+                        <img src="assets/velly-bandaar.jpeg" alt="Velly" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">
+                    </div>
+                    <h2 style="color: #667eea; margin-bottom: 10px;">📋 Payment Instructions</h2>
+                    <div style="background: #f8f9ff; padding: 20px; border-radius: 15px; border-left: 5px solid #667eea; margin: 20px 0;">
+                        <p style="color: #333; font-size: 16px; line-height: 1.6; margin: 0;">
+                            "Please provide your email address below. We'll send you the payment details and instructions. 
+                            Once your payment is confirmed, your account will be approved to access the complete assessment and career roadmaps. 
+                            Thank you for your interest! 💼✨"
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="plan-card">
+                    <h3 style="text-decoration: line-through; opacity: 0.6;">₹99</h3>
+                    <h3 style="font-size: 48px; margin-top: 10px;">₹1</h3>
+                    <p style="font-size: 20px; font-weight: bold;">Limited Time Offer! 🎉</p>
+                    <div class="plan-features">
+                        <p>✅ Complete Career Assessment</p>
+                        <p>✅ Detailed RIASEC Analysis</p>
+                        <p>✅ Personalized Roadmaps</p>
+                        <p>✅ Top Institutes & Salaries</p>
+                        <p>✅ Lifetime Access</p>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <input type="email" id="paymentEmail" placeholder="📧 Enter your email" style="text-align: center;">
+                </div>
+                
+                <button class="btn-primary" onclick="submitEmailForPayment()">Submit Email 📨</button>
+            </div>
+
+            <!-- Step 2: Waiting for Approval -->
+            <div id="waitingApprovalStep" style="display: none;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="width: 100px; height: 100px; margin: 0 auto 15px; border-radius: 50%; overflow: hidden; border: 3px solid #667eea; animation: bounce 2s infinite;">
+                        <img src="assets/velly-bandaar.jpeg" alt="Velly" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">
+                    </div>
+                    <h2 style="color: #667eea; margin-bottom: 10px;">💌 Payment Instructions Sent!</h2>
+                </div>
+
+                <div style="background: #f8f9ff; padding: 25px; border-radius: 15px; border-left: 5px solid #667eea; margin: 20px 0;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">🐵 Velly Bandaar's Message:</h3>
+                    <p style="color: #333; font-size: 16px; line-height: 1.8; margin-bottom: 15px;">
+                        "Check your email: <strong id="submittedEmail" style="color: #667eea;"></strong>"
+                    </p>
+                    <p style="color: #333; font-size: 16px; line-height: 1.8; margin-bottom: 15px;">
+                        📧 I've sent you payment details!<br>
+                        💰 Pay the ₹1 using the information provided<br>
+                        ⏳ Once I verify your payment, I'll approve you<br>
+                        ✅ Then you can start the test!
+                    </p>
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 10px; border-left: 4px solid #ffc107; margin-top: 20px;">
+                        <p style="color: #856404; font-size: 14px; margin: 0;">
+                            ⚠️ <strong>Important:</strong> Don't close this page! 
+                            Refresh to check if you've been approved.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <div style="font-size: 48px; margin-bottom: 10px;">⏳</div>
+                    <h3 style="color: #666;">Waiting for Approval...</h3>
+                    <p style="color: #999; font-size: 14px;">Velly Bandaar is checking your payment</p>
+                    <button class="btn-primary" onclick="checkApprovalStatus()" style="margin-top: 20px;">
+                        🔄 Check Approval Status
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Approved -->
+            <div id="approvedStep" style="display: none;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="width: 100px; height: 100px; margin: 0 auto 15px; border-radius: 50%; overflow: hidden; border: 3px solid #28a745;">
+                        <img src="assets/velly-bandaar.jpeg" alt="Velly" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">
+                    </div>
+                    <h2 style="color: #28a745; margin-bottom: 10px;">✅ Approved!</h2>
+                </div>
+
+                <div style="background: #d4edda; padding: 25px; border-radius: 15px; border-left: 5px solid #28a745; margin: 20px 0;">
+                    <h3 style="color: #155724; margin-bottom: 15px;">🎉 Velly Bandaar Says:</h3>
+                    <p style="color: #155724; font-size: 16px; line-height: 1.8; margin: 0;">
+                        "Shabash! Payment received! 💰✨<br>
+                        You're all set to discover your perfect career path!<br>
+                        Let's gooooo! 🚀"
+                    </p>
+                </div>
+
+                <button class="btn-primary" onclick="startApprovedTest()" style="background: #28a745;">
+                    Start Test Now! 🚀
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Screen -->
+    <div id="testScreen" class="screen">
+        <div class="test-container">
+            <div class="test-header">
+                <div>
+                    <h2 id="phaseTitle">Personality Assessment</h2>
+                    <p id="questionCounter">Question 1 of 50</p>
+                </div>
+                <div class="timer" id="timer">50:00</div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+
+            <div class="question-review" id="questionReview"></div>
+
+            <div class="question-card">
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn-secondary" id="prevBtn" onclick="previousQuestion()" disabled>Previous</button>
+                <button class="btn-primary" id="nextBtn" onclick="nextQuestion()">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="resultsScreen" class="screen">
+        <div class="results-container">
+            <div class="results-header">
+                <h1>🎉 Your Assessment Results</h1>
+                <p>Congratulations on completing the assessment!</p>
+            </div>
+
+            <div class="score-card">
+                <h2 id="personalityType">RIASEC Type</h2>
+                <p id="personalityDesc">Your Personality Profile</p>
+            </div>
+
+            <div class="riasec-scores" id="riasecScores"></div>
+
+            <div class="score-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <h2 id="aptitudeScore">0%</h2>
+                <p>Aptitude Score</p>
+            </div>
+
+            <div class="career-list" id="careerRecommendations"></div>
+
+            <div class="occupation-selector" style="margin: 30px 0; padding: 25px; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <h3 style="color: #667eea; margin-bottom: 20px; text-align: center;">📖 Select Occupation to View Complete Roadmap</h3>
+                <select id="occupationSelect" style="width: 100%; padding: 15px; font-size: 16px; border: 2px solid #667eea; border-radius: 10px; margin-bottom: 15px;">
+                    <option value="">-- Choose an occupation --</option>
+                </select>
+                <button onclick="viewSelectedRoadmap()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer;">📖 View Complete Roadmap</button>
+            </div>
+
+            <div class="roadmap-section" id="roadmapSection" style="margin-top: 20px; padding: 25px; background: #f8f9fa; border-radius: 15px; display: none; white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.8; max-height: 600px; overflow-y: auto;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Questions Data
+        const personalityQuestions = [
+            {q: "When planning a group trip, what role do you take?", opts: ["Organize everything", "Share ideas but let others decide", "Follow the group's plan", "Question decisions if flawed"], types: ["E", "S", "C", "I"]},
+            {q: "In an argument with someone unreasonable, what do you do?", opts: ["Calmly explain my point", "Leave the conversation", "Debate strongly to win", "Use humor to diffuse tension"], types: ["S", "C", "E", "A"]},
+            {q: "A team project deadline is near. How do you act?", opts: ["Take charge and assign roles", "Help the team collaborate", "Follow instructions carefully", "Find innovative shortcuts"], types: ["E", "S", "C", "A"]},
+            {q: "How do you prefer working?", opts: ["Leading a team", "Working with others equally", "Working alone", "Taking flexible roles"], types: ["E", "S", "I", "A"]},
+            {q: "Your friend is stressed about exams. What do you do?", opts: ["Motivate with a pep talk", "Help them study", "Leave them to handle it", "Make them laugh"], types: ["S", "C", "I", "A"]},
+            {q: "You are assigned a boring task. How do you handle it?", opts: ["Try to make it interesting", "Ask for help or collaborate", "Complete it systematically", "Find ways to improve it"], types: ["A", "S", "C", "I"]},
+            {q: "How do you make decisions?", opts: ["Based on facts & data", "Based on what feels right", "Based on team consensus", "Based on established rules"], types: ["I", "A", "S", "C"]},
+            {q: "When facing a tough challenge, your first thought is:", opts: ["Analyze it logically", "Think creatively", "Ask for help", "Follow proven methods"], types: ["I", "A", "S", "C"]},
+            {q: "In a group discussion, you usually:", opts: ["Lead the conversation", "Support others' ideas", "Listen and analyze", "Add creative input"], types: ["E", "S", "I", "A"]},
+            {q: "Your ideal weekend involves:", opts: ["Socializing with friends", "Learning something new", "Creating or building", "Organizing and planning"], types: ["S", "I", "A", "C"]},
+            {q: "When solving problems, you prefer:", opts: ["Hands-on approach", "Research and analysis", "Brainstorming ideas", "Following procedures"], types: ["R", "I", "A", "C"]},
+            {q: "You feel most satisfied when:", opts: ["Helping others", "Discovering new things", "Creating something unique", "Achieving goals"], types: ["S", "I", "A", "E"]},
+            {q: "In conflicts, you tend to:", opts: ["Find practical solutions", "Understand all perspectives", "Mediate peacefully", "Follow rules"], types: ["R", "I", "S", "C"]},
+            {q: "Your learning style is:", opts: ["Doing and practicing", "Reading and researching", "Discussing with others", "Visual and creative"], types: ["R", "I", "S", "A"]},
+            {q: "You prefer tasks that are:", opts: ["Structured and clear", "Analytical and complex", "People-oriented", "Creative and flexible"], types: ["C", "I", "S", "A"]},
+            {q: "Your workspace is usually:", opts: ["Organized and neat", "Filled with tools", "Collaborative space", "Inspiring and creative"], types: ["C", "R", "S", "A"]},
+            {q: "You handle stress by:", opts: ["Physical activity", "Analyzing the situation", "Talking to others", "Creative expression"], types: ["R", "I", "S", "A"]},
+            {q: "Your strength lies in:", opts: ["Leadership", "Problem-solving", "Empathy", "Innovation"], types: ["E", "I", "S", "A"]},
+            {q: "You prefer environments that are:", opts: ["Active and dynamic", "Quiet and focused", "Social and friendly", "Flexible and open"], types: ["R", "I", "S", "A"]},
+            {q: "Your ideal career involves:", opts: ["Managing people", "Research and discovery", "Helping others", "Creating content"], types: ["E", "I", "S", "A"]},
+            {q: "You make friends by:", opts: ["Taking initiative", "Shared interests", "Being helpful", "Being creative"], types: ["E", "I", "S", "A"]},
+            {q: "You value most:", opts: ["Achievement", "Knowledge", "Relationships", "Freedom"], types: ["E", "I", "S", "A"]},
+            {q: "Your hobbies include:", opts: ["Sports/Building", "Reading/Learning", "Volunteering", "Art/Music"], types: ["R", "I", "S", "A"]},
+            {q: "You work best when:", opts: ["Given clear goals", "Solving puzzles", "Collaborating", "Exploring ideas"], types: ["C", "I", "S", "A"]},
+            {q: "Your communication style is:", opts: ["Direct and clear", "Detailed and thorough", "Warm and friendly", "Expressive and engaging"], types: ["E", "I", "S", "A"]},
+            {q: "You handle change by:", opts: ["Adapting quickly", "Analyzing impact", "Supporting others", "Finding opportunities"], types: ["R", "I", "S", "A"]},
+            {q: "Your decision-making is:", opts: ["Quick and decisive", "Careful and researched", "Consensus-based", "Intuitive"], types: ["E", "I", "S", "A"]},
+            {q: "You prefer feedback that is:", opts: ["Results-oriented", "Detailed and specific", "Encouraging", "Constructive"], types: ["E", "I", "S", "A"]},
+            {q: "Your free time activity:", opts: ["Outdoor activities", "Reading or learning", "Creative pursuits", "Organizing and planning"], types: ["R", "I", "A", "C"]},
+            {q: "You handle pressure by:", opts: ["Staying focused on tasks", "Analyzing the situation", "Finding creative solutions", "Following procedures"], types: ["R", "I", "A", "C"]}
+        ];
+
+        const aptitudeQuestions = [
+            {q: "If 8 workers build a wall in 12 days, how many workers are needed to build it in 6 days?", opts: ["12", "16", "18", "20"], correct: 1},
+            {q: "A train travels 240 km in 3 hours. What is its speed in km/h?", opts: ["70", "75", "80", "85"], correct: 2},
+            {q: "If 25% of a number is 60, what is 40% of that number?", opts: ["90", "96", "100", "104"], correct: 1},
+            {q: "The ratio of boys to girls in a class is 3:2. If there are 15 boys, how many girls are there?", opts: ["8", "10", "12", "15"], correct: 1},
+            {q: "A shopkeeper sells an item for ₹450 at a 10% profit. What was the cost price?", opts: ["₹400", "₹405", "₹409", "₹415"], correct: 2},
+            {q: "Find the next number in the series: 2, 6, 12, 20, 30, ?", opts: ["40", "42", "44", "46"], correct: 1},
+            {q: "Complete the series: A, D, G, J, ?", opts: ["K", "L", "M", "N"], correct: 2},
+            {q: "Find the missing number: 5, 11, 23, 47, ?", opts: ["91", "93", "95", "97"], correct: 2},
+            {q: "What comes next: 1, 4, 9, 16, 25, ?", opts: ["30", "32", "36", "40"], correct: 2},
+            {q: "Complete: 3, 7, 15, 31, ?", opts: ["59", "61", "63", "65"], correct: 2},
+            {q: "All roses are flowers. Some flowers are red. Therefore:", opts: ["All roses are red", "Some roses are red", "No roses are red", "Cannot be determined"], correct: 3},
+            {q: "If BOOK is coded as CPPL, how is WORD coded?", opts: ["XPSE", "XQSE", "YPSE", "YQSE"], correct: 0},
+            {q: "In a certain code, RAIN is written as 1234. How is GAIN written?", opts: ["5234", "6234", "7234", "8234"], correct: 0},
+            {q: "If Monday is the 1st, what day is the 15th?", opts: ["Sunday", "Monday", "Tuesday", "Wednesday"], correct: 1},
+            {q: "A is taller than B. C is shorter than B. Who is the shortest?", opts: ["A", "B", "C", "Cannot determine"], correct: 2},
+            {q: "Choose the synonym of 'Abundant':", opts: ["Scarce", "Plentiful", "Limited", "Rare"], correct: 1},
+            {q: "What is the antonym of 'Optimistic'?", opts: ["Hopeful", "Positive", "Pessimistic", "Confident"], correct: 2},
+            {q: "Complete the analogy: Book : Author :: Painting : ?", opts: ["Canvas", "Brush", "Artist", "Color"], correct: 2},
+            {q: "Choose the correctly spelled word:", opts: ["Recieve", "Receive", "Receve", "Receiv"], correct: 1},
+            {q: "If it takes 5 machines 5 minutes to make 5 widgets, how long does it take 100 machines to make 100 widgets?", opts: ["5 minutes", "20 minutes", "100 minutes", "500 minutes"], correct: 0}
+        ];
+
+        // State
+        let currentPhase = 0; // 0-2: personality (10 each), 3: aptitude
+        let currentQuestion = 0;
+        let answers = [];
+        let timeLeft = 50 * 60; // 50 minutes in seconds
+        let timerInterval;
+        let userName = "";
+        let userEmail = "";
+        let guideStep = 0;
+        let analysisCallback = null;
+
+        // Firebase Configuration - From your Android app
+        const firebaseConfig = {
+            apiKey: "AIzaSyBTKTpC8uoYTDjU83EKyRrjN2cmr0iI-Fk",
+            authDomain: "theapp-project-76bed.firebaseapp.com",
+            projectId: "theapp-project-76bed",
+            storageBucket: "theapp-project-76bed.firebasestorage.app",
+            messagingSenderId: "24433567597",
+            appId: "1:24433567597:web:bbaada260de8ee4d971c64"
+        };
+
+        // Initialize Firebase
+        let app, auth, db;
+        try {
+            // Only initialize if config looks valid
+            if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('Demo')) {
+                app = firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                console.log('Firebase initialized successfully');
+            } else {
+                console.log('Firebase not configured - using demo mode');
+                auth = null;
+                db = null;
+            }
+        } catch (error) {
+            console.log('Firebase initialization error (using demo mode):', error);
+            auth = null;
+            db = null;
+        }
+
+        let currentUser = null;
+        let userTestResults = null;
+
+        // Check if user is already logged in
+        if (auth) {
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    currentUser = user;
+                    userName = user.displayName || user.email || user.phoneNumber;
+                    userEmail = user.email || (user.phoneNumber + "@phone.com");
+                    console.log('✅ User already logged in:', userName);
+                    
+                    // Check if user has saved test results
+                    if (db) {
+                        try {
+                            const userDoc = await db.collection('users').doc(user.uid).get();
+                            if (userDoc.exists) {
+                                const userData = userDoc.data();
+                                userTestResults = userData.testResults;
+                                console.log('✅ Found saved test results');
+                                
+                                // Check payment approval status
+                                const paymentSnapshot = await db.collection('paymentRequests')
+                                    .where('userId', '==', user.uid)
+                                    .where('status', '==', 'approved')
+                                    .limit(1)
+                                    .get();
+                                
+                                if (!paymentSnapshot.empty) {
+                                    console.log('✅ Payment already approved - skipping to results');
+                                    // User has approved payment, show results directly
+                                    if (userTestResults) {
+                                        loadSavedResults(userTestResults);
+                                        setTimeout(() => {
+                                            showScreen('resultsScreen');
+                                        }, 3500);
+                                        return;
+                                    }
+                                }
+                            }
+                        } catch (error) {
+                            console.log('Error loading user data:', error);
+                        }
+                    }
+                    
+                    // Skip to payment if already authenticated but no results yet
+                    if (document.getElementById('splashScreen').classList.contains('active')) {
+                        setTimeout(() => {
+                            showScreen('paymentScreen');
+                        }, 3500);
+                    }
+                } else {
+                    console.log('No user logged in');
+                    // Clear localStorage on logout
+                    localStorage.removeItem('userTestResults');
+                }
+            });
+        } else {
+            // Demo mode - check localStorage
+            const savedResults = localStorage.getItem('userTestResults');
+            if (savedResults) {
+                try {
+                    userTestResults = JSON.parse(savedResults);
+                    console.log('✅ Found saved results in localStorage (demo mode)');
+                    loadSavedResults(userTestResults);
+                    setTimeout(() => {
+                        showScreen('resultsScreen');
+                    }, 3500);
+                } catch (e) {
+                    console.log('Error loading saved results:', e);
+                }
+            }
+        }
+
+        // SPLASH SCREEN - Auto navigate after 3.5 seconds
+        setTimeout(() => {
+            showScreen('loginScreen');
+            // Show welcome guide after splash
+            setTimeout(showWelcomeGuide, 1000);
+        }, 3500);
+
+        function showWelcomeGuide() {
+            const guide = document.getElementById('guideCharacter');
+            const bubble = document.getElementById('speechBubble');
+            const overlay = document.getElementById('guideOverlay');
+            const content = document.getElementById('speechContent');
+
+            guide.classList.add('active');
+            bubble.classList.add('active');
+            overlay.classList.add('active');
+
+            content.innerHTML = `
+                <h3>Hi! My name is "Velly Bandaar" 🐵</h3>
+                <p>I work for the gang called "Badmash Patandar Samajvadi Party" 💀</p>
+                <p>This group helps in illumination of the world. ✨</p>
+                <p>What's your name? 🤔</p>
+                <button onclick="closeGuide()">Got it!</button>
+            `;
+        }
+
+        function closeGuide() {
+            document.getElementById('speechBubble').classList.remove('active');
+            document.getElementById('guideOverlay').classList.remove('active');
+        }
+
+        function toggleGuide() {
+            const bubble = document.getElementById('speechBubble');
+            const overlay = document.getElementById('guideOverlay');
+            
+            if (bubble.classList.contains('active')) {
+                closeGuide();
+            } else {
+                showContextualGuide();
+            }
+        }
+
+        function showContextualGuide() {
+            const content = document.getElementById('speechContent');
+            const bubble = document.getElementById('speechBubble');
+            const overlay = document.getElementById('guideOverlay');
+            const currentScreen = document.querySelector('.screen.active').id;
+
+            bubble.classList.add('active');
+            overlay.classList.add('active');
+
+            if (currentScreen === 'testScreen') {
+                const totalQ = 50;
+                const answered = answers.filter(a => a !== undefined).length;
+                content.innerHTML = `
+                    <h3>📊 Your Progress</h3>
+                    <p><strong>Answered:</strong> ${answered} / ${totalQ} questions</p>
+                    <p><strong>Time Left:</strong> ${Math.floor(timeLeft/60)}:${(timeLeft%60).toString().padStart(2,'0')}</p>
+                    <p>💡 <strong>Tip:</strong> Click on the numbered circles to jump to any question!</p>
+                    <button onclick="closeGuide()">Continue Test</button>
+                `;
+            } else if (currentScreen === 'resultsScreen') {
+                content.innerHTML = `
+                    <h3>🎉 Congratulations!</h3>
+                    <p>You've completed the assessment!</p>
+                    <p>Scroll down to see your detailed career roadmaps with education paths, salary info, and top institutes! 📚</p>
+                    <button onclick="closeGuide()">Got it!</button>
+                `;
+            }
+        }
+
+        function showTestGuide() {
+            const content = document.getElementById('speechContent');
+            const bubble = document.getElementById('speechBubble');
+            const overlay = document.getElementById('guideOverlay');
+
+            bubble.classList.add('active');
+            overlay.classList.add('active');
+
+            content.innerHTML = `
+                <h3>📋 Test Structure</h3>
+                <p><strong>1️⃣ Personality Test:</strong> 30 questions (in 3 sets of 10)</p>
+                <p><strong>2️⃣ Aptitude Test:</strong> 20 questions</p>
+                <p>You'll get personality insights after every 10 questions! 🧠</p>
+                <p><strong>⏱️ Total Time:</strong> 50 minutes for all 50 questions</p>
+                <button onclick="closeGuide(); loadQuestion(); startTimer();">Let's Start!</button>
+            `;
+        }
+
+        function googleSignIn() {
+            if (auth) {
+                // Real Firebase Google Sign-In
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.addScope('profile');
+                provider.addScope('email');
+                
+                auth.signInWithPopup(provider)
+                    .then((result) => {
+                        // Successful sign-in
+                        const user = result.user;
+                        currentUser = user;
+                        userName = user.displayName || user.email.split('@')[0];
+                        userEmail = user.email;
+                        
+                        console.log('Google Sign-In successful:', userName);
+                        showScreen('paymentScreen');
+                    })
+                    .catch((error) => {
+                        console.error('Google Sign-In error:', error);
+                        alert('Google Sign-In failed: ' + error.message);
+                        // Fallback to modal
+                        document.getElementById('googleModal').classList.add('active');
+                    });
+            } else {
+                // Fallback to modal if Firebase not initialized
+                document.getElementById('googleModal').classList.add('active');
+            }
+        }
+
+        function completeGoogleSignIn() {
+            const email = document.getElementById('googleEmail').value;
+            if (email && email.includes('@')) {
+                userName = email.split('@')[0];
+                userEmail = email;
+                currentUser = { name: userName, email: userEmail };
+                closeAuthModal();
+                showScreen('paymentScreen');
+            } else {
+                alert('Please enter a valid email address');
+            }
+        }
+
+        // Phone Authentication Variables
+        let confirmationResult = null;
+        let recaptchaVerifier = null;
+
+        function phoneAuth() {
+            document.getElementById('phoneModal').classList.add('active');
+            
+            // Initialize reCAPTCHA if not already done
+            if (!recaptchaVerifier && auth) {
+                try {
+                    recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                        'size': 'normal',
+                        'callback': (response) => {
+                            console.log('reCAPTCHA solved');
+                        },
+                        'expired-callback': () => {
+                            console.log('reCAPTCHA expired');
+                            alert('reCAPTCHA expired. Please try again.');
+                        }
+                    });
+                    recaptchaVerifier.render();
+                } catch (error) {
+                    console.error('reCAPTCHA error:', error);
+                }
+            }
+        }
+
+        async function sendOTP() {
+            const countryCode = document.getElementById('countryCode').value;
+            const phone = document.getElementById('phoneNumber').value;
+            const fullPhone = countryCode + phone;
+            
+            if (!phone || phone.length < 10) {
+                alert('Please enter a valid phone number');
+                return;
+            }
+
+            if (!auth) {
+                // Demo mode fallback
+                document.getElementById('otpGroup').style.display = 'block';
+                document.getElementById('phoneBtn').textContent = 'Verify OTP';
+                document.getElementById('phoneBtn').onclick = verifyOTPDemo;
+                alert('🔧 Demo Mode: Enter any 6 digits to continue.');
+                return;
+            }
+
+            try {
+                document.getElementById('phoneBtn').disabled = true;
+                document.getElementById('phoneBtn').textContent = 'Sending...';
+                
+                // Send OTP via Firebase
+                confirmationResult = await auth.signInWithPhoneNumber(fullPhone, recaptchaVerifier);
+                
+                console.log('✅ OTP sent successfully');
+                document.getElementById('otpGroup').style.display = 'block';
+                document.getElementById('phoneBtn').textContent = 'Verify OTP';
+                document.getElementById('phoneBtn').onclick = verifyOTP;
+                document.getElementById('phoneBtn').disabled = false;
+                alert('✅ OTP sent to ' + fullPhone + '\n\nPlease check your SMS.');
+                
+            } catch (error) {
+                console.error('Error sending OTP:', error);
+                document.getElementById('phoneBtn').disabled = false;
+                document.getElementById('phoneBtn').textContent = 'Send OTP';
+                
+                if (error.code === 'auth/invalid-phone-number') {
+                    alert('❌ Invalid phone number format.\n\nPlease check and try again.');
+                } else if (error.code === 'auth/too-many-requests') {
+                    alert('❌ Too many requests.\n\nPlease try again later.');
+                } else {
+                    alert('❌ Error sending OTP: ' + error.message);
+                }
+                
+                // Reset reCAPTCHA
+                if (recaptchaVerifier) {
+                    recaptchaVerifier.clear();
+                    recaptchaVerifier = null;
+                    document.getElementById('recaptcha-container').innerHTML = '';
+                }
+            }
+        }
+
+        async function verifyOTP() {
+            const otp = document.getElementById('otpCode').value;
+            
+            if (!otp || otp.length !== 6) {
+                alert('Please enter a valid 6-digit OTP');
+                return;
+            }
+
+            try {
+                document.getElementById('phoneBtn').disabled = true;
+                document.getElementById('phoneBtn').textContent = 'Verifying...';
+                
+                // Verify OTP
+                const result = await confirmationResult.confirm(otp);
+                const user = result.user;
+                
+                console.log('✅ Phone authentication successful:', user.phoneNumber);
+                
+                // Set user info
+                currentUser = user;
+                userName = "User_" + user.phoneNumber.slice(-4);
+                userEmail = user.phoneNumber + "@phone.com";
+                
+                // Close modal and proceed
+                closeAuthModal();
+                alert('✅ Phone verified successfully!');
+                showScreen('paymentScreen');
+                
+            } catch (error) {
+                console.error('Error verifying OTP:', error);
+                document.getElementById('phoneBtn').disabled = false;
+                document.getElementById('phoneBtn').textContent = 'Verify OTP';
+                
+                if (error.code === 'auth/invalid-verification-code') {
+                    alert('❌ Invalid OTP.\n\nPlease check and try again.');
+                } else if (error.code === 'auth/code-expired') {
+                    alert('❌ OTP expired.\n\nPlease request a new one.');
+                } else {
+                    alert('❌ Error verifying OTP: ' + error.message);
+                }
+            }
+        }
+
+        // Demo mode fallback
+        function verifyOTPDemo() {
+            const otp = document.getElementById('otpCode').value;
+            const phone = document.getElementById('phoneNumber').value;
+            if (otp && otp.length === 6) {
+                userName = "User_" + phone.slice(-4);
+                userEmail = phone + "@phone.com";
+                currentUser = { name: userName, email: userEmail };
+                closeAuthModal();
+                alert('✅ Demo mode: Phone verified!');
+                showScreen('paymentScreen');
+            } else {
+                alert('Please enter a valid 6-digit OTP');
+            }
+        }
+
+        function closeAuthModal() {
+            document.getElementById('googleModal').classList.remove('active');
+            document.getElementById('phoneModal').classList.remove('active');
+            
+            // Reset phone modal
+            document.getElementById('otpGroup').style.display = 'none';
+            document.getElementById('phoneBtn').textContent = 'Send OTP';
+            document.getElementById('phoneBtn').onclick = sendOTP;
+            document.getElementById('phoneBtn').disabled = false;
+            document.getElementById('phoneNumber').value = '';
+            document.getElementById('otpCode').value = '';
+            
+            // Clear reCAPTCHA
+            if (recaptchaVerifier) {
+                try {
+                    recaptchaVerifier.clear();
+                } catch (e) {
+                    console.log('reCAPTCHA clear error:', e);
+                }
+                recaptchaVerifier = null;
+                document.getElementById('recaptcha-container').innerHTML = '';
+            }
+        }
+
+        function startTest() {
+            userName = document.getElementById('nameInput').value;
+            userEmail = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+            
+            if (!userName || !userEmail || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            if (auth) {
+                // Real Firebase Email/Password Sign-Up
+                auth.createUserWithEmailAndPassword(userEmail, password)
+                    .then((userCredential) => {
+                        // Update profile with name
+                        const user = userCredential.user;
+                        return user.updateProfile({
+                            displayName: userName
+                        }).then(() => {
+                            currentUser = user;
+                            console.log('Account created successfully:', userName);
+                            showScreen('paymentScreen');
+                        });
+                    })
+                    .catch((error) => {
+                        if (error.code === 'auth/email-already-in-use') {
+                            // Try to sign in instead
+                            auth.signInWithEmailAndPassword(userEmail, password)
+                                .then((userCredential) => {
+                                    currentUser = userCredential.user;
+                                    userName = currentUser.displayName || userName;
+                                    console.log('Signed in successfully:', userName);
+                                    showScreen('paymentScreen');
+                                })
+                                .catch((signInError) => {
+                                    alert('Email already exists. Please use correct password or try Google Sign-In.');
+                                });
+                        } else {
+                            console.error('Sign-up error:', error);
+                            alert('Sign-up failed: ' + error.message);
+                        }
+                    });
+            } else {
+                // Fallback if Firebase not initialized
+                currentUser = { name: userName, email: userEmail };
+                showScreen('paymentScreen');
+            }
+        }
+
+        // Payment Approval System with Firebase Firestore
+        let approvedEmails = JSON.parse(localStorage.getItem('approvedEmailsList') || '[]');
+        
+        async function submitEmailForPayment() {
+            const paymentEmail = document.getElementById('paymentEmail').value.trim();
+            
+            if (!paymentEmail || !paymentEmail.includes('@')) {
+                alert('⚠️ Please enter a valid email address to continue.');
+                return;
+            }
+
+            // Store payment email
+            if (!userEmail) {
+                userEmail = paymentEmail;
+            }
+
+            // Save to localStorage for persistence (always do this first)
+            localStorage.setItem('pendingPaymentEmail', paymentEmail);
+            localStorage.setItem('paymentStatus', 'pending');
+            localStorage.setItem('requestSubmittedAt', new Date().toISOString());
+
+            // Show submitted email
+            document.getElementById('submittedEmail').textContent = paymentEmail;
+
+            // Hide email submission, show waiting step
+            document.getElementById('emailSubmissionStep').style.display = 'none';
+            document.getElementById('waitingApprovalStep').style.display = 'block';
+
+            console.log('Payment email submitted:', paymentEmail);
+
+            // Try to save to Firestore (optional, won't block if it fails)
+            if (db) {
+                try {
+                    await db.collection('paymentRequests').add({
+                        userId: currentUser ? currentUser.uid : null,
+                        email: paymentEmail,
+                        userName: userName || 'Unknown',
+                        status: 'pending',
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        userAgent: navigator.userAgent
+                    });
+                    console.log('✅ Payment request saved to Firestore');
+                    alert('📧 Request submitted to Firestore!\n\nVelly Bandaar will send you payment details shortly!\nYour request will be saved for 24+ hours.');
+                } catch (firestoreError) {
+                    console.warn('⚠️ Firestore save failed (using localStorage fallback):', firestoreError);
+                    alert('📧 Request submitted!\n\nVelly Bandaar will send you payment details shortly!\n\n⚠️ Note: Using local storage (Firestore not available)');
+                }
+            } else {
+                alert('📧 Request submitted!\n\nVelly Bandaar will send you payment details shortly!\n\n⚠️ Note: Using local storage (Firestore not configured)');
+            }
+            
+            // Start checking for approval
+            startApprovalPolling();
+        }
+
+        // Poll Firestore for approval status
+        let approvalPollingInterval;
+        
+        function startApprovalPolling() {
+            if (!db) return;
+            
+            const pendingEmail = localStorage.getItem('pendingPaymentEmail');
+            if (!pendingEmail) return;
+
+            // Check every 10 seconds
+            approvalPollingInterval = setInterval(async () => {
+                try {
+                    const snapshot = await db.collection('paymentRequests')
+                        .where('email', '==', pendingEmail)
+                        .where('status', '==', 'approved')
+                        .limit(1)
+                        .get();
+                    
+                    if (!snapshot.empty) {
+                        // User is approved!
+                        clearInterval(approvalPollingInterval);
+                        localStorage.setItem('paymentStatus', 'approved');
+                        showApprovedStep();
+                        alert('🎉 You\'ve been approved! You can now start the test!');
+                    }
+                } catch (error) {
+                    console.error('Error checking approval:', error);
+                }
+            }, 10000); // Check every 10 seconds
+        }
+
+        async function checkApprovalStatus() {
+            const pendingEmail = localStorage.getItem('pendingPaymentEmail');
+            
+            if (!pendingEmail) {
+                alert('🐵 No email found! Please submit your email first.');
+                return;
+            }
+
+            // Check localStorage first (in case admin approved on same browser)
+            const localApprovalStatus = localStorage.getItem('paymentStatus');
+            if (localApprovalStatus === 'approved') {
+                showApprovedStep();
+                return;
+            }
+
+            // Check Firestore for approval
+            if (db) {
+                try {
+                    const snapshot = await db.collection('paymentRequests')
+                        .where('email', '==', pendingEmail)
+                        .where('status', '==', 'approved')
+                        .limit(1)
+                        .get();
+                    
+                    if (!snapshot.empty) {
+                        // User is approved!
+                        localStorage.setItem('paymentStatus', 'approved');
+                        showApprovedStep();
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Error checking Firestore:', error);
+                }
+            }
+
+            // Check if email is in approved list (fallback)
+            const isApproved = approvedEmails.includes(pendingEmail);
+            
+            if (isApproved) {
+                localStorage.setItem('paymentStatus', 'approved');
+                showApprovedStep();
+            } else {
+                alert('⏳ Payment not verified yet!\n\nVelly Bandaar is still checking your payment.\nPlease wait or contact support if you\'ve already paid.');
+            }
+        }
+
+        function showApprovedStep() {
+            document.getElementById('waitingApprovalStep').style.display = 'none';
+            document.getElementById('approvedStep').style.display = 'block';
+        }
+
+        function startApprovedTest() {
+            showScreen('testScreen');
+            showTestGuide();
+        }
+
+        // Check approval status on page load
+        window.addEventListener('load', function() {
+            const paymentStatus = localStorage.getItem('paymentStatus');
+            const pendingEmail = localStorage.getItem('pendingPaymentEmail');
+            
+            if (paymentStatus === 'approved' && pendingEmail) {
+                // User is already approved, show approved step if on payment screen
+                if (document.getElementById('paymentScreen').classList.contains('active')) {
+                    document.getElementById('emailSubmissionStep').style.display = 'none';
+                    document.getElementById('approvedStep').style.display = 'block';
+                }
+            } else if (paymentStatus === 'pending' && pendingEmail) {
+                // User is waiting for approval
+                if (document.getElementById('paymentScreen').classList.contains('active')) {
+                    document.getElementById('submittedEmail').textContent = pendingEmail;
+                    document.getElementById('emailSubmissionStep').style.display = 'none';
+                    document.getElementById('waitingApprovalStep').style.display = 'block';
+                    
+                    // Start polling for approval
+                    startApprovalPolling();
+                }
+            }
+        });
+
+        // ADMIN FUNCTION: Approve an email (you can call this from browser console)
+        function approveEmail(email) {
+            if (!approvedEmails.includes(email)) {
+                approvedEmails.push(email);
+                console.log('✅ Approved:', email);
+                console.log('Approved emails:', approvedEmails);
+                
+                // Store in localStorage for persistence
+                const approvedList = JSON.parse(localStorage.getItem('approvedEmailsList') || '[]');
+                if (!approvedList.includes(email)) {
+                    approvedList.push(email);
+                    localStorage.setItem('approvedEmailsList', JSON.stringify(approvedList));
+                }
+                
+                // If this email is currently pending, update status
+                if (localStorage.getItem('pendingPaymentEmail') === email) {
+                    localStorage.setItem('paymentStatus', 'approved');
+                    alert('✅ Email approved! User can now start the test.');
+                    // Auto-refresh to show approved state
+                    location.reload();
+                } else {
+                    alert('✅ Email approved! When user checks status, they will be approved.');
+                }
+            }
+        }
+
+        // ADMIN FUNCTION: View all pending/approved emails
+        function viewApprovedEmails() {
+            console.log('Approved emails:', approvedEmails);
+            return approvedEmails;
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                document.getElementById('timer').textContent = 
+                    `${mins}:${secs.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    showResults();
+                }
+            }, 1000);
+        }
+
+        function updateQuestionReview() {
+            const reviewContainer = document.getElementById('questionReview');
+            const isAptitude = currentPhase === 3;
+            const startQ = isAptitude ? 30 : currentPhase * 10;
+            const endQ = isAptitude ? 50 : (currentPhase + 1) * 10;
+            
+            reviewContainer.innerHTML = '';
+            
+            for (let i = startQ; i < endQ; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'question-dot';
+                dot.textContent = i + 1;
+                
+                if (answers[i] !== undefined) {
+                    dot.classList.add('answered');
+                }
+                
+                const currentOverall = currentPhase * 10 + currentQuestion;
+                if (i === currentOverall) {
+                    dot.classList.add('current');
+                }
+                
+                dot.onclick = () => jumpToQuestion(i);
+                reviewContainer.appendChild(dot);
+            }
+        }
+
+        function jumpToQuestion(index) {
+            const isAptitude = index >= 30;
+            if (isAptitude) {
+                currentPhase = 3;
+                currentQuestion = index - 30;
+            } else {
+                currentPhase = Math.floor(index / 10);
+                currentQuestion = index % 10;
+            }
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const isAptitude = currentPhase === 3;
+            const questions = isAptitude ? aptitudeQuestions : personalityQuestions;
+            const phaseOffset = isAptitude ? 0 : currentPhase * 10;
+            const questionIndex = isAptitude ? currentQuestion : (phaseOffset + currentQuestion);
+            
+            if (questionIndex >= questions.length) {
+                if (currentPhase < 3) {
+                    currentPhase++;
+                    currentQuestion = 0;
+                    loadQuestion();
+                } else {
+                    showResults();
+                }
+                return;
+            }
+
+            const question = questions[questionIndex];
+            const totalQuestions = 50;
+            const overallProgress = ((currentPhase * 10 + currentQuestion) / totalQuestions) * 100;
+
+            document.getElementById('phaseTitle').textContent = 
+                isAptitude ? 'Aptitude Test' : `Personality Assessment - Part ${currentPhase + 1}`;
+            document.getElementById('questionCounter').textContent = 
+                `Question ${currentPhase * 10 + currentQuestion + 1} of ${totalQuestions}`;
+            document.getElementById('progressBar').style.width = overallProgress + '%';
+            document.getElementById('questionText').textContent = question.q;
+
+            updateQuestionReview();
+
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            question.opts.forEach((opt, index) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.textContent = opt;
+                div.onclick = () => selectOption(index);
+                if (answers[questionIndex] === index) {
+                    div.classList.add('selected');
+                }
+                optionsContainer.appendChild(div);
+            });
+
+            document.getElementById('prevBtn').disabled = (currentPhase === 0 && currentQuestion === 0);
+        }
+
+        function selectOption(index) {
+            const isAptitude = currentPhase === 3;
+            const phaseOffset = isAptitude ? 30 : currentPhase * 10;
+            const questionIndex = phaseOffset + currentQuestion;
+            
+            answers[questionIndex] = index;
+            
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                opt.classList.toggle('selected', i === index);
+            });
+        }
+
+        function nextQuestion() {
+            const isAptitude = currentPhase === 3;
+            const questionsInPhase = isAptitude ? 20 : 10;
+            const phaseOffset = isAptitude ? 30 : currentPhase * 10;
+            const questionIndex = phaseOffset + currentQuestion;
+            
+            // Check if answer is selected
+            if (answers[questionIndex] === undefined) {
+                alert('⚠️ Please select an answer before proceeding!');
+                return;
+            }
+            
+            console.log('Next clicked - Phase:', currentPhase, 'Question:', currentQuestion, 'of', questionsInPhase);
+            
+            if (currentQuestion < questionsInPhase - 1) {
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                // Completed a phase
+                console.log('Phase completed!');
+                if (currentPhase < 3) {
+                    // Show personality analysis after each 10 personality questions
+                    if (currentPhase < 3) {
+                        showPersonalityAnalysis(currentPhase + 1);
+                    }
+                } else {
+                    // Completed aptitude test
+                    console.log('🎉 All tests completed! Showing results...');
+                    alert('✅ Test completed! Calculating results...');
+                    showResults();
+                }
+            }
+        }
+
+        function showPersonalityAnalysis(analysisNumber) {
+            // Calculate RIASEC scores for completed questions
+            const startQ = (analysisNumber - 1) * 10;
+            const endQ = analysisNumber * 10;
+            const riasecScores = {R: 0, I: 0, A: 0, S: 0, E: 0, C: 0};
+            
+            for (let i = startQ; i < endQ; i++) {
+                const answer = answers[i];
+                if (answer !== undefined && personalityQuestions[i].types[answer]) {
+                    riasecScores[personalityQuestions[i].types[answer]]++;
+                }
+            }
+
+            // Find dominant type
+            const dominant = Object.entries(riasecScores)
+                .sort((a, b) => b[1] - a[1])[0];
+
+            const typeNames = {
+                R: 'Realistic (Doer)',
+                I: 'Investigative (Thinker)',
+                A: 'Artistic (Creator)',
+                S: 'Social (Helper)',
+                E: 'Enterprising (Persuader)',
+                C: 'Conventional (Organizer)'
+            };
+
+            const insights = {
+                R: 'You prefer hands-on work and practical problem-solving. You enjoy working with tools, machines, and physical activities.',
+                I: 'You love analyzing problems and discovering new things. You enjoy research, learning, and intellectual challenges.',
+                A: 'You have a creative mindset and enjoy expressing yourself. You value originality, imagination, and artistic pursuits.',
+                S: 'You care about helping others and building relationships. You enjoy teaching, counseling, and working with people.',
+                E: 'You are a natural leader who enjoys persuading and managing. You thrive in business, sales, and leadership roles.',
+                C: 'You value organization and structure. You excel at detailed work, following procedures, and maintaining order.'
+            };
+
+            // Show analysis modal
+            const overlay = document.getElementById('analysisOverlay');
+            const title = document.getElementById('analysisTitle');
+            const content = document.getElementById('analysisContent');
+            const typingInd = document.getElementById('typingIndicator');
+
+            overlay.classList.add('active');
+            title.textContent = `🎉 Analysis #${analysisNumber}: Questions ${startQ + 1}-${endQ}`;
+            
+            // Show typing indicator
+            typingInd.style.display = 'flex';
+            content.innerHTML = '';
+
+            setTimeout(() => {
+                typingInd.style.display = 'none';
+                
+                let html = `
+                    <h3>📊 Initial Personality Traits:</h3>
+                    <p>${insights[dominant[0]]}</p>
+                    
+                    <h3>🎯 Your RIASEC Scores So Far:</h3>
+                `;
+
+                Object.entries(riasecScores).forEach(([type, score]) => {
+                    html += `
+                        <div class="score-item">
+                            <span>${type} - ${typeNames[type]}</span>
+                            <strong>${score}</strong>
+                        </div>
+                    `;
+                });
+
+                if (analysisNumber < 3) {
+                    html += `<p style="margin-top: 20px; color: #667eea; font-weight: bold;">Let's continue! ${10 * (3 - analysisNumber)} more personality questions to go! 🚀</p>`;
+                } else {
+                    html += `<p style="margin-top: 20px; color: #667eea; font-weight: bold;">Great! Now let's test your aptitude with 20 questions! 🎯</p>`;
+                }
+
+                content.innerHTML = html;
+            }, 1500);
+
+            // Set callback to continue
+            analysisCallback = () => {
+                currentPhase++;
+                currentQuestion = 0;
+                loadQuestion();
+            };
+        }
+
+        function closeAnalysis() {
+            document.getElementById('analysisOverlay').classList.remove('active');
+            if (analysisCallback) {
+                analysisCallback();
+                analysisCallback = null;
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            } else if (currentPhase > 0) {
+                currentPhase--;
+                currentQuestion = 9;
+                loadQuestion();
+            }
+        }
+
+        function loadSavedResults(testResults) {
+            console.log('Loading saved test results...');
+            
+            // Restore answers
+            if (testResults.answers) {
+                answers = testResults.answers;
+            }
+            
+            // Restore user info
+            if (testResults.userName) userName = testResults.userName;
+            if (testResults.userEmail) userEmail = testResults.userEmail;
+            
+            // Display the results
+            displayResults(testResults.riasecScores, testResults.aptitudePercent);
+        }
+        
+        function displayResults(riasecScores, aptitudePercent) {
+            console.log('🎨 displayResults function started');
+            
+            const typeNames = {
+                R: 'Realistic',
+                I: 'Investigative',
+                A: 'Artistic',
+                S: 'Social',
+                E: 'Enterprising',
+                C: 'Conventional'
+            };
+
+            const careers = {
+                R: ['Mechanical Engineers', 'Civil Engineers', 'Electricians', 'Aircraft Pilots'],
+                I: ['Data Scientists', 'Software Developers', 'Physicians', 'Biochemists'],
+                A: ['Graphic Designers', 'Writers and Authors', 'Musicians and Singers', 'Commercial and Industrial Designers'],
+                S: ['Elementary School Teachers', 'Clinical Psychologists', 'Nurse Anesthetists', 'Social Workers'],
+                E: ['Lawyers', 'Sales Managers', 'Marketing Managers', 'Chief Executives'],
+                C: ['Accountants and Auditors', 'Financial Analysts', 'Budget Analysts', 'Database Administrators']
+            };
+
+            // Find dominant type
+            const dominant = Object.entries(riasecScores)
+                .sort((a, b) => b[1] - a[1])[0];
+
+            console.log('Dominant type:', dominant[0], typeNames[dominant[0]]);
+
+            document.getElementById('personalityType').textContent = 
+                `${dominant[0]} - ${typeNames[dominant[0]]}`;
+            document.getElementById('personalityDesc').textContent = 
+                `You scored highest in ${typeNames[dominant[0]]} traits`;
+            document.getElementById('aptitudeScore').textContent = aptitudePercent + '%';
+
+            const scoresHtml = Object.entries(riasecScores)
+                .map(([type, score]) => `
+                    <div class="riasec-item">
+                        <h3>${type}</h3>
+                        <p>${typeNames[type]}</p>
+                        <p style="font-size: 24px; color: #667eea;">${score}</p>
+                    </div>
+                `).join('');
+            document.getElementById('riasecScores').innerHTML = scoresHtml;
+
+            const careersHtml = `
+                <h3>🎯 Recommended Careers</h3>
+                <ul>
+                    ${careers[dominant[0]].map(c => `<li>${c}</li>`).join('')}
+                </ul>
+            `;
+            document.getElementById('careerRecommendations').innerHTML = careersHtml;
+            
+            // Populate occupation dropdown
+            populateOccupationDropdown(dominant[0]);
+            
+            // Show results screen
+            console.log('📺 Showing results screen...');
+            showScreen('resultsScreen');
+            console.log('✅ Results screen should be visible now');
+        }
+
+        async function showResults() {
+            clearInterval(timerInterval);
+            
+            // Calculate RIASEC scores
+            const riasecScores = {R: 0, I: 0, A: 0, S: 0, E: 0, C: 0};
+            
+            personalityQuestions.forEach((q, i) => {
+                const answer = answers[i];
+                if (answer !== undefined && q.types[answer]) {
+                    riasecScores[q.types[answer]]++;
+                }
+            });
+
+            // Calculate aptitude score
+            let correctCount = 0;
+            aptitudeQuestions.forEach((q, i) => {
+                if (answers[30 + i] === q.correct) correctCount++;
+            });
+            const aptitudePercent = Math.round((correctCount / 20) * 100);
+            
+            // Save test results
+            const testResults = {
+                riasecScores,
+                aptitudePercent,
+                correctCount,
+                answers: answers,
+                timestamp: new Date().toISOString(),
+                userName: userName,
+                userEmail: userEmail
+            };
+            
+            // Save to Firebase if user is logged in
+            if (currentUser && db) {
+                try {
+                    await db.collection('users').doc(currentUser.uid).set({
+                        email: userEmail,
+                        name: userName,
+                        testResults: testResults,
+                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                    console.log('✅ Test results saved to Firebase');
+                } catch (error) {
+                    console.log('Error saving to Firebase:', error);
+                }
+            }
+            
+            // Also save to localStorage as backup
+            try {
+                localStorage.setItem('userTestResults', JSON.stringify(testResults));
+                console.log('✅ Test results saved to localStorage');
+            } catch (e) {
+                console.log('Error saving to localStorage:', e);
+            }
+            
+            userTestResults = testResults;
+
+            // Display the results
+            console.log('📊 Calling displayResults...');
+            console.log('RIASEC Scores:', riasecScores);
+            console.log('Aptitude:', aptitudePercent);
+            displayResults(riasecScores, aptitudePercent);
+            console.log('✅ displayResults called');
+
+            // Determine aptitude band for career recommendations
+            const aptitudeBand = aptitudePercent <= 10 ? 0 :
+                                aptitudePercent <= 20 ? 1 :
+                                aptitudePercent <= 30 ? 2 :
+                                aptitudePercent <= 40 ? 3 : 4;
+
+            // Get comprehensive roadmap based on personality type and aptitude
+            function getComprehensiveRoadmap(type, aptitudeBand) {
+                const roadmaps = {
+                    R: aptitudeBand >= 3 ? `
+                        <h3>🔧 REALISTIC CAREERS - ENGINEERING TRACK</h3>
+                        <div class="roadmap-card">
+                            <h4>ENGINEERING CAREERS:</h4>
+                            <p>• Civil Engineer • Mechanical Engineer • Electrical Engineer<br>
+                            • Aerospace Engineer • Biomedical Engineer • Chemical Engineer</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🏛️ TOP UNIVERSITIES & ADMISSION:</h4>
+                            <p><strong>India:</strong> IIT (JEE Advanced) • NIT (JEE Main) • BITS Pilani (BITSAT)</p>
+                            <p><strong>International:</strong> MIT, Stanford, Caltech (SAT/ACT + Strong Math/Science)</p>
+                            <p><strong>Requirements:</strong> 85%+ in Physics, Chemistry, Math</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📚 LEARNING PATH (4-6 years):</h4>
+                            <div class="roadmap-step">
+                                <h5>Year 1-2: Engineering Fundamentals</h5>
+                                <p>Math, Physics, Engineering basics, CAD software</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 3-4: Specialized Courses</h5>
+                                <p>Core engineering subjects, internships, projects</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 5-6: Advanced Projects</h5>
+                                <p>Industry certifications, research, placement preparation</p>
+                            </div>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry Level:</strong> ₹6-12 LPA<br>
+                            <strong>Mid Level:</strong> ₹12-25 LPA<br>
+                            <strong>Senior Level:</strong> ₹25-60 LPA</p>
+                        </div>
+                    ` : `
+                        <h3>🔧 REALISTIC CAREERS - SKILLED TRADES</h3>
+                        <div class="roadmap-card">
+                            <h4>SKILLED TECHNICAL ROLES:</h4>
+                            <p>• Electrician • Skilled Technician • Field Worker<br>
+                            • Automotive Technician • Construction Supervisor</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🏫 TECHNICAL EDUCATION:</h4>
+                            <p>• ITI Advanced Courses • Polytechnic Engineering<br>
+                            • NCVT/SCVT Certifications • Industry Apprenticeships</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📚 LEARNING PATH (2-4 years):</h4>
+                            <p><strong>Year 1-2:</strong> Technical foundation, hands-on training<br>
+                            <strong>Year 3-4:</strong> Advanced certifications, supervisory skills</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry:</strong> ₹3-6 LPA | <strong>Mid:</strong> ₹6-12 LPA | <strong>Senior:</strong> ₹12-20 LPA</p>
+                        </div>
+                    `,
+                    I: `
+                        <h3>🔬 INVESTIGATIVE CAREERS & ROADMAPS</h3>
+                        <div class="roadmap-card">
+                            <h4>RESEARCH TRACK:</h4>
+                            <p>• Data Scientist • Research Scientist • Systems Analyst<br>
+                            • Biomedical Researcher • Environmental Scientist • Psychologist</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🏛️ TOP UNIVERSITIES & ADMISSION:</h4>
+                            <p><strong>India:</strong> IISc Bangalore • TIFR • AIIMS (NEET) • IIT (Research Programs)</p>
+                            <p><strong>International:</strong> Harvard, MIT, Stanford (GRE/GMAT + Research Experience)</p>
+                            <p><strong>Requirements:</strong> 90%+ in Science subjects, Research aptitude</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>TECHNOLOGY RESEARCH:</h4>
+                            <p>• AI Researcher • Quantum Computing Specialist • Bioinformatics<br>
+                            • Data Mining Expert • Computational Biology • Robotics Engineer</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📚 LEARNING PATH (6-8 years):</h4>
+                            <div class="roadmap-step">
+                                <h5>Year 1-3: Bachelor's Degree</h5>
+                                <p>Science/Engineering foundation, research methodology</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 4-6: Master's Program</h5>
+                                <p>Research focus, thesis work, publications</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 7-8: PhD or Industry Research</h5>
+                                <p>Advanced research, specialization, industry roles</p>
+                            </div>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry:</strong> ₹4-10 LPA | <strong>Mid:</strong> ₹10-25 LPA | <strong>Senior:</strong> ₹25-60 LPA</p>
+                        </div>
+                    `,
+                    A: `
+                        <h3>🎨 ARTISTIC CAREERS & ROADMAPS</h3>
+                        <div class="roadmap-card">
+                            <h4>DESIGN TRACK:</h4>
+                            <p>• Graphic Designer • UX/UI Designer • Creative Director<br>
+                            • Art Director • Fashion Designer • Interior Designer</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🏛️ TOP UNIVERSITIES & ADMISSION:</h4>
+                            <p><strong>India:</strong> NID Ahmedabad • NIFT • Srishti School of Art</p>
+                            <p><strong>International:</strong> Parsons, RISD, Central Saint Martins (Portfolio + Interview)</p>
+                            <p><strong>Requirements:</strong> Strong portfolio, creativity tests, 75%+ academics</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>MEDIA & ENTERTAINMENT:</h4>
+                            <p>• Film Director • Animator • Game Designer<br>
+                            • Content Creator • Digital Artist • Photographer</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📚 LEARNING PATH (3-5 years):</h4>
+                            <div class="roadmap-step">
+                                <h5>Year 1-2: Foundation</h5>
+                                <p>Drawing, Color theory, Design principles</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 3-4: Specialization</h5>
+                                <p>Digital design, Traditional media, Software mastery</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 5-6: Portfolio Development</h5>
+                                <p>Advanced portfolio, internships, exhibitions</p>
+                            </div>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry:</strong> ₹2-6 LPA | <strong>Mid:</strong> ₹6-18 LPA | <strong>Senior:</strong> ₹18-45 LPA</p>
+                        </div>
+                    `,
+                    S: aptitudeBand >= 4 ? `
+                        <h3>👥 SOCIAL CAREERS - HEALTHCARE LEADERSHIP</h3>
+                        <div class="roadmap-card">
+                            <h4>🏥 HEALTHCARE LEADERSHIP (Aptitude 41-50):</h4>
+                            <p>• Physicians • Surgeons • Psychologists • Dentists<br>
+                            • Medical Directors • Healthcare Executives</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🎓 TOP UNIVERSITIES & ADMISSION:</h4>
+                            <p><strong>Medicine:</strong> Harvard Medical, Johns Hopkins, AIIMS Delhi</p>
+                            <p><strong>Psychology:</strong> Stanford, Yale, Cambridge, NIMHANS</p>
+                            <p><strong>Nursing:</strong> UPenn, Duke, Johns Hopkins</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📋 ADMISSION CRITERIA:</h4>
+                            <p>• Medical School: NEET (India), MCAT (US), BMAT (UK)<br>
+                            • Psychology PhD: GRE, Research experience, Clinical hours<br>
+                            • Requirements: Biology, Chemistry, Physics background<br>
+                            • Clinical Experience: Volunteering, shadowing physicians</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📚 LEARNING PATH (6-12 years):</h4>
+                            <div class="roadmap-step">
+                                <h5>Year 1-3: Pre-med/Bachelor's</h5>
+                                <p>Science foundation, MCAT/NEET preparation</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 4-7: Medical School</h5>
+                                <p>MBBS/MD program, clinical rotations</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 8-11: Residency Training</h5>
+                                <p>Specialization in chosen field</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 12+: Fellowship</h5>
+                                <p>Subspecialization, research, practice</p>
+                            </div>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry:</strong> ₹2-8 LPA | <strong>Mid:</strong> ₹8-25 LPA | <strong>Senior:</strong> ₹25-60 LPA<br>
+                            <strong>Medical Specialists:</strong> ₹60 LPA+</p>
+                        </div>
+                    ` : `
+                        <h3>👥 SOCIAL CAREERS - EDUCATION & COUNSELING</h3>
+                        <div class="roadmap-card">
+                            <h4>🎓 EDUCATION & COUNSELING:</h4>
+                            <p>• Teachers • School Counselors • Educational Administrators<br>
+                            • Mental Health Counselors • Social Workers</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🏫 EDUCATION REQUIREMENTS:</h4>
+                            <p>• Teaching: B.Ed after Bachelor's, TET/CTET certification<br>
+                            • Counseling: Master's in Psychology/Social Work<br>
+                            • Administration: M.Ed + administrative experience</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>👨‍⚕️ HEALTHCARE SUPPORT:</h4>
+                            <p>• Registered Nurses • Physical Therapists • Medical Assistants<br>
+                            • Community Health Workers • Healthcare Technicians</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry:</strong> ₹2-8 LPA | <strong>Mid:</strong> ₹8-25 LPA | <strong>Senior:</strong> ₹25-60 LPA</p>
+                        </div>
+                    `,
+                    E: aptitudeBand >= 4 ? `
+                        <h3>💼 ENTERPRISING CAREERS - EXECUTIVE LEADERSHIP</h3>
+                        <div class="roadmap-card">
+                            <h4>🏢 EXECUTIVE LEADERSHIP (Aptitude 41-50):</h4>
+                            <p>• CEOs • Politicians • Venture Capitalists • Senior Executives<br>
+                            • Chief Executives • Investment Fund Managers</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🎓 TOP UNIVERSITIES & ADMISSION:</h4>
+                            <p><strong>Business:</strong> Harvard Business School, Wharton, Stanford GSB</p>
+                            <p><strong>India:</strong> IIM Ahmedabad, IIM Bangalore, IIM Calcutta</p>
+                            <p><strong>Law:</strong> Yale Law, Harvard Law, Columbia Law</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📋 ADMISSION CRITERIA:</h4>
+                            <p>• MBA: CAT (India), GMAT/GRE (International), Work experience<br>
+                            • Law: CLAT (India), LSAT (US), Strong academic record<br>
+                            • Requirements: Leadership potential, Business acumen<br>
+                            • Experience: 2-5 years professional work experience</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📚 LEARNING PATH (5-8 years):</h4>
+                            <div class="roadmap-step">
+                                <h5>Year 1-3: Bachelor's Degree</h5>
+                                <p>Business/Economics/Engineering foundation</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 4-6: Work Experience</h5>
+                                <p>Professional experience in relevant field</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 7-8: MBA Program</h5>
+                                <p>Top business school, networking, internships</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Advanced: Executive Education</h5>
+                                <p>Leadership programs, continuous learning</p>
+                            </div>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry:</strong> ₹3-10 LPA | <strong>Mid:</strong> ₹10-30 LPA | <strong>Senior:</strong> ₹30-80 LPA<br>
+                            <strong>C-Suite/Entrepreneur:</strong> ₹80 LPA+</p>
+                        </div>
+                    ` : `
+                        <h3>💼 ENTERPRISING CAREERS - MANAGEMENT ROLES</h3>
+                        <div class="roadmap-card">
+                            <h4>💼 MANAGEMENT ROLES:</h4>
+                            <p>• Marketing Managers • Sales Managers • Operations Managers<br>
+                            • Financial Managers • Human Resources Managers</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🏫 BUSINESS EDUCATION:</h4>
+                            <p>• Bachelor's: BBA, B.Com, Economics from top universities<br>
+                            • Certifications: PMP, Six Sigma, Digital Marketing<br>
+                            • Skills: Leadership, Communication, Strategic thinking</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📊 BUSINESS DEVELOPMENT:</h4>
+                            <p>• Sales Representatives • Marketing Specialists • HR Specialists<br>
+                            • Business Analysts • Project Coordinators</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry:</strong> ₹3-10 LPA | <strong>Mid:</strong> ₹10-30 LPA | <strong>Senior:</strong> ₹30-80 LPA</p>
+                        </div>
+                    `,
+                    C: aptitudeBand >= 4 ? `
+                        <h3>📊 CONVENTIONAL CAREERS - FINANCIAL LEADERSHIP</h3>
+                        <div class="roadmap-card">
+                            <h4>💰 FINANCIAL LEADERSHIP (Aptitude 41-50):</h4>
+                            <p>• CFOs • Actuaries • Financial Risk Specialists<br>
+                            • Operations Research Analysts • Senior Compliance Managers</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🎓 TOP UNIVERSITIES & ADMISSION:</h4>
+                            <p><strong>Finance:</strong> Wharton, Chicago Booth, London Business School</p>
+                            <p><strong>Actuarial:</strong> Georgia State, University of Illinois, Boston University</p>
+                            <p><strong>India:</strong> SRCC, LSR, St. Xavier's College</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📋 ADMISSION CRITERIA:</h4>
+                            <p>• Professional Exams: CA, CS, CMA, CFA, FRM<br>
+                            • Actuarial: SOA, CAS professional certifications<br>
+                            • Requirements: Strong mathematics, Statistics background<br>
+                            • Experience: Internships in finance, Analytical projects</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📚 LEARNING PATH (4-7 years):</h4>
+                            <div class="roadmap-step">
+                                <h5>Year 1-3: Bachelor's Degree</h5>
+                                <p>Commerce/Economics/Mathematics foundation</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 4-5: Professional Certifications</h5>
+                                <p>CA/CS/CMA programs, articleship</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Year 6-7: Advanced Certifications</h5>
+                                <p>CFA/FRM/Actuarial exams, specialization</p>
+                            </div>
+                            <div class="roadmap-step">
+                                <h5>Continuous: Professional Development</h5>
+                                <p>Industry updates, networking, leadership</p>
+                            </div>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry:</strong> ₹2-6 LPA | <strong>Mid:</strong> ₹6-20 LPA | <strong>Senior:</strong> ₹20-50 LPA<br>
+                            <strong>C-Level:</strong> ₹50 LPA+</p>
+                        </div>
+                    ` : `
+                        <h3>📊 CONVENTIONAL CAREERS - FINANCIAL ANALYSIS</h3>
+                        <div class="roadmap-card">
+                            <h4>📈 FINANCIAL ANALYSIS:</h4>
+                            <p>• Financial Analysts • Budget Analysts • Compliance Officers<br>
+                            • Database Administrators • Operations Planners</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>🏫 PROFESSIONAL EDUCATION:</h4>
+                            <p>• Commerce: B.Com (Hons), Economics, Statistics<br>
+                            • Certifications: CPA, ACCA, CISA, PMP<br>
+                            • Skills: Excel, SQL, Financial modeling, Risk analysis</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>📋 ADMINISTRATIVE SUPPORT:</h4>
+                            <p>• Accountants • Bookkeepers • Administrative Officers<br>
+                            • Payroll Associates • Office Managers</p>
+                        </div>
+                        <div class="roadmap-card">
+                            <h4>💰 SALARY EXPECTATIONS:</h4>
+                            <p><strong>Entry:</strong> ₹2-6 LPA | <strong>Mid:</strong> ₹6-20 LPA | <strong>Senior:</strong> ₹20-50 LPA</p>
+                        </div>
+                    `
+                };
+                return roadmaps[type] || roadmaps['S'];
+            }
+
+            // Populate occupation dropdown with updated roadmaps
+
+                // Check if database is loaded
+                if (typeof finalCompleteRoadmaps === 'undefined') {
+                    console.error('Database not loaded!');
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = 'Error: Database not loaded';
+                    select.appendChild(option);
+                    return;
+            const select = document.getElementById('occupationSelect');
+            const slug = select.value;
+            console.log('Selected slug:', slug);
+
+            if (!slug) {
+                alert('⚠️ Please select an occupation first!');
+                return;
+            }
+
+            if (slug === 'all') {
+                // Show all occupations list in current page
+                const roadmapSection = document.getElementById('roadmapSection');
+                if (typeof finalCompleteRoadmaps !== 'undefined') {
+                    const allOccupations = Object.keys(finalCompleteRoadmaps).sort();
+                    let html = '<h3 style="color: #667eea;">📚 All 386 Occupations Available:</h3><div style="columns: 2; column-gap: 20px; margin-top: 20px;">';
+                    allOccupations.forEach(occ => {
+                        const displayName = occ.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                        html += `<div style="margin-bottom: 10px; break-inside: avoid;">• ${displayName}</div>`;
+                    });
+                    html += '</div><p style="margin-top: 20px; color: #856404; background: #fff3cd; padding: 15px; border-radius: 10px;">💡 <strong>Tip:</strong> Go back and select a specific occupation from the dropdown to view its complete roadmap!</p>';
+                    roadmapSection.innerHTML = html;
+                    roadmapSection.style.display = 'block';
+                    roadmapSection.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert('❌ Roadmaps database not loaded. Please refresh the page.');
+                }
+                return;
+            }
+
+            // Open roadmap in new tab using a temporary link
+            const occupationName = select.options[select.selectedIndex].text;
+            const url = `roadmap-viewer.html?slug=${encodeURIComponent(slug)}&name=${encodeURIComponent(occupationName)}`;
+            console.log('🚀 Opening URL:', url);
+            
+            // Create a temporary link and click it
+            const link = document.createElement('a');
+            link.href = url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            console.log('✅ Link clicked - new tab should open');
+        }
+    </script>
+</body>
+</html>

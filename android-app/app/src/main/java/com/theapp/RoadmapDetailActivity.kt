@@ -96,27 +96,97 @@ class RoadmapDetailActivity : AppCompatActivity() {
     }
     
     private fun generateDetailedRoadmap(occupation: String): String {
-        return when (occupation) {
-            "Software Engineer" -> generateSoftwareEngineerRoadmap()
-            "Data Scientist" -> generateDataScientistRoadmap()
-            "Doctor" -> generateDoctorRoadmap()
-            "Teacher" -> generateTeacherRoadmap()
-            "Mechanical Engineer" -> generateMechanicalEngineerRoadmap()
-            "Graphic Designer" -> generateGraphicDesignerRoadmap()
-            "Business Manager" -> generateBusinessManagerRoadmap()
-            "Nurse" -> generateNurseRoadmap()
-            "Accountant" -> generateAccountantRoadmap()
-            "Lawyer" -> generateLawyerRoadmap()
-            "Psychologist" -> generatePsychologistRoadmap()
-            "Architect" -> generateArchitectRoadmap()
-            "Pharmacist" -> generatePharmacistRoadmap()
-            "Dentist" -> generateDentistRoadmap()
-            "Veterinarian" -> generateVeterinarianRoadmap()
-            "Civil Engineer" -> generateCivilEngineerRoadmap()
-            "Marketing Manager" -> generateMarketingManagerRoadmap()
-            "Financial Analyst" -> generateFinancialAnalystRoadmap()
-            "UX Designer" -> generateUXDesignerRoadmap()
-            "Product Manager" -> generateProductManagerRoadmap()
+        android.util.Log.d("RoadmapDetail", "🔍 Looking up occupation: '$occupation'")
+        
+        // FIRST: Try to get from 386 database using OccupationMapper
+        var slug = OccupationMapper.getSlug(occupation)
+        
+        if (slug != null) {
+            android.util.Log.d("RoadmapDetail", "✅ Found mapping: '$occupation' → '$slug'")
+            val roadmap = RoadmapsDatabase.getRoadmap(slug)
+            
+            if (roadmap != null) {
+                android.util.Log.d("RoadmapDetail", "✅ Using DATABASE roadmap (386) for: $occupation")
+                return roadmap
+            }
+        }
+        
+        // SECOND: Fall back to hardcoded roadmaps
+        android.util.Log.d("RoadmapDetail", "⚠️ No database roadmap, using HARDCODED for: $occupation")
+        
+        return when (occupation.lowercase().trim()) {
+            // REALISTIC (R)
+            "software engineer" -> generateSoftwareEngineerRoadmap()
+            "mechanical engineer" -> generateMechanicalEngineerRoadmap()
+            "civil engineer" -> generateCivilEngineerRoadmap()
+            "electrical engineer" -> generateElectricalEngineerRoadmap()
+            "automotive technician" -> generateAutomotiveTechnicianRoadmap()
+            "carpenter" -> generateCarpenterRoadmap()
+            "electrician" -> generateElectricianRoadmap()
+            "pilot" -> generatePilotRoadmap()
+            "architect" -> generateArchitectRoadmap()
+            "industrial designer" -> generateIndustrialDesignerRoadmap()
+            
+            // INVESTIGATIVE (I)
+            "data scientist" -> generateDataScientistRoadmap()
+            "research scientist" -> generateResearchScientistRoadmap()
+            "doctor" -> generateDoctorRoadmap()
+            "psychologist" -> generatePsychologistRoadmap()
+            "mathematician" -> generateMathematicianRoadmap()
+            "physicist" -> generatePhysicistRoadmap()
+            "chemist" -> generateChemistRoadmap()
+            "biologist" -> generateBiologistRoadmap()
+            "market research analyst" -> generateMarketResearchAnalystRoadmap()
+            "software developer" -> generateSoftwareEngineerRoadmap()
+            
+            // ARTISTIC (A)
+            "graphic designer" -> generateGraphicDesignerRoadmap()
+            "ux/ui designer" -> generateUXDesignerRoadmap()
+            "artist" -> generateArtistRoadmap()
+            "writer" -> generateWriterRoadmap()
+            "musician" -> generateMusicianRoadmap()
+            "actor" -> generateActorRoadmap()
+            "photographer" -> generatePhotographerRoadmap()
+            "interior designer" -> generateInteriorDesignerRoadmap()
+            "fashion designer" -> generateFashionDesignerRoadmap()
+            "video editor" -> generateVideoEditorRoadmap()
+            
+            // SOCIAL (S)
+            "teacher" -> generateTeacherRoadmap()
+            "counselor" -> generateCounselorRoadmap()
+            "social worker" -> generateSocialWorkerRoadmap()
+            "nurse" -> generateNurseRoadmap()
+            "therapist" -> generateTherapistRoadmap()
+            "human resources manager" -> generateHRManagerRoadmap()
+            "customer service representative" -> generateCustomerServiceRoadmap()
+            "community outreach coordinator" -> generateCommunityOutreachRoadmap()
+            "school administrator" -> generateSchoolAdministratorRoadmap()
+            "healthcare administrator" -> generateHealthcareAdministratorRoadmap()
+            
+            // ENTERPRISING (E)
+            "business manager" -> generateBusinessManagerRoadmap()
+            "sales representative" -> generateSalesRepresentativeRoadmap()
+            "entrepreneur" -> generateEntrepreneurRoadmap()
+            "marketing manager" -> generateMarketingManagerRoadmap()
+            "lawyer" -> generateLawyerRoadmap()
+            "politician" -> generatePoliticianRoadmap()
+            "real estate agent" -> generateRealEstateAgentRoadmap()
+            "financial advisor" -> generateFinancialAdvisorRoadmap()
+            "project manager" -> generateProjectManagerRoadmap()
+            "operations manager" -> generateOperationsManagerRoadmap()
+            
+            // CONVENTIONAL (C)
+            "accountant" -> generateAccountantRoadmap()
+            "financial analyst" -> generateFinancialAnalystRoadmap()
+            "data entry clerk" -> generateDataEntryClerkRoadmap()
+            "administrative assistant" -> generateAdministrativeAssistantRoadmap()
+            "librarian" -> generateLibrarianRoadmap()
+            "bank teller" -> generateBankTellerRoadmap()
+            "bookkeeper" -> generateBookkeeperRoadmap()
+            "quality control inspector" -> generateQualityControlInspectorRoadmap()
+            "office manager" -> generateOfficeManagerRoadmap()
+            "records clerk" -> generateRecordsClerkRoadmap()
+            
             else -> generateGenericRoadmap(occupation)
         }
     }
@@ -2316,6 +2386,184 @@ YEAR 2 (Advanced):
 
 ⏰ TIMELINE: 5-6 years education + 2-3 years experience for PM roles
         """.trimIndent()
+    }
+    
+    // Missing REALISTIC (R) roadmaps
+    private fun generateElectricalEngineerRoadmap(): String {
+        return generateGenericRoadmap("Electrical Engineer")
+    }
+    
+    private fun generateAutomotiveTechnicianRoadmap(): String {
+        return generateGenericRoadmap("Automotive Technician")
+    }
+    
+    private fun generateCarpenterRoadmap(): String {
+        return generateGenericRoadmap("Carpenter")
+    }
+    
+    private fun generateElectricianRoadmap(): String {
+        return generateGenericRoadmap("Electrician")
+    }
+    
+    private fun generatePilotRoadmap(): String {
+        return generateGenericRoadmap("Pilot")
+    }
+    
+    private fun generateIndustrialDesignerRoadmap(): String {
+        return generateGenericRoadmap("Industrial Designer")
+    }
+    
+    // Missing INVESTIGATIVE (I) roadmaps
+    private fun generateResearchScientistRoadmap(): String {
+        return generateGenericRoadmap("Research Scientist")
+    }
+    
+    private fun generateMathematicianRoadmap(): String {
+        return generateGenericRoadmap("Mathematician")
+    }
+    
+    private fun generatePhysicistRoadmap(): String {
+        return generateGenericRoadmap("Physicist")
+    }
+    
+    private fun generateChemistRoadmap(): String {
+        return generateGenericRoadmap("Chemist")
+    }
+    
+    private fun generateBiologistRoadmap(): String {
+        return generateGenericRoadmap("Biologist")
+    }
+    
+    private fun generateMarketResearchAnalystRoadmap(): String {
+        return generateGenericRoadmap("Market Research Analyst")
+    }
+    
+    // Missing ARTISTIC (A) roadmaps
+    private fun generateArtistRoadmap(): String {
+        return generateGenericRoadmap("Artist")
+    }
+    
+    private fun generateWriterRoadmap(): String {
+        return generateGenericRoadmap("Writer")
+    }
+    
+    private fun generateMusicianRoadmap(): String {
+        return generateGenericRoadmap("Musician")
+    }
+    
+    private fun generateActorRoadmap(): String {
+        return generateGenericRoadmap("Actor")
+    }
+    
+    private fun generatePhotographerRoadmap(): String {
+        return generateGenericRoadmap("Photographer")
+    }
+    
+    private fun generateInteriorDesignerRoadmap(): String {
+        return generateGenericRoadmap("Interior Designer")
+    }
+    
+    private fun generateFashionDesignerRoadmap(): String {
+        return generateGenericRoadmap("Fashion Designer")
+    }
+    
+    private fun generateVideoEditorRoadmap(): String {
+        return generateGenericRoadmap("Video Editor")
+    }
+    
+    // Missing SOCIAL (S) roadmaps
+    private fun generateCounselorRoadmap(): String {
+        return generateGenericRoadmap("Counselor")
+    }
+    
+    private fun generateSocialWorkerRoadmap(): String {
+        return generateGenericRoadmap("Social Worker")
+    }
+    
+    private fun generateTherapistRoadmap(): String {
+        return generateGenericRoadmap("Therapist")
+    }
+    
+    private fun generateHRManagerRoadmap(): String {
+        return generateGenericRoadmap("Human Resources Manager")
+    }
+    
+    private fun generateCustomerServiceRoadmap(): String {
+        return generateGenericRoadmap("Customer Service Representative")
+    }
+    
+    private fun generateCommunityOutreachRoadmap(): String {
+        return generateGenericRoadmap("Community Outreach Coordinator")
+    }
+    
+    private fun generateSchoolAdministratorRoadmap(): String {
+        return generateGenericRoadmap("School Administrator")
+    }
+    
+    private fun generateHealthcareAdministratorRoadmap(): String {
+        return generateGenericRoadmap("Healthcare Administrator")
+    }
+    
+    // Missing ENTERPRISING (E) roadmaps
+    private fun generateSalesRepresentativeRoadmap(): String {
+        return generateGenericRoadmap("Sales Representative")
+    }
+    
+    private fun generateEntrepreneurRoadmap(): String {
+        return generateGenericRoadmap("Entrepreneur")
+    }
+    
+    private fun generatePoliticianRoadmap(): String {
+        return generateGenericRoadmap("Politician")
+    }
+    
+    private fun generateRealEstateAgentRoadmap(): String {
+        return generateGenericRoadmap("Real Estate Agent")
+    }
+    
+    private fun generateFinancialAdvisorRoadmap(): String {
+        return generateGenericRoadmap("Financial Advisor")
+    }
+    
+    private fun generateProjectManagerRoadmap(): String {
+        return generateGenericRoadmap("Project Manager")
+    }
+    
+    private fun generateOperationsManagerRoadmap(): String {
+        return generateGenericRoadmap("Operations Manager")
+    }
+    
+    // Missing CONVENTIONAL (C) roadmaps
+    private fun generateDataEntryClerkRoadmap(): String {
+        return generateGenericRoadmap("Data Entry Clerk")
+    }
+    
+    private fun generateAdministrativeAssistantRoadmap(): String {
+        return generateGenericRoadmap("Administrative Assistant")
+    }
+    
+    private fun generateLibrarianRoadmap(): String {
+        return generateGenericRoadmap("Librarian")
+    }
+    
+    private fun generateBankTellerRoadmap(): String {
+        return generateGenericRoadmap("Bank Teller")
+    }
+    
+    private fun generateBookkeeperRoadmap(): String {
+        return generateGenericRoadmap("Bookkeeper")
+    }
+    
+    private fun generateQualityControlInspectorRoadmap(): String {
+        return generateGenericRoadmap("Quality Control Inspector")
+    }
+    
+    private fun generateOfficeManagerRoadmap(): String {
+        return generateGenericRoadmap("Office Manager")
+    }
+    
+    private fun generateRecordsClerkRoadmap(): String {
+        return generateGenericRoadmap("Records Clerk")
     }
     
     private fun shareRoadmap(occupation: String) {

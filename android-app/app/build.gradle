@@ -1,18 +1,17 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    // Remove Google services to eliminate Firebase dependencies
-    // id 'com.google.gms.google-services'
+    id 'com.google.gms.google-services'
 }
 
 android {
     namespace 'com.theapp'
-    compileSdk 30
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.theapp"
         minSdk 24
-        targetSdk 30
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -52,10 +51,19 @@ dependencies {
     
     // UI
     implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    
+    // Lifecycle
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
     
     // Coroutines for async operations
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
+    
+    // Firebase
+    implementation platform('com.google.firebase:firebase-bom:32.7.0')
+    implementation 'com.google.firebase:firebase-firestore-ktx'
+    implementation 'com.google.firebase:firebase-auth-ktx'
     
     // Testing
     testImplementation 'junit:junit:4.13.2'

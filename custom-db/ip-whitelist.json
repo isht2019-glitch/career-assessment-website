@@ -1,0 +1,22 @@
+[
+  {
+    "ip": "127.0.0.1",
+    "description": "Localhost",
+    "addedAt": "2025-11-05T20:15:01.529Z"
+  },
+  {
+    "ip": "::1",
+    "description": "Localhost IPv6",
+    "addedAt": "2025-11-05T20:15:01.531Z"
+  },
+  {
+    "ip": "192.168.1.0/24",
+    "description": "Local network",
+    "addedAt": "2025-11-05T20:15:01.531Z"
+  },
+  {
+    "ip": "10.0.0.0/8",
+    "description": "Private network",
+    "addedAt": "2025-11-05T20:15:01.531Z"
+  }
+]

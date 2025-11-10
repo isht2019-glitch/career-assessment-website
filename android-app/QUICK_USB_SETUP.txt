@@ -1,0 +1,248 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║              📱 CONNECT YOUR PHONE TO ANDROID STUDIO 📱                      ║
+║                                                                              ║
+║                        Quick 5-Minute Setup                                  ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                        STEP 1: ENABLE DEVELOPER MODE                         │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+ON YOUR PHONE:
+
+1. Open Settings ⚙️
+2. Go to "About Phone" 📱
+3. Find "Build Number"
+4. TAP IT 7 TIMES rapidly 👆👆👆👆👆👆👆
+5. You'll see: "You are now a developer!" 🎉
+
+✅ DONE! Developer Options unlocked!
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                        STEP 2: ENABLE USB DEBUGGING                          │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+ON YOUR PHONE:
+
+1. Go back to Settings ⚙️
+2. Find "Developer Options" (might be under System)
+3. Scroll down to "USB Debugging"
+4. Toggle it ON ✅
+5. Tap "OK" when popup appears
+
+✅ DONE! USB Debugging enabled!
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                        STEP 3: CONNECT USB CABLE                             │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+1. Plug USB cable into your phone 🔌
+2. Plug other end into your computer 💻
+3. Wait a few seconds...
+
+ON YOUR PHONE - A notification appears:
+
+"USB charging this device"
+Tap it and select:
+   ✅ File Transfer (MTP)  ← CHOOSE THIS
+   ❌ Charging only        ← DON'T CHOOSE THIS
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                        STEP 4: ALLOW USB DEBUGGING                           │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+ON YOUR PHONE - A popup appears:
+
+   ┌─────────────────────────────────────┐
+   │  Allow USB debugging?               │
+   │                                     │
+   │  The computer's RSA key             │
+   │  fingerprint is:                    │
+   │  XX:XX:XX:XX:XX...                  │
+   │                                     │
+   │  ☑ Always allow from this computer │
+   │                                     │
+   │  [Cancel]              [OK]         │
+   └─────────────────────────────────────┘
+
+1. ✅ CHECK the box "Always allow from this computer"
+2. Tap "OK"
+
+✅ DONE! Phone is authorized!
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                        STEP 5: VERIFY IN ANDROID STUDIO                      │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+IN ANDROID STUDIO:
+
+1. Look at the top toolbar
+2. Find the device dropdown (next to Run button ▶️)
+3. Click it
+
+YOU SHOULD SEE YOUR PHONE:
+   📱 Samsung Galaxy S21 (Android 12)
+   📱 Xiaomi Redmi Note 10 (Android 11)
+   📱 OnePlus 9 Pro (Android 13)
+   (Your phone model and Android version)
+
+✅ DONE! Phone is connected!
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                        STEP 6: RUN YOUR APP                                  │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+IN ANDROID STUDIO:
+
+1. Select your phone from dropdown
+2. Click the green Run button ▶️ (or press Shift+F10)
+3. Wait for build...
+4. App installs on your phone automatically! 📲
+5. App launches! 🚀
+
+✅ DONE! Your app is running on your phone!
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                        🎉 CONGRATULATIONS! 🎉                                ║
+║                                                                              ║
+║              Your phone is now connected to Android Studio!                  ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                        🐛 TROUBLESHOOTING                                    │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+PHONE NOT SHOWING?
+
+Try these in order:
+
+1. CHECK USB MODE
+   • Swipe down on phone
+   • Tap USB notification
+   • Change to "File Transfer"
+
+2. RESTART ADB
+   • In Android Studio: View → Tool Windows → Terminal
+   • Type: adb kill-server
+   • Type: adb start-server
+   • Type: adb devices
+   • You should see your phone listed
+
+3. RECONNECT
+   • Unplug USB cable
+   • Plug it back in
+   • Allow USB debugging again
+
+4. TRY DIFFERENT USB PORT
+   • Use a different USB port on your computer
+   • Try USB 2.0 port instead of USB 3.0
+
+5. CHECK CABLE
+   • Make sure it's a DATA cable (not charging-only)
+   • Try a different cable if possible
+
+6. RESTART PHONE
+   • Turn off your phone
+   • Turn it back on
+   • Reconnect USB cable
+
+STILL NOT WORKING?
+
+Check the detailed guide: USB_DEBUGGING_GUIDE.md
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                        💡 QUICK TIPS                                         │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+TIP 1: KEEP SCREEN ON
+   Developer Options → Stay Awake (ON)
+   Screen stays on while charging - useful for testing!
+
+TIP 2: FASTER INSTALLATION
+   Developer Options → Install via USB (ON)
+   Apps install faster from Android Studio!
+
+TIP 3: SEE YOUR TAPS
+   Developer Options → Show Taps (ON)
+   Visual feedback when you tap - great for demos!
+
+TIP 4: CHECK CONNECTION
+   In Android Studio Terminal, type: adb devices
+   You should see: ABC123456789    device
+
+TIP 5: WIRELESS DEBUGGING (Android 11+)
+   Developer Options → Wireless Debugging (ON)
+   Connect once via USB, then go wireless!
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                        📱 DEVICE-SPECIFIC NOTES                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+SAMSUNG:
+   • Build Number: Settings → About Phone → Software Information
+   • May need Samsung USB Driver for Windows
+
+XIAOMI/MIUI:
+   • Build Number: Settings → About Phone → MIUI Version (tap 7 times)
+   • Enable "Install via USB" in Developer Options
+
+ONEPLUS:
+   • Usually works out of the box
+   • Build Number: Settings → About Phone → Build Number
+
+REALME:
+   • Build Number: Settings → About Phone → Version → Build Number
+
+OPPO:
+   • Build Number: Settings → About Phone → Version
+
+VIVO:
+   • Build Number: Settings → About Phone → Software Version
+
+GOOGLE PIXEL:
+   • Works automatically, no extra drivers needed
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                        ✅ CHECKLIST                                          │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+Before running your app, make sure:
+
+□ Developer Options enabled (tapped Build Number 7 times)
+□ USB Debugging enabled (in Developer Options)
+□ USB cable connected (data cable, not charging-only)
+□ USB mode set to "File Transfer" (not "Charging only")
+□ USB debugging authorized (checked "Always allow")
+□ Phone appears in Android Studio device dropdown
+□ Phone is unlocked (not on lock screen)
+
+If all checked ✅, you're ready to run your app!
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                        🚀 RUN YOUR APP NOW!                                  │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+1. Open your project in Android Studio
+2. Select your phone from device dropdown
+3. Click Run ▶️
+4. Wait for build and installation
+5. App launches on your phone! 🎉
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                  📱 YOUR PHONE IS READY! 📱                                  ║
+║                                                                              ║
+║              Start building and testing your app!                            ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+For detailed guide with screenshots and advanced troubleshooting:
+📖 See: USB_DEBUGGING_GUIDE.md
+
+Questions? Issues? Check the detailed guide above!
+
+Happy coding! 🚀

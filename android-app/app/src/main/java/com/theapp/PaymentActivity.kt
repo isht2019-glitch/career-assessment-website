@@ -2,203 +2,217 @@ package com.theapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.FrameLayout
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.theapp.databinding.ActivityPaymentBinding
-import org.json.JSONObject
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FieldValue
 
 class PaymentActivity : AppCompatActivity() {
-    
-    private lateinit var binding: ActivityPaymentBinding
-    private var selectedPlan: String = "premium"
-    private val planPrice: Int = 1
+
+    private lateinit var db: FirebaseFirestore
+    private lateinit var emailEditText: EditText
+    private lateinit var submitButton: Button
+    private lateinit var progressBar: ProgressBar
+    private lateinit var choosePlanButton: Button
+    private lateinit var paymentOptionsLayout: LinearLayout
+    private lateinit var checkStatusButton: Button
+    private lateinit var pendingMessage: TextView
     private var userEmail: String = ""
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityPaymentBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        
-        // Get user email
-        userEmail = UserManager.getUserEmail(this) ?: ""
-        binding.etUserEmail.setText(userEmail)
-        
-        setupClickListeners()
-        updatePricing()
-        
-        // Initialize Velly Bandaar guide for payment page
-        initializePaymentGuide()
-    }
-    
-    private fun initializePayment() {
-        // Simplified payment initialization without external dependencies
-        showSuccess("Payment system initialized")
-    }
-    
-    private fun setupClickListeners() {
-        // Plan selection
-        binding.btnChoosePlan.setOnClickListener {
-            selectedPlan = "premium"
-            showEmailSubmissionForm()
-        }
-        
-        // Submit email for manual approval
-        binding.btnSubmitEmail.setOnClickListener {
-            submitEmailForApproval()
-        }
-        
-        // Check approval status
-        binding.btnCheckStatus.setOnClickListener {
-            checkApprovalStatus()
-        }
-        
-        // Logout
-        binding.btnLogout.setOnClickListener {
-            logout()
-        }
-    }
-    
-    private fun updatePricing() {
-        binding.tvPlanPrice.text = "₹$planPrice/month"
-    }
-    
-    private fun showEmailSubmissionForm() {
-        try {
-            // Show the email submission form
-            binding.layoutPaymentOptions.visibility = android.view.View.VISIBLE
-            updateSelectedPlanUI()
+        setContentView(R.layout.activity_payment)
+
+        // Initialize Firebase
+        db = FirebaseFirestore.getInstance()
+
+        // Initialize views
+        emailEditText = findViewById(R.id.etUserEmail)
+        submitButton = findViewById(R.id.btnSubmitEmail)
+        progressBar = findViewById(R.id.progressBar)
+        choosePlanButton = findViewById(R.id.btnChoosePlan)
+        paymentOptionsLayout = findViewById(R.id.layoutPaymentOptions)
+        checkStatusButton = findViewById(R.id.btnCheckStatus)
+        pendingMessage = findViewById(R.id.tvPendingMessage)
+
+        // Choose Plan button - Shows the email form
+        choosePlanButton.setOnClickListener {
+            // Show payment options
+            paymentOptionsLayout.visibility = View.VISIBLE
             
-            // Scroll to make the form visible
-            binding.root.post {
-                binding.layoutPaymentOptions.requestFocus()
+            Toast.makeText(this, "📧 Enter your email to continue", Toast.LENGTH_SHORT).show()
+        }
+
+        // Submit Email button - Submits to Firebase
+        submitButton.setOnClickListener {
+            submitPaymentRequest()
+        }
+
+        // Check Status button - Checks approval status
+        checkStatusButton.setOnClickListener {
+            checkPaymentStatus()
+        }
+    }
+
+    private fun submitPaymentRequest() {
+        val email = emailEditText.text.toString().trim()
+
+        // Validate email
+        if (email.isEmpty()) {
+            emailEditText.error = "Email is required"
+            Toast.makeText(this, "⚠️ Please enter your email", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailEditText.error = "Invalid email format"
+            Toast.makeText(this, "⚠️ Please enter a valid email", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Show loading
+        progressBar.visibility = View.VISIBLE
+        submitButton.isEnabled = false
+        submitButton.text = "📨 Submitting..."
+
+        // Create payment request
+        val paymentRequest = hashMapOf(
+            "email" to email,
+            "userName" to email.substringBefore("@"),
+            "status" to "pending",
+            "timestamp" to FieldValue.serverTimestamp(),
+            "amount" to 1,
+            "paymentMethod" to "UPI",
+            "plan" to "Premium Plan",
+            "transactionId" to "TXN${System.currentTimeMillis()}"
+        )
+
+        // Submit to Firestore
+        db.collection("paymentRequests")
+            .add(paymentRequest)
+            .addOnSuccessListener { documentReference ->
+                progressBar.visibility = View.GONE
+                submitButton.isEnabled = true
+                submitButton.text = "📨 Submit Email"
+                
+                // Save email for status checking
+                userEmail = email
+
+                // Show pending message and check status button
+                pendingMessage.visibility = View.VISIBLE
+                checkStatusButton.visibility = View.VISIBLE
+
+                Toast.makeText(
+                    this,
+                    "✅ Payment request submitted successfully!\n\nRequest ID: ${documentReference.id.take(8)}...\n\nWaiting for admin approval.\n\nClick 'Check Status' button to see if approved.",
+                    Toast.LENGTH_LONG
+                ).show()
+
+                // Clear email field
+                emailEditText.setText("")
             }
-            
-            showSuccess("Please enter your email below")
-        } catch (e: Exception) {
-            android.util.Log.e("PaymentActivity", "Error showing email form", e)
-            showError("Error showing payment form")
-        }
+            .addOnFailureListener { e ->
+                progressBar.visibility = View.GONE
+                submitButton.isEnabled = true
+                submitButton.text = "📨 Submit Email"
+
+                Toast.makeText(
+                    this,
+                    "❌ Error submitting request:\n\n${e.message}\n\nPlease check your internet connection and try again.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
     }
-    
-    private fun updateSelectedPlanUI() {
-        val planName = "Premium Plan"
-        
-        binding.tvSelectedPlan.text = planName
-        binding.tvSelectedPrice.text = "₹$planPrice/month"
-    }
-    
-    private fun getPlanPrice(): Int {
-        return planPrice
-    }
-    
-    private fun submitEmailForApproval() {
-        userEmail = binding.etUserEmail.text.toString().trim()
-        
+
+    private fun checkPaymentStatus() {
         if (userEmail.isEmpty()) {
-            showError("Please enter your email address")
+            Toast.makeText(this, "⚠️ Please submit a payment request first", Toast.LENGTH_SHORT).show()
             return
         }
-        
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(userEmail).matches()) {
-            showError("Please enter a valid email address")
-            return
-        }
-        
-        showLoading(true)
-        
-        // Save email and pending status
-        saveEmailSubmission()
-        
-        binding.root.postDelayed({
-            showLoading(false)
-            showEmailSubmissionSuccess()
-        }, 1500)
-    }
-    
-    private fun saveEmailSubmission() {
-        val sharedPref = getSharedPreferences("theapp_prefs", MODE_PRIVATE)
-        with(sharedPref.edit()) {
-            putString("user_email", userEmail)
-            putString("approval_status", "pending")
-            putLong("submission_date", System.currentTimeMillis())
-            apply()
-        }
-    }
-    
-    private fun checkApprovalStatus() {
-        // Allow user to proceed to test
-        showSuccess("Starting your test...")
-        saveSubscriptionStatus()
-        navigateToTest()
-    }
-    
-    private fun showEmailSubmissionSuccess() {
-        val message = "Email submitted successfully! 📧\n\nYou will receive a QR code and payment instructions at: $userEmail\n\nYou can proceed to the test now and complete payment later!"
-        showSuccess(message)
-        
-        // Save email to UserManager
-        UserManager.saveUserLogin(this, userEmail)
-        
-        // Show continue button and status check UI
-        binding.btnCheckStatus.visibility = android.view.View.VISIBLE
-        binding.tvPendingMessage.visibility = android.view.View.VISIBLE
-        binding.tvPendingMessage.text = "✅ Email registered: $userEmail\n\nPayment of ₹1 can be completed later.\nYou can start the test now!"
-        
-        // Add a "Start Test Now" button by repurposing the check status button
-        binding.btnCheckStatus.text = "Start Test Now ▶️"
-    }
-    
-    private fun navigateToTest() {
-        binding.root.postDelayed({
-            val intent = Intent(this, TestActivity::class.java)
-            startActivity(intent)
-            finish()
-        }, 2000)
-    }
-    
-    private fun saveSubscriptionStatus() {
-        val sharedPref = getSharedPreferences("theapp_prefs", MODE_PRIVATE)
-        with(sharedPref.edit()) {
-            putBoolean("is_subscribed", true)
-            putString("subscription_plan", selectedPlan)
-            putLong("subscription_date", System.currentTimeMillis())
-            apply()
-        }
-    }
-    
-    private fun logout() {
-        val sharedPref = getSharedPreferences("theapp_prefs", MODE_PRIVATE)
-        with(sharedPref.edit()) {
-            putBoolean("is_logged_in", false)
-            putBoolean("is_subscribed", false)
-            apply()
-        }
-        
-        val intent = Intent(this, AuthActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
-    
-    private fun showLoading(show: Boolean) {
-        binding.progressBar.visibility = if (show) android.view.View.VISIBLE else android.view.View.GONE
-        binding.btnSubmitEmail.isEnabled = !show
-        binding.btnCheckStatus.isEnabled = !show
-        binding.btnChoosePlan.isEnabled = !show
-    }
-    
-    private fun showError(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-    }
-    
-    private fun showSuccess(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-    
-    private fun initializePaymentGuide() {
-        // Create Velly Bandaar guide for payment page
-        val rootView = findViewById<FrameLayout>(android.R.id.content)
-        val paymentGuide = PaymentGuideSystem(this, rootView)
-        paymentGuide.init()
+
+        // Show loading
+        progressBar.visibility = View.VISIBLE
+        checkStatusButton.isEnabled = false
+        checkStatusButton.text = "🔄 Checking..."
+
+        // Query Firestore for payment status (simplified - no orderBy to avoid index requirement)
+        db.collection("paymentRequests")
+            .whereEqualTo("email", userEmail)
+            .get()
+            .addOnSuccessListener { documents ->
+                progressBar.visibility = View.GONE
+                checkStatusButton.isEnabled = true
+                checkStatusButton.text = "🔄 Check Approval Status"
+
+                if (documents.isEmpty) {
+                    Toast.makeText(
+                        this,
+                        "⚠️ No payment request found for $userEmail",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@addOnSuccessListener
+                }
+
+                // Get the most recent document (last in list)
+                val doc = documents.documents.lastOrNull()
+                if (doc == null) {
+                    Toast.makeText(
+                        this,
+                        "⚠️ No payment request found",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@addOnSuccessListener
+                }
+
+                val status = doc.getString("status") ?: "pending"
+
+                when (status) {
+                    "approved" -> {
+                        Toast.makeText(
+                            this,
+                            "🎉 APPROVED!\n\nYour payment has been approved!\n\nOpening test...",
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                        // Hide pending message
+                        pendingMessage.visibility = View.GONE
+                        checkStatusButton.visibility = View.GONE
+
+                        // Navigate to test activity
+                        progressBar.postDelayed({
+                            val intent = Intent(this, TestActivity::class.java)
+                            intent.putExtra("USER_EMAIL", userEmail)
+                            startActivity(intent)
+                            finish()
+                        }, 2000)
+                    }
+                    "rejected" -> {
+                        Toast.makeText(
+                            this,
+                            "❌ REJECTED\n\nYour payment request was rejected.\n\nPlease contact support or try again.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    else -> {
+                        Toast.makeText(
+                            this,
+                            "⏳ PENDING\n\nYour payment is still waiting for admin approval.\n\nPlease check again in a few minutes.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                progressBar.visibility = View.GONE
+                checkStatusButton.isEnabled = true
+                checkStatusButton.text = "🔄 Check Approval Status"
+
+                Toast.makeText(
+                    this,
+                    "❌ Error checking status:\n\n${e.message}\n\nPlease try again.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
     }
 }

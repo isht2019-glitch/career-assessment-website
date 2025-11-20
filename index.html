@@ -2464,13 +2464,16 @@
                 // Initialize test if showing test screen
                 if (screenId === 'testScreen') {
                     console.log('🎯 Initializing test...');
-                    currentPhase = 0;
-                    currentQuestion = 0;
-                    answers = [];
+                    // Only reset if not already in aptitude phase
+                    if (currentPhase !== 3) {
+                        currentPhase = 0;
+                        currentQuestion = 0;
+                        answers = [];
+                    }
                     timeLeft = 50 * 60;
                     loadQuestion();
                     startTimer();
-                    console.log('✅ Test initialized');
+                    console.log('✅ Test initialized - Phase:', currentPhase);
                 }
             } else {
                 console.error('❌ Screen not found:', screenId);

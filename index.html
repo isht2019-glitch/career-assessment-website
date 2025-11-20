@@ -1207,7 +1207,8 @@
         </div>
     </div>
 
-    <div class="auth-modal" id="phoneModal">
+    <!-- Phone Modal - DISABLED (OTP not working) -->
+    <div class="auth-modal" id="phoneModal" style="display: none;">
         <button class="close-modal" onclick="closeAuthModal()">×</button>
         <div class="auth-modal-content">
             <h2>📱 Phone Authentication</h2>
@@ -1288,10 +1289,6 @@
                 <button class="btn-google" onclick="googleSignIn()">
                     <img src="https://www.google.com/favicon.ico" alt="Google">
                     Google
-                </button>
-                <button class="btn-phone" onclick="phoneAuth()">
-                    <span>📱</span>
-                    Phone OTP
                 </button>
             </div>
         </div>

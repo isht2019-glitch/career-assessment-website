@@ -37,8 +37,20 @@ class MainActivity : AppCompatActivity() {
                 val isLoggedIn = checkLoginStatus()
                 
                 if (isLoggedIn) {
-                    // Skip payment and go directly to test
-                    navigateToTest()
+                    // Check if payment is approved
+                    val isPaymentApproved = UserManager.isPaymentApproved(this)
+                    
+                    if (isPaymentApproved) {
+                        // Payment approved, check if test completed
+                        if (UserManager.hasCompletedTest(this)) {
+                            navigateToOccupationSelection()
+                        } else {
+                            navigateToTest()
+                        }
+                    } else {
+                        // Payment not approved, show payment screen
+                        navigateToPayment()
+                    }
                 } else {
                     navigateToAuth()
                 }
@@ -60,11 +72,36 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
     
-    private fun navigateToTest() {
-        // Navigate to payment screen for logged-in users
+    private fun navigateToPayment() {
         val intent = Intent(this, PaymentActivity::class.java)
         startActivity(intent)
         finish()
+    }
+    
+    private fun navigateToTest() {
+        // Navigate to test for approved users
+        val intent = Intent(this, TestActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+    
+    private fun navigateToOccupationSelection() {
+        val stored = UserManager.getStoredTestResults(this)
+        if (stored != null) {
+            val intent = Intent(this, OccupationSelectionActivity::class.java)
+            intent.putExtra("dominant_type", stored.dominantType)
+            intent.putExtra("aptitude_score", stored.aptitudeScore)
+            intent.putExtra("r_score", stored.rScore)
+            intent.putExtra("i_score", stored.iScore)
+            intent.putExtra("a_score", stored.aScore)
+            intent.putExtra("s_score", stored.sScore)
+            intent.putExtra("e_score", stored.eScore)
+            intent.putExtra("c_score", stored.cScore)
+            startActivity(intent)
+            finish()
+        } else {
+            navigateToTest()
+        }
     }
     
     private fun initializeMainGuide() {

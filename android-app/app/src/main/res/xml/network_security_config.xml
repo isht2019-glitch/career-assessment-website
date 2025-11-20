@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
+    <!-- Allow all HTTPS traffic (including Google APIs) -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    
     <!-- Allow cleartext (HTTP) traffic for local development -->
     <domain-config cleartextTrafficPermitted="true">
         <!-- Local IP addresses for development -->
@@ -10,12 +17,9 @@
         <domain includeSubdomains="true">127.0.0.1</domain>
     </domain-config>
     
-    <!-- For production, you should use HTTPS -->
-    <!-- Uncomment this when deploying to production with HTTPS -->
-    <!--
-    <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">theapp.work</domain>
-        <domain includeSubdomains="true">admin.theapp.work</domain>
+    <!-- Google APIs (HTTPS) -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">googleapis.com</domain>
+        <domain includeSubdomains="true">generativelanguage.googleapis.com</domain>
     </domain-config>
-    -->
 </network-security-config>

@@ -81,6 +81,12 @@
             android:exported="false"
             android:label="Admin Panel"
             android:theme="@style/Theme.TheApp" />
+        
+        <activity
+            android:name=".SurveyActivity"
+            android:exported="false"
+            android:label="Feedback Survey"
+            android:theme="@style/Theme.TheApp" />
     </application>
 
 </manifest>

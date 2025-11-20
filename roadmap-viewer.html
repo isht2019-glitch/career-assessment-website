@@ -100,6 +100,32 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
+
+        .load-more-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            margin: 20px auto;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .load-more-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 30px;
+        }
     </style>
 </head>
 <body>
@@ -122,46 +148,90 @@
         // AI-Powered Roadmap Generator using Google Gemini API (FREE)
         // Get your FREE API key from: https://makersuite.google.com/app/apikey
         const GEMINI_API_KEY = 'AIzaSyAgkLm9NEBiNJvsdw1JpYJRpS8A-B3-xt8'; // Gemini API key
+        let fullRoadmap = '';
+        let isComprehensiveMode = false;
         
         async function generateAIRoadmap(occupationName) {
-            const prompt = `Create a comprehensive, detailed career roadmap for "${occupationName}" in India and internationally. Include:
+            const prompt = `Generate a DETAILED 12-PHASE career roadmap for: ${occupationName}
 
-1. **Education Requirements:**
-   - Specific institutes/universities in India (with names like NSD, FTII, IITs, AIIMS, etc.)
-   - International options with countries
-   - Degree requirements and duration
-   - Entrance exams if applicable
+Create a comprehensive, structured roadmap with these EXACT 12 phases:
 
-2. **Skills Required:**
-   - Technical/professional skills specific to ${occupationName}
-   - Soft skills needed
-   - Certifications or training programs
+**Phase 1: Career Overview**
+- What is this career?
+- Key responsibilities
+- Why pursue this career?
 
-3. **Career Path:**
-   - Entry-level positions and how to get started
-   - Mid-career progression
-   - Senior-level opportunities
-   - Realistic timeline (years)
+**Phase 2: Education Requirements**
+- Required degrees/certifications
+- Recommended institutions/programs in India and internationally
+- Typical duration
 
-4. **Salary Expectations (India 2025):**
-   - Entry level (0-2 years): Realistic INR range
-   - Mid-level (3-7 years): Realistic INR range
-   - Senior (8+ years): Realistic INR range
-   - Note: Mention if income is variable/uncertain
+**Phase 3: Essential Skills (Technical)**
+- Core technical skills
+- Tools and software
+- Industry-specific knowledge
 
-5. **Platforms & Resources:**
-   - Job platforms specific to this field (not generic ones like Unstop if irrelevant)
-   - Portfolio websites if applicable
-   - Networking communities
-   - Learning resources
+**Phase 4: Essential Skills (Soft Skills)**
+- Communication
+- Leadership
+- Problem-solving
+- Teamwork
 
-6. **Reality Check:**
-   - Job market reality (competitive? stable? uncertain?)
-   - Success rate and challenges
-   - Alternative career paths
-   - Important considerations
+**Phase 5: Entry-Level Preparation**
+- Internships/apprenticeships
+- Entry-level certifications
+- Portfolio/projects needed
 
-Format with clear sections, emojis, and be HONEST about challenges and uncertainties. Make it specific to ${occupationName}, not generic.`;
+**Phase 6: Entry-Level Positions**
+- Job titles
+- Typical responsibilities
+- Salary range (INR for India)
+- Timeline to reach
+
+**Phase 7: Mid-Career Development**
+- Advancement opportunities
+- Additional certifications
+- Specializations available
+
+**Phase 8: Mid-Career Positions**
+- Senior/specialist roles
+- Increased responsibilities
+- Salary range (INR for India)
+- Years of experience needed
+
+**Phase 9: Advanced Skills & Leadership**
+- Management skills
+- Strategic thinking
+- Industry expertise
+
+**Phase 10: Senior/Leadership Positions**
+- Executive roles
+- Consulting opportunities
+- Salary range (INR for India)
+
+**Phase 11: Industry Outlook & Trends**
+- Job market growth in India
+- Future demand
+- Emerging opportunities
+- Industry changes
+
+**Phase 12: Getting Started Today**
+- First steps (this month)
+- Resources and platforms
+- Networking groups
+- Recommended learning paths
+
+IMPORTANT: 
+- Only include relevant career information
+- Do NOT include math problems, width/length/dimensions, geometry, or unrelated material
+- Do NOT include any CSS, HTML, or code snippets
+- Use clear formatting with bullet points
+- Provide realistic salary ranges in INR
+- Make it specific to ${occupationName}, not generic
+- Keep each phase concise but detailed
+- Be HONEST about challenges and uncertainties
+- Format as plain text with markdown (**, #, ##, ###, -)
+- NO style tags, NO HTML tags, NO code blocks`;
 
             try {
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
@@ -282,13 +352,21 @@ Format with clear sections, emojis, and be HONEST about challenges and uncertain
             try {
                 // Generate roadmap using AI
                 const roadmap = await generateAIRoadmap(occupationName);
+                fullRoadmap = roadmap;
+                isComprehensiveMode = false;
+                
+                // Show summary version first (2000 characters)
+                const summaryRoadmap = roadmap.length > 2000 ? roadmap.substring(0, 2000) + '...' : roadmap;
                 
                 document.getElementById('roadmapContent').innerHTML = `
                     <div class="success">
                         <strong>✅ AI-Generated Roadmap (2025)</strong><br>
                         Personalized career guidance powered by Google Gemini AI
                     </div>
-                    <pre style="white-space: pre-wrap; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; line-height: 1.6;">${roadmap}</pre>
+                    <pre style="white-space: pre-wrap; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; line-height: 1.6;" id="roadmapText">${summaryRoadmap}</pre>
+                    <div class="button-container">
+                        <button class="load-more-btn" onclick="toggleComprehensiveMode()">📖 Load More</button>
+                    </div>
                 `;
                 
                 console.log('✅ AI Roadmap generated successfully');
@@ -356,6 +434,22 @@ Format with clear sections, emojis, and be HONEST about challenges and uncertain
                 `;
             }
         });
+
+        function toggleComprehensiveMode() {
+            isComprehensiveMode = !isComprehensiveMode;
+            
+            const displayText = isComprehensiveMode ? fullRoadmap : (fullRoadmap.length > 2000 ? fullRoadmap.substring(0, 2000) + '...' : fullRoadmap);
+            
+            document.getElementById('roadmapText').textContent = displayText;
+            
+            const btn = document.querySelector('.load-more-btn');
+            if (btn) {
+                btn.textContent = isComprehensiveMode ? '📖 Show Less' : '📖 Load More';
+            }
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     </script>
 </body>
 </html>

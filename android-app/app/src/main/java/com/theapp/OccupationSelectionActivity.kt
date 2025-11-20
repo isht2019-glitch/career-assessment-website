@@ -124,90 +124,11 @@ class OccupationSelectionActivity : AppCompatActivity() {
     }
     
     private fun getRecommendedOccupations(type: String): List<String> {
-        return when (type) {
-            "R" -> listOf(
-                "Software Engineer",
-                "Mechanical Engineer",
-                "Civil Engineer",
-                "Electrical Engineer",
-                "Automotive Technician",
-                "Carpenter",
-                "Electrician",
-                "Pilot",
-                "Architect",
-                "Industrial Designer"
-            )
-            "I" -> listOf(
-                "Data Scientist",
-                "Research Scientist",
-                "Doctor",
-                "Psychologist",
-                "Mathematician",
-                "Physicist",
-                "Chemist",
-                "Biologist",
-                "Market Research Analyst",
-                "Software Developer"
-            )
-            "A" -> listOf(
-                "Graphic Designer",
-                "UX/UI Designer",
-                "Artist",
-                "Writer",
-                "Musician",
-                "Actor",
-                "Photographer",
-                "Interior Designer",
-                "Fashion Designer",
-                "Video Editor"
-            )
-            "S" -> listOf(
-                "Teacher",
-                "Counselor",
-                "Social Worker",
-                "Nurse",
-                "Therapist",
-                "Human Resources Manager",
-                "Customer Service Representative",
-                "Community Outreach Coordinator",
-                "School Administrator",
-                "Healthcare Administrator"
-            )
-            "E" -> listOf(
-                "Business Manager",
-                "Sales Representative",
-                "Entrepreneur",
-                "Marketing Manager",
-                "Lawyer",
-                "Politician",
-                "Real Estate Agent",
-                "Financial Advisor",
-                "Project Manager",
-                "Operations Manager"
-            )
-            "C" -> listOf(
-                "Accountant",
-                "Financial Analyst",
-                "Data Entry Clerk",
-                "Administrative Assistant",
-                "Librarian",
-                "Bank Teller",
-                "Bookkeeper",
-                "Quality Control Inspector",
-                "Office Manager",
-                "Records Clerk"
-            )
-            else -> listOf(
-                "Teacher",
-                "Counselor",
-                "Social Worker",
-                "Nurse",
-                "Therapist",
-                "Human Resources Manager",
-                "Customer Service Representative",
-                "Healthcare Administrator"
-            )
-        }
+        // Use new OccupationsDatabase with 637 O*NET careers
+        val allFiltered = OccupationsDatabase.getOccupationsByType(type)
+        
+        // Return all filtered occupations (will be 36-279 depending on type)
+        return allFiltered
     }
     
     private fun getTypeName(type: String): String {

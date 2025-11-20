@@ -113,13 +113,44 @@
                     android:text="Roadmap content will appear here..."
                     android:textSize="14sp"
                     android:textColor="@color/black"
-                    android:lineSpacingExtra="4dp"
-                    android:fontFamily="monospace" />
+                    android:lineSpacingExtra="4dp" />
 
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
 
     </ScrollView>
+
+    <!-- Bottom Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:spacing="12dp">
+
+        <Button
+            android:id="@+id/btn_back_to_home"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Home"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:background="@drawable/button_rounded" />
+
+        <Button
+            android:id="@+id/btn_survey"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Feedback"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:background="@drawable/button_gradient" />
+
+    </LinearLayout>
 
 </LinearLayout>

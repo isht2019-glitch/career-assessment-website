@@ -403,6 +403,12 @@ class TestActivity : AppCompatActivity() {
         android.util.Log.d("TestActivity", "⚡ startPhase called with phase: $phase")
         android.util.Log.d("TestActivity", "Current phase before change: $currentPhase")
         
+        // Handle payment screen before aptitude
+        if (phase == 6 && currentPhase == 5) {
+            showPaymentScreen()
+            return
+        }
+        
         currentPhase = phase
         
         android.util.Log.d("TestActivity", "Current phase after change: $currentPhase")
@@ -678,6 +684,12 @@ class TestActivity : AppCompatActivity() {
                 storePhaseAnswers(20, 30)
                 Toast.makeText(this, "Perfect! Here's your complete personality profile...", Toast.LENGTH_SHORT).show()
                 startPhase(5) // Show complete analysis
+            }
+            5 -> {
+                // After viewing complete analysis, show payment screen
+                android.util.Log.d("TestActivity", "Moving to payment screen")
+                showPaymentScreen()
+                // Don't call startPhase(6) yet - wait for user to click Continue
             }
             6 -> {
                 // Store aptitude answers and submit final test
@@ -989,7 +1001,38 @@ class TestActivity : AppCompatActivity() {
         // Find dominant RIASEC type
         val dominantScore = riasecScores.values.maxOrNull()!!
         val dominantType = riasecScores.entries.find { it.value == dominantScore }!!.key
-        
+
+        // Persist results so we can skip the test next time
+        try {
+            android.util.Log.d("TestActivity", "💾 Saving test results...")
+            android.util.Log.d("TestActivity", "  RIASEC Scores: $riasecScores")
+            android.util.Log.d("TestActivity", "  Aptitude Score: $aptitudePercentage")
+            android.util.Log.d("TestActivity", "  Dominant Type: $dominantType")
+            
+            UserManager.saveTestResults(
+                context = this,
+                riasecScores = riasecScores,
+                aptitudeScore = aptitudePercentage,
+                dominantType = dominantType
+            )
+            
+            // Mark payment as approved (user completed test after payment)
+            UserManager.setPaymentApproved(this, true)
+            android.util.Log.d("TestActivity", "✅ Payment status marked as approved")
+            
+            // Verify results were saved
+            val saved = UserManager.getStoredTestResults(this)
+            if (saved != null) {
+                android.util.Log.d("TestActivity", "✅ Results saved successfully!")
+                android.util.Log.d("TestActivity", "  Verified - Dominant Type: ${saved.dominantType}")
+            } else {
+                android.util.Log.e("TestActivity", "❌ Results not saved - verification failed")
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("TestActivity", "Error saving test results", e)
+            e.printStackTrace()
+        }
+
         // Pass results to OccupationSelectionActivity
         val intent = Intent(this, OccupationSelectionActivity::class.java)
         intent.putExtra("riasec_score", dominantScore)
@@ -1006,6 +1049,89 @@ class TestActivity : AppCompatActivity() {
         finish()
     }
     
+    private fun showPaymentScreen() {
+        // Create payment screen between personality and aptitude tests
+        val paymentView = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+            setBackgroundColor(getColor(android.R.color.white))
+            setPadding(32, 32, 32, 32)
+        }
+
+        // Title
+        val titleView = TextView(this).apply {
+            text = "Unlock Premium Insights"
+            textSize = 24f
+            setTypeface(null, android.graphics.Typeface.BOLD)
+            setTextColor(getColor(R.color.purple_500))
+            setPadding(0, 0, 0, 24)
+        }
+        paymentView.addView(titleView)
+
+        // Description
+        val descView = TextView(this).apply {
+            text = "Complete your aptitude assessment and unlock:\n\n" +
+                    "✓ Detailed career roadmap\n" +
+                    "✓ Personalized insights\n" +
+                    "✓ One-on-one discussion session with founder\n\n" +
+                    "Special Offer: ₹1 instead of ₹100"
+            textSize = 16f
+            setTextColor(getColor(android.R.color.black))
+            setPadding(0, 0, 0, 32)
+            setLineSpacing(1.5f, 1.5f)
+        }
+        paymentView.addView(descView)
+
+        // Price display
+        val priceView = TextView(this).apply {
+            text = "₹1"
+            textSize = 48f
+            setTypeface(null, android.graphics.Typeface.BOLD)
+            setTextColor(getColor(R.color.purple_500))
+            gravity = android.view.Gravity.CENTER
+            setPadding(0, 0, 0, 32)
+        }
+        paymentView.addView(priceView)
+
+        // Original price strikethrough
+        val originalView = TextView(this).apply {
+            text = "Originally ₹100"
+            textSize = 14f
+            setTextColor(getColor(android.R.color.darker_gray))
+            gravity = android.view.Gravity.CENTER
+            paintFlags = paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+            setPadding(0, 0, 0, 48)
+        }
+        paymentView.addView(originalView)
+
+        // Continue button
+        val continueBtn = android.widget.Button(this).apply {
+            text = "Continue to Aptitude Test"
+            textSize = 16f
+            setTextColor(getColor(android.R.color.white))
+            setBackgroundColor(getColor(R.color.purple_500))
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 16, 0, 16)
+            }
+            setPadding(0, 24, 0, 24)
+            setOnClickListener {
+                // Move to aptitude test (phase 6)
+                binding.root.removeView(paymentView)
+                startPhase(6)
+            }
+        }
+        paymentView.addView(continueBtn)
+
+        // Add to main view
+        binding.root.addView(paymentView)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         timer?.cancel()

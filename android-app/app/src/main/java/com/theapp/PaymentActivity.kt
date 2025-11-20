@@ -36,6 +36,9 @@ class PaymentActivity : AppCompatActivity() {
         checkStatusButton = findViewById(R.id.btnCheckStatus)
         pendingMessage = findViewById(R.id.tvPendingMessage)
 
+        // Check if payment is already approved
+        checkIfAlreadyApproved()
+
         // Choose Plan button - Shows the email form
         choosePlanButton.setOnClickListener {
             // Show payment options
@@ -52,6 +55,16 @@ class PaymentActivity : AppCompatActivity() {
         // Check Status button - Checks approval status
         checkStatusButton.setOnClickListener {
             checkPaymentStatus()
+        }
+    }
+    
+    private fun checkIfAlreadyApproved() {
+        // If payment is already approved in SharedPreferences, skip to test
+        if (UserManager.isPaymentApproved(this)) {
+            android.util.Log.d("PaymentActivity", "✅ Payment already approved, skipping to test")
+            val intent = Intent(this, TestActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 
@@ -175,17 +188,49 @@ class PaymentActivity : AppCompatActivity() {
                             Toast.LENGTH_LONG
                         ).show()
 
+                        // Mark payment as approved in UserManager
+                        UserManager.setPaymentApproved(this, true)
+                        UserManager.saveUserLogin(this, userEmail)
+
                         // Hide pending message
                         pendingMessage.visibility = View.GONE
                         checkStatusButton.visibility = View.GONE
 
-                        // Navigate to test activity
-                        progressBar.postDelayed({
-                            val intent = Intent(this, TestActivity::class.java)
-                            intent.putExtra("USER_EMAIL", userEmail)
-                            startActivity(intent)
-                            finish()
-                        }, 2000)
+                        // If the user has already completed the test, skip directly to occupations
+                        if (UserManager.hasCompletedTest(this)) {
+                            val stored = UserManager.getStoredTestResults(this)
+                            if (stored != null) {
+                                progressBar.postDelayed({
+                                    val intent = Intent(this, OccupationSelectionActivity::class.java)
+                                    intent.putExtra("dominant_type", stored.dominantType)
+                                    intent.putExtra("aptitude_score", stored.aptitudeScore)
+                                    intent.putExtra("r_score", stored.rScore)
+                                    intent.putExtra("i_score", stored.iScore)
+                                    intent.putExtra("a_score", stored.aScore)
+                                    intent.putExtra("s_score", stored.sScore)
+                                    intent.putExtra("e_score", stored.eScore)
+                                    intent.putExtra("c_score", stored.cScore)
+                                    startActivity(intent)
+                                    finish()
+                                }, 2000)
+                            } else {
+                                // Fallback: go to test if stored scores are missing
+                                progressBar.postDelayed({
+                                    val intent = Intent(this, TestActivity::class.java)
+                                    intent.putExtra("USER_EMAIL", userEmail)
+                                    startActivity(intent)
+                                    finish()
+                                }, 2000)
+                            }
+                        } else {
+                            // First time: navigate to test activity
+                            progressBar.postDelayed({
+                                val intent = Intent(this, TestActivity::class.java)
+                                intent.putExtra("USER_EMAIL", userEmail)
+                                startActivity(intent)
+                                finish()
+                            }, 2000)
+                        }
                     }
                     "rejected" -> {
                         Toast.makeText(

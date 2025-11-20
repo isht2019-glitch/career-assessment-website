@@ -47,8 +47,21 @@ class OccupationSelectionActivity : AppCompatActivity() {
             
             setupOccupationList(dominantType)
             
+            // Setup button listeners
             binding.btnRestart?.setOnClickListener {
                 finish()
+            }
+            
+            binding.btnFeedback?.setOnClickListener {
+                showFeedbackDialog()
+            }
+            
+            binding.btnLogout?.setOnClickListener {
+                logoutUser()
+            }
+            
+            binding.btnDeleteAccount?.setOnClickListener {
+                showDeleteConfirmation()
             }
             
         } catch (e: Exception) {
@@ -152,6 +165,101 @@ class OccupationSelectionActivity : AppCompatActivity() {
             "E" -> "Persuasive, ambitious, leadership-oriented people who enjoy business and management"
             "C" -> "Organized, detail-oriented, systematic workers who prefer structured environments"
             else -> "Helpful, caring, people-oriented individuals who enjoy helping others"
+        }
+    }
+    
+    private fun showFeedbackDialog() {
+        try {
+            val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+            builder.setTitle("📝 Share Your Feedback")
+            
+            val input = android.widget.EditText(this).apply {
+                hint = "Tell us what you think..."
+                minLines = 4
+                gravity = android.view.Gravity.TOP
+                setPadding(16, 16, 16, 16)
+            }
+            
+            builder.setView(input)
+            builder.setPositiveButton("Send") { _, _ ->
+                val feedback = input.text.toString()
+                if (feedback.isNotEmpty()) {
+                    saveFeedback(feedback)
+                    android.widget.Toast.makeText(this, "✅ Thank you for your feedback!", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            }
+            builder.setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+            builder.show()
+        } catch (e: Exception) {
+            android.util.Log.e("OccupationSelection", "Error showing feedback dialog", e)
+        }
+    }
+    
+    private fun saveFeedback(feedback: String) {
+        try {
+            // Save to SharedPreferences
+            val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+            prefs.edit().putString("user_feedback", feedback).apply()
+            android.util.Log.d("OccupationSelection", "Feedback saved: $feedback")
+        } catch (e: Exception) {
+            android.util.Log.e("OccupationSelection", "Error saving feedback", e)
+        }
+    }
+    
+    private fun logoutUser() {
+        try {
+            val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+            builder.setTitle("🚪 Logout")
+            builder.setMessage("Are you sure you want to logout?")
+            builder.setPositiveButton("Yes") { _, _ ->
+                // Clear user data
+                val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+                prefs.edit().clear().apply()
+                
+                // Navigate to auth
+                val intent = Intent(this, AuthActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            }
+            builder.setNegativeButton("No") { dialog, _ -> dialog.dismiss() }
+            builder.show()
+        } catch (e: Exception) {
+            android.util.Log.e("OccupationSelection", "Error logging out", e)
+        }
+    }
+    
+    private fun showDeleteConfirmation() {
+        try {
+            val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+            builder.setTitle("🗑️ Delete Account")
+            builder.setMessage("Are you sure? This action cannot be undone. All your data will be permanently deleted.")
+            builder.setPositiveButton("Delete") { _, _ ->
+                deleteAccount()
+            }
+            builder.setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+            builder.show()
+        } catch (e: Exception) {
+            android.util.Log.e("OccupationSelection", "Error showing delete confirmation", e)
+        }
+    }
+    
+    private fun deleteAccount() {
+        try {
+            // Clear all user data
+            val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+            prefs.edit().clear().apply()
+            
+            android.widget.Toast.makeText(this, "✅ Account deleted successfully", android.widget.Toast.LENGTH_SHORT).show()
+            
+            // Navigate to auth
+            val intent = Intent(this, AuthActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        } catch (e: Exception) {
+            android.util.Log.e("OccupationSelection", "Error deleting account", e)
+            android.widget.Toast.makeText(this, "❌ Error deleting account", android.widget.Toast.LENGTH_SHORT).show()
         }
     }
 }

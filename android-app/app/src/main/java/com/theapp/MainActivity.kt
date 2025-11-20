@@ -25,8 +25,8 @@ class MainActivity : AppCompatActivity() {
         
         setupUI()
         
-        // Initialize Velly Bandaar guide for main page
-        initializeMainGuide()
+        // Guide disabled for now
+        // initializeMainGuide()
     }
     
     private fun setupUI() {

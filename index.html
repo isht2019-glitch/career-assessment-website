@@ -2265,8 +2265,11 @@
             document.getElementById('approvedStep').style.display = 'block';
         }
 
-        function startApprovedTest() {
-            showScreen('testScreen');
+        async function startApprovedTest() {
+            // Set to aptitude phase BEFORE showing screen
+            currentPhase = 3;
+            currentQuestion = 0;
+            await showScreen('testScreen');
             showTestGuide();
         }
 
@@ -2812,7 +2815,7 @@
             document.body.appendChild(overlay);
         }
 
-        function continueToAptitudeTest() {
+        async function continueToAptitudeTest() {
             // Check if payment is approved before allowing continuation
             const paymentStatus = localStorage.getItem('paymentStatus');
             
@@ -2825,7 +2828,7 @@
             currentPhase = 3; // Aptitude phase
             currentQuestion = 0;
             answers = []; // Reset answers for fresh start
-            showScreen('testScreen');
+            await showScreen('testScreen');
             loadQuestion();
             startTimer();
         }

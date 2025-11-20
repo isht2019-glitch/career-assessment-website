@@ -1957,6 +1957,23 @@
                 document.getElementById('otpGroup').style.display = 'block';
                 document.getElementById('phoneBtn').textContent = 'Verify OTP';
                 document.getElementById('phoneBtn').onclick = verifyOTPDemo;
+                
+                // Show demo message on screen
+                const demoMessage = document.createElement('div');
+                demoMessage.style.cssText = `
+                    background: #fff3cd;
+                    color: #856404;
+                    padding: 15px;
+                    border-radius: 8px;
+                    margin-bottom: 15px;
+                    border: 1px solid #ffeaa7;
+                    text-align: center;
+                    font-weight: bold;
+                `;
+                demoMessage.innerHTML = `🔧 Demo Mode<br><small>Enter any 6 digits to continue</small>`;
+                const phoneModal = document.getElementById('phoneModal');
+                phoneModal.insertBefore(demoMessage, phoneModal.firstChild);
+                
                 alert('🔧 Demo Mode: Enter any 6 digits to continue.');
                 return;
             }
@@ -1973,6 +1990,23 @@
                 document.getElementById('phoneBtn').textContent = 'Verify OTP';
                 document.getElementById('phoneBtn').onclick = verifyOTP;
                 document.getElementById('phoneBtn').disabled = false;
+                
+                // Show success message on screen
+                const otpMessage = document.createElement('div');
+                otpMessage.style.cssText = `
+                    background: #d4edda;
+                    color: #155724;
+                    padding: 15px;
+                    border-radius: 8px;
+                    margin-bottom: 15px;
+                    border: 1px solid #c3e6cb;
+                    text-align: center;
+                    font-weight: bold;
+                `;
+                otpMessage.innerHTML = `✅ OTP sent to ${fullPhone}<br><small>Check your SMS for the 6-digit code</small>`;
+                const phoneModal = document.getElementById('phoneModal');
+                phoneModal.insertBefore(otpMessage, phoneModal.firstChild);
+                
                 alert('✅ OTP sent to ' + fullPhone + '\n\nPlease check your SMS.');
                 
             } catch (error) {

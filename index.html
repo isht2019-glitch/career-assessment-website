@@ -2443,8 +2443,11 @@
                     if (!paymentSnapshot.empty) {
                         console.log('✅ Payment already approved! Skipping payment screen...');
                         localStorage.setItem('paymentApproved', 'true');
-                        // Skip to test screen instead
+                        // Skip to test screen instead - and set to aptitude phase
                         screenId = 'testScreen';
+                        currentPhase = 3;
+                        currentQuestion = 0;
+                        console.log('   Setting currentPhase to 3 for aptitude test');
                     }
                 } catch (error) {
                     console.log('Error checking payment status:', error);

@@ -92,17 +92,17 @@
 
         .letter {
             display: inline-block;
-            opacity: 0;
-            animation: letter-reveal 1.5s ease-in-out forwards;
+            opacity: 1;
+            animation: none;
         }
 
         .letter:nth-child(1) { animation-delay: 0s; }
-        .letter:nth-child(2) { animation-delay: 0.08s; }
-        .letter:nth-child(3) { animation-delay: 0.16s; }
-        .letter:nth-child(4) { animation-delay: 0.24s; }
-        .letter:nth-child(5) { animation-delay: 0.32s; }
-        .letter:nth-child(6) { animation-delay: 0.4s; }
-        .letter:nth-child(7) { animation-delay: 0.48s; }
+        .letter:nth-child(2) { animation-delay: 0s; }
+        .letter:nth-child(3) { animation-delay: 0s; }
+        .letter:nth-child(4) { animation-delay: 0s; }
+        .letter:nth-child(5) { animation-delay: 0s; }
+        .letter:nth-child(6) { animation-delay: 0s; }
+        .letter:nth-child(7) { animation-delay: 0s; }
 
         @keyframes letter-reveal {
             0% {
@@ -1747,7 +1747,7 @@
             }
         })();
         
-        // SPLASH SCREEN - Auto navigate after 2 seconds
+        // SPLASH SCREEN - Auto navigate after 1 second
         setTimeout(async () => {
             if (hasNavigatedFromSplash) {
                 console.log('⏭️ Already navigated from splash (user logged in)');
@@ -1757,7 +1757,7 @@
             hasNavigatedFromSplash = true;
             
             try {
-                console.log('⏰ 2 seconds passed - navigating to login screen...');
+                console.log('⏰ 1 second passed - navigating to login screen...');
                 await showScreen('loginScreen');
                 console.log('✅ Login screen should be visible now');
                 // Guide disabled
@@ -1785,7 +1785,7 @@
                     console.error('❌ Login screen element not found!');
                 }
             }
-        }, 2000);
+        }, 1000);
 
         function showWelcomeGuide() {
             const guide = document.getElementById('guideCharacter');
@@ -1979,6 +1979,8 @@
                 document.getElementById('phoneBtn').disabled = true;
                 document.getElementById('phoneBtn').textContent = 'Sending...';
                 
+                console.log('📱 Attempting to send OTP to:', fullPhone);
+                
                 // Send OTP via Firebase
                 confirmationResult = await auth.signInWithPhoneNumber(fullPhone, recaptchaVerifier);
                 
@@ -2007,17 +2009,35 @@
                 alert('✅ OTP sent to ' + fullPhone + '\n\nPlease check your SMS.');
                 
             } catch (error) {
-                console.error('Error sending OTP:', error);
+                console.error('❌ Error sending OTP:', error);
+                console.error('Error code:', error.code);
+                console.error('Error message:', error.message);
+                
                 document.getElementById('phoneBtn').disabled = false;
                 document.getElementById('phoneBtn').textContent = 'Send OTP';
                 
-                if (error.code === 'auth/invalid-phone-number') {
-                    alert('❌ Invalid phone number format.\n\nPlease check and try again.');
-                } else if (error.code === 'auth/too-many-requests') {
-                    alert('❌ Too many requests.\n\nPlease try again later.');
-                } else {
-                    alert('❌ Error sending OTP: ' + error.message);
-                }
+                // Fallback to demo mode if OTP fails
+                console.log('⚠️ Falling back to demo mode...');
+                document.getElementById('otpGroup').style.display = 'block';
+                document.getElementById('phoneBtn').textContent = 'Verify OTP';
+                document.getElementById('phoneBtn').onclick = verifyOTPDemo;
+                
+                const errorMessage = document.createElement('div');
+                errorMessage.style.cssText = `
+                    background: #fff3cd;
+                    color: #856404;
+                    padding: 15px;
+                    border-radius: 8px;
+                    margin-bottom: 15px;
+                    border: 1px solid #ffeaa7;
+                    text-align: center;
+                    font-weight: bold;
+                `;
+                errorMessage.innerHTML = `⚠️ SMS service unavailable<br><small>Demo Mode: Enter any 6 digits to continue</small>`;
+                const phoneModal = document.getElementById('phoneModal');
+                phoneModal.insertBefore(errorMessage, phoneModal.firstChild);
+                
+                alert('⚠️ SMS service unavailable.\n\nDemo Mode: Enter any 6 digits to continue.');
                 
                 // Reset reCAPTCHA
                 if (recaptchaVerifier) {

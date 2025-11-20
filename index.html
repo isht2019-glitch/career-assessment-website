@@ -1587,6 +1587,7 @@
         let userName = "";
         let userEmail = "";
         let guideStep = 0;
+        let isTestInProgress = false; // Flag to track if user is actively taking test
         let analysisCallback = null;
 
         // Firebase Configuration - From your Android app
@@ -2422,7 +2423,8 @@
             console.log('📺 showScreen called with:', screenId);
             
             // If trying to show payment screen, check if payment is already approved
-            if (screenId === 'paymentScreen' && currentUser && db) {
+            // BUT ONLY if user is not actively in test (page reload scenario)
+            if (screenId === 'paymentScreen' && currentUser && db && !isTestInProgress) {
                 try {
                     console.log('🔍 Checking payment status before showing payment screen...');
                     let paymentSnapshot = await db.collection('paymentRequests')
@@ -2505,6 +2507,7 @@
         }
 
         function startTimer() {
+            isTestInProgress = true;
             timerInterval = setInterval(() => {
                 timeLeft--;
                 const mins = Math.floor(timeLeft / 60);
@@ -2514,6 +2517,7 @@
                 
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
+                    isTestInProgress = false;
                     showResults();
                 }
             }, 1000);
@@ -2970,6 +2974,7 @@
         }
 
         async function showResults() {
+            isTestInProgress = false;
             clearInterval(timerInterval);
             
             // Calculate RIASEC scores

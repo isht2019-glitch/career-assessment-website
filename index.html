@@ -2614,10 +2614,13 @@
                 loadQuestion();
             } else {
                 // Completed a phase
-                console.log('Phase completed!');
-                if (currentPhase < 3) {
-                    // Show personality analysis after each 10 personality questions
-                    showPersonalityAnalysis(currentPhase + 1);
+                console.log('Phase completed! Current phase:', currentPhase);
+                if (currentPhase < 2) {
+                    // Show personality analysis after each 10 personality questions (phases 0, 1)
+                    showPersonalityAnalysis(currentPhase);
+                } else if (currentPhase === 2) {
+                    // After phase 2 (Q21-30), show payment screen
+                    showPaymentScreenBeforeAptitude();
                 } else {
                     // Completed aptitude test
                     console.log('🎉 All tests completed! Showing results...');
@@ -2627,10 +2630,14 @@
             }
         }
 
-        function showPersonalityAnalysis(analysisNumber) {
+        function showPersonalityAnalysis(phaseNumber) {
+            // phaseNumber is 0 or 1 (phase that just completed)
+            // analysisNumber is 1 or 2 (for display)
+            const analysisNumber = phaseNumber + 1;
+            
             // Calculate RIASEC scores for completed questions
-            const startQ = (analysisNumber - 1) * 10;
-            const endQ = analysisNumber * 10;
+            const startQ = phaseNumber * 10;
+            const endQ = (phaseNumber + 1) * 10;
             const riasecScores = {R: 0, I: 0, A: 0, S: 0, E: 0, C: 0};
             
             for (let i = startQ; i < endQ; i++) {
@@ -2694,8 +2701,8 @@
                     `;
                 });
 
-                if (analysisNumber < 3) {
-                    html += `<p style="margin-top: 20px; color: #667eea; font-weight: bold;">Let's continue! ${10 * (3 - analysisNumber)} more personality questions to go! 🚀</p>`;
+                if (analysisNumber < 2) {
+                    html += `<p style="margin-top: 20px; color: #667eea; font-weight: bold;">Let's continue! ${10 * (2 - analysisNumber)} more personality questions to go! 🚀</p>`;
                 } else {
                     html += `<p style="margin-top: 20px; color: #667eea; font-weight: bold;">Excellent! Your personality profile is complete. Next: Unlock premium insights with payment! 💎</p>`;
                 }
@@ -2705,14 +2712,9 @@
 
             // Set callback to continue
             analysisCallback = () => {
-                if (analysisNumber < 3) {
-                    currentPhase++;
-                    currentQuestion = 0;
-                    loadQuestion();
-                } else {
-                    // Show payment screen before aptitude
-                    showPaymentScreenBeforeAptitude();
-                }
+                currentPhase++;
+                currentQuestion = 0;
+                loadQuestion();
             };
         }
 

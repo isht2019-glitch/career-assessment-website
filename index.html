@@ -73,43 +73,54 @@
             50% { transform: scale(1.05); }
         }
 
-        /* Android-style ProgressBar loader */
+        /* Android-style letter reveal animation */
         .android-loader {
-            width: 80px;
-            height: 80px;
+            width: 300px;
+            height: 100px;
             margin: 30px auto;
             position: relative;
-            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3), transparent);
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 60px;
+            font-weight: bold;
+            letter-spacing: 15px;
+            color: white;
+            font-family: 'Georgia', serif;
+            font-style: italic;
         }
 
-        .android-loader::before {
-            content: '';
-            position: absolute;
-            width: 70px;
-            height: 70px;
-            border: 5px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
+        .letter {
+            display: inline-block;
+            opacity: 0;
+            animation: letter-reveal 3s ease-in-out forwards;
         }
 
-        .android-loader::after {
-            content: '';
-            position: absolute;
-            width: 70px;
-            height: 70px;
-            border: 5px solid transparent;
-            border-top: 5px solid white;
-            border-right: 5px solid rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-            animation: android-spin 1.2s linear infinite;
-        }
+        .letter:nth-child(1) { animation-delay: 0s; }
+        .letter:nth-child(2) { animation-delay: 0.15s; }
+        .letter:nth-child(3) { animation-delay: 0.3s; }
+        .letter:nth-child(4) { animation-delay: 0.45s; }
+        .letter:nth-child(5) { animation-delay: 0.6s; }
+        .letter:nth-child(6) { animation-delay: 0.75s; }
+        .letter:nth-child(7) { animation-delay: 0.9s; }
 
-        @keyframes android-spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes letter-reveal {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            20% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            60% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.3) translateY(-50px);
+            }
         }
 
         .writing-text {
@@ -1174,8 +1185,15 @@
             <div class="logo-reveal">
                 <img src="assets/velly-bandaar.jpeg" alt="TheApp" onerror="this.style.display='none'">
             </div>
-            <div class="writing-text">TheApp</div>
-            <div class="android-loader"></div>
+            <div class="android-loader">
+                <span class="letter">t</span>
+                <span class="letter">h</span>
+                <span class="letter">e</span>
+                <span class="letter"> </span>
+                <span class="letter">a</span>
+                <span class="letter">p</span>
+                <span class="letter">p</span>
+            </div>
             <p style="color: white; margin-top: 20px; font-size: 14px; opacity: 0.8;">Loading your career pathway...</p>
         </div>
     </div>
@@ -1356,6 +1374,9 @@
                     <button class="btn-primary" onclick="checkApprovalStatus()" style="margin-top: 20px;">
                         🔄 Check Approval Status
                     </button>
+                    <button class="btn-secondary" onclick="showAdminPanel()" style="margin-top: 10px; background: #6c757d;">
+                        🔐 Admin Panel
+                    </button>
                 </div>
             </div>
 
@@ -1380,6 +1401,22 @@
                 <button class="btn-primary" onclick="startApprovedTest()" style="background: #28a745;">
                     Start Test Now! 🚀
                 </button>
+            </div>
+
+            <!-- Admin Panel (Hidden by default) -->
+            <div id="adminPanel" style="display: none; margin-top: 40px; padding: 20px; background: #f0f0f0; border-radius: 10px; border: 2px dashed #999;">
+                <h3 style="color: #333; margin-bottom: 15px;">🔐 Admin Panel - Approve Payments</h3>
+                <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: bold;">Email to Approve:</label>
+                    <input type="email" id="adminApproveEmail" placeholder="Enter email to approve" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; margin-bottom: 10px;">
+                    <button onclick="adminApproveEmail()" style="width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">✅ Approve Email</button>
+                </div>
+                <div style="background: white; padding: 15px; border-radius: 8px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: bold;">Pending Emails:</label>
+                    <div id="pendingEmailsList" style="max-height: 200px; overflow-y: auto; background: #f9f9f9; padding: 10px; border-radius: 5px;">
+                        <p style="color: #999;">Loading pending emails...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -2290,6 +2327,93 @@
         function viewApprovedEmails() {
             console.log('Approved emails:', approvedEmails);
             return approvedEmails;
+        }
+
+        // ADMIN PANEL FUNCTIONS
+        function showAdminPanel() {
+            const adminPanel = document.getElementById('adminPanel');
+            if (adminPanel) {
+                adminPanel.style.display = adminPanel.style.display === 'none' ? 'block' : 'none';
+                if (adminPanel.style.display === 'block') {
+                    loadPendingEmails();
+                }
+            }
+        }
+
+        async function loadPendingEmails() {
+            const pendingList = document.getElementById('pendingEmailsList');
+            pendingList.innerHTML = '';
+            
+            if (db) {
+                try {
+                    const snapshot = await db.collection('paymentRequests')
+                        .where('status', '==', 'pending')
+                        .get();
+                    
+                    if (snapshot.empty) {
+                        pendingList.innerHTML = '<p style="color: #999;">No pending emails</p>';
+                    } else {
+                        snapshot.forEach(doc => {
+                            const data = doc.data();
+                            const div = document.createElement('div');
+                            div.style.cssText = 'padding: 10px; margin-bottom: 8px; background: white; border-radius: 5px; border-left: 3px solid #ffc107; display: flex; justify-content: space-between; align-items: center;';
+                            div.innerHTML = `
+                                <div>
+                                    <strong>${data.email}</strong><br>
+                                    <small style="color: #999;">${data.userName || 'Unknown'}</small>
+                                </div>
+                                <button onclick="adminApproveEmailDirect('${data.email}')" style="padding: 5px 10px; background: #28a745; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">Approve</button>
+                            `;
+                            pendingList.appendChild(div);
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error loading pending emails:', error);
+                    pendingList.innerHTML = '<p style="color: #dc3545;">Error loading pending emails</p>';
+                }
+            } else {
+                pendingList.innerHTML = '<p style="color: #999;">Firestore not configured</p>';
+            }
+        }
+
+        function adminApproveEmail() {
+            const email = document.getElementById('adminApproveEmail').value.trim();
+            if (!email) {
+                alert('Please enter an email address');
+                return;
+            }
+            adminApproveEmailDirect(email);
+        }
+
+        async function adminApproveEmailDirect(email) {
+            if (db) {
+                try {
+                    // Update Firestore
+                    const snapshot = await db.collection('paymentRequests')
+                        .where('email', '==', email)
+                        .where('status', '==', 'pending')
+                        .limit(1)
+                        .get();
+                    
+                    if (!snapshot.empty) {
+                        await snapshot.docs[0].ref.update({ status: 'approved' });
+                        console.log('✅ Email approved in Firestore:', email);
+                    }
+                } catch (error) {
+                    console.error('Error updating Firestore:', error);
+                }
+            }
+            
+            // Also approve locally
+            approveEmail(email);
+            
+            // Reload pending list
+            loadPendingEmails();
+            
+            // Clear input
+            document.getElementById('adminApproveEmail').value = '';
+            
+            alert('✅ Email approved: ' + email);
         }
 
         async function showScreen(screenId) {

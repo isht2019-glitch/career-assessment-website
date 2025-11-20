@@ -48,21 +48,49 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Subscribe to TheApp"
+                android:text="🚀 Unlock Your Career Potential"
                 android:textSize="28sp"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:textColor="@color/white"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="16dp" />
 
-            <TextView
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Get premium access for just ₹1"
-                android:textSize="16sp"
-                android:gravity="center"
-                android:textColor="@color/white_80"
-                android:layout_marginBottom="24dp" />
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                android:layout_marginBottom="24dp"
+                app:cardBackgroundColor="#667eea">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="💡 This small amount can LEVITATE YOUR CAREER with key insights that transform your future!"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Get access to personalized career roadmaps, industry insights, and one-on-one conversation with our founder to guide your journey."
+                        android:textSize="13sp"
+                        android:textColor="@color/white_80"
+                        android:gravity="center"
+                        android:lineSpacingMultiplier="1.4" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
 
             <!-- Single Plan Card -->
@@ -79,31 +107,72 @@
                     android:orientation="vertical"
                     android:padding="24dp">
 
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="0dp"
+                        android:layout_marginBottom="16dp"
+                        app:cardBackgroundColor="#fff3cd">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="🎉 GRAND OPENING SPECIAL OFFER 🎉"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#856404"
+                            android:gravity="center"
+                            android:padding="12dp" />
+
+                    </androidx.cardview.widget.CardView>
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Premium Plan"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:gravity="center" />
+                        android:gravity="center"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="₹100"
+                        android:textSize="16sp"
+                        android:textColor="#999999"
+                        android:gravity="center"
+                        android:layout_marginBottom="4dp"
+                        android:alpha="0.6" />
 
                     <TextView
                         android:id="@+id/tvPlanPrice"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="₹1/month"
-                        android:textSize="32sp"
+                        android:text="₹1"
+                        android:textSize="48sp"
                         android:textStyle="bold"
-                        android:textColor="@color/purple_500"
+                        android:textColor="#28a745"
                         android:gravity="center"
-                        android:layout_marginVertical="16dp" />
+                        android:layout_marginVertical="8dp" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="• Unlimited projects\n• Priority support\n• 100GB storage\n• Advanced analytics\n• Team collaboration\n• 24/7 support"
+                        android:text="Limited Time Offer - Avail Now! ⏰"
                         android:textSize="14sp"
+                        android:textColor="#666666"
+                        android:gravity="center"
                         android:layout_marginBottom="20dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="✅ Complete Career Assessment\n✅ Detailed RIASEC Analysis\n✅ Personalized Career Roadmaps\n✅ Top Institutes &amp; Salary Insights\n✅ One-on-One Conversation with Founder\n✅ Lifetime Access"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="20dp"
+                        android:lineSpacingMultiplier="1.6" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnChoosePlan"

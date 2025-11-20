@@ -844,13 +844,13 @@ class TestActivity : AppCompatActivity() {
             
             val guideSystem = PersonalityGuideSystem(this, rootView, riasecScores)
             guideSystem.showCompletePersonalityAnalysis {
-                // Continue to aptitude phase after guide
-                android.util.Log.d("TestActivity", "✅ Complete analysis done, proceeding to aptitude phase 6 after cleanup...")
+                // Continue to payment screen after guide
+                android.util.Log.d("TestActivity", "✅ Complete analysis done, proceeding to payment screen after cleanup...")
                 
                 // Delay to ensure proper UI cleanup
                 binding.root.postDelayed({
-                    android.util.Log.d("TestActivity", "🔄 Starting aptitude phase 6 now...")
-                    startPhase(6)
+                    android.util.Log.d("TestActivity", "🔄 Starting payment screen now...")
+                    showPaymentScreenBeforeAptitude()
                 }, 500)
             }
         } catch (e: Exception) {
@@ -961,87 +961,102 @@ class TestActivity : AppCompatActivity() {
     }
     
     private fun showPaymentScreenBeforeAptitude() {
-        // Create payment screen between personality and aptitude tests
-        val paymentView = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
-            )
-            setBackgroundColor(getColor(android.R.color.white))
-            setPadding(32, 32, 32, 32)
-        }
-
-        // Title
-        val titleView = TextView(this).apply {
-            text = "Unlock Premium Insights"
-            textSize = 24f
-            setTypeface(null, android.graphics.Typeface.BOLD)
-            setTextColor(getColor(R.color.purple_500))
-            setPadding(0, 0, 0, 24)
-        }
-        paymentView.addView(titleView)
-
-        // Description
-        val descView = TextView(this).apply {
-            text = "Complete your aptitude assessment and unlock:\n\n" +
-                    "✓ Detailed career roadmap\n" +
-                    "✓ Personalized insights\n" +
-                    "✓ One-on-one discussion session with founder\n\n" +
-                    "Special Offer: ₹1 instead of ₹100"
-            textSize = 16f
-            setTextColor(getColor(android.R.color.black))
-            setPadding(0, 0, 0, 32)
-            setLineSpacing(1.5f, 1.5f)
-        }
-        paymentView.addView(descView)
-
-        // Price display
-        val priceView = TextView(this).apply {
-            text = "₹1"
-            textSize = 48f
-            setTypeface(null, android.graphics.Typeface.BOLD)
-            setTextColor(getColor(R.color.purple_500))
-            gravity = android.view.Gravity.CENTER
-            setPadding(0, 0, 0, 32)
-        }
-        paymentView.addView(priceView)
-
-        // Original price strikethrough
-        val originalView = TextView(this).apply {
-            text = "Originally ₹100"
-            textSize = 14f
-            setTextColor(getColor(android.R.color.darker_gray))
-            gravity = android.view.Gravity.CENTER
-            paintFlags = paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
-            setPadding(0, 0, 0, 48)
-        }
-        paymentView.addView(originalView)
-
-        // Continue button
-        val continueBtn = android.widget.Button(this).apply {
-            text = "Continue to Aptitude Test"
-            textSize = 16f
-            setTextColor(getColor(android.R.color.white))
-            setBackgroundColor(getColor(R.color.purple_500))
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                setMargins(0, 16, 0, 16)
+        try {
+            // Create payment screen between personality and aptitude tests
+            val paymentView = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT
+                )
+                setBackgroundColor(getColor(android.R.color.white))
+                setPadding(32, 32, 32, 32)
             }
-            setPadding(0, 24, 0, 24)
-            setOnClickListener {
-                // Move to aptitude test (phase 6)
-                binding.root.removeView(paymentView)
-                android.util.Log.d("TestActivity", "Payment screen dismissed, starting aptitude phase 6")
-                startPhase(6)
-            }
-        }
-        paymentView.addView(continueBtn)
 
-        // Add to main view
-        binding.root.addView(paymentView)
+            // Title
+            val titleView = TextView(this).apply {
+                text = "Unlock Premium Insights"
+                textSize = 24f
+                setTypeface(null, android.graphics.Typeface.BOLD)
+                setTextColor(getColor(R.color.purple_500))
+                setPadding(0, 0, 0, 24)
+            }
+            paymentView.addView(titleView)
+
+            // Description
+            val descView = TextView(this).apply {
+                text = "Complete your aptitude assessment and unlock:\n\n" +
+                        "✓ Detailed career roadmap\n" +
+                        "✓ Personalized insights\n" +
+                        "✓ One-on-one discussion session with founder\n\n" +
+                        "Special Offer: ₹1 instead of ₹100"
+                textSize = 16f
+                setTextColor(getColor(android.R.color.black))
+                setPadding(0, 0, 0, 32)
+                setLineSpacing(1.5f, 1.5f)
+            }
+            paymentView.addView(descView)
+
+            // Price display
+            val priceView = TextView(this).apply {
+                text = "₹1"
+                textSize = 48f
+                setTypeface(null, android.graphics.Typeface.BOLD)
+                setTextColor(getColor(R.color.purple_500))
+                gravity = android.view.Gravity.CENTER
+                setPadding(0, 0, 0, 32)
+            }
+            paymentView.addView(priceView)
+
+            // Original price strikethrough
+            val originalView = TextView(this).apply {
+                text = "Originally ₹100"
+                textSize = 14f
+                setTextColor(getColor(android.R.color.darker_gray))
+                gravity = android.view.Gravity.CENTER
+                paintFlags = paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+                setPadding(0, 0, 0, 48)
+            }
+            paymentView.addView(originalView)
+
+            // Continue button
+            val continueBtn = android.widget.Button(this).apply {
+                text = "Continue to Aptitude Test"
+                textSize = 16f
+                setTextColor(getColor(android.R.color.white))
+                setBackgroundColor(getColor(R.color.purple_500))
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    setMargins(0, 16, 0, 16)
+                }
+                setPadding(0, 24, 0, 24)
+                setOnClickListener {
+                    try {
+                        // Move to aptitude test (phase 6)
+                        if (paymentView.parent != null) {
+                            binding.root.removeView(paymentView)
+                        }
+                        android.util.Log.d("TestActivity", "Payment screen dismissed, starting aptitude phase 6")
+                        startPhase(6)
+                    } catch (e: Exception) {
+                        android.util.Log.e("TestActivity", "Error removing payment view", e)
+                        startPhase(6)
+                    }
+                }
+            }
+            paymentView.addView(continueBtn)
+
+            // Add to main view
+            binding.root.addView(paymentView)
+            android.util.Log.d("TestActivity", "✅ Payment screen displayed successfully")
+        } catch (e: Exception) {
+            android.util.Log.e("TestActivity", "ERROR showing payment screen", e)
+            e.printStackTrace()
+            Toast.makeText(this, "Proceeding to aptitude test...", Toast.LENGTH_SHORT).show()
+            startPhase(6)
+        }
     }
     
     private fun showPaymentScreen() {

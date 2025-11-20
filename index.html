@@ -2443,11 +2443,22 @@
                     if (!paymentSnapshot.empty) {
                         console.log('✅ Payment already approved! Skipping payment screen...');
                         localStorage.setItem('paymentApproved', 'true');
-                        // Skip to test screen instead - and set to aptitude phase
+                        // Skip to test screen instead
                         screenId = 'testScreen';
-                        currentPhase = 3;
-                        currentQuestion = 0;
-                        console.log('   Setting currentPhase to 3 for aptitude test');
+                        // Only go to aptitude if personality test was already completed
+                        // Otherwise start from Part 1
+                        const personalityAnswers = localStorage.getItem('personalityAnswers');
+                        if (personalityAnswers) {
+                            // User already completed personality test, go to aptitude
+                            currentPhase = 3;
+                            currentQuestion = 0;
+                            console.log('   Personality already complete - Setting currentPhase to 3 for aptitude test');
+                        } else {
+                            // User hasn't started yet, start from Part 1
+                            currentPhase = 0;
+                            currentQuestion = 0;
+                            console.log('   Personality not started - Starting from Part 1');
+                        }
                     }
                 } catch (error) {
                     console.log('Error checking payment status:', error);
@@ -2751,6 +2762,10 @@
         }
 
         function showPaymentScreenBeforeAptitude() {
+            // Mark personality test as complete
+            localStorage.setItem('personalityAnswers', JSON.stringify(answers));
+            console.log('💾 Personality test complete - saved answers to localStorage');
+            
             // Show the full payment screen instead of overlay
             // This ensures email collection is mandatory
             showScreen('paymentScreen');

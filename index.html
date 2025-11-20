@@ -1182,9 +1182,6 @@
     <!-- SPLASH SCREEN -->
     <div id="splashScreen" class="screen active" style="display: flex !important;">
         <div class="logo-container">
-            <div class="logo-reveal">
-                <img src="assets/velly-bandaar.jpeg" alt="TheApp" onerror="this.style.display='none'">
-            </div>
             <div class="android-loader">
                 <span class="letter">t</span>
                 <span class="letter">h</span>
@@ -2540,14 +2537,17 @@
             const phaseOffset = isAptitude ? 0 : currentPhase * 10;
             const questionIndex = isAptitude ? currentQuestion : (phaseOffset + currentQuestion);
             
+            // Check if we've exceeded the questions in this phase
+            const questionsInPhase = isAptitude ? 20 : 10;
+            if (currentQuestion >= questionsInPhase) {
+                // This shouldn't happen - nextQuestion should handle phase transitions
+                console.error('ERROR: currentQuestion exceeded questionsInPhase');
+                return;
+            }
+            
+            // Check if question index is valid
             if (questionIndex >= questions.length) {
-                if (currentPhase < 3) {
-                    currentPhase++;
-                    currentQuestion = 0;
-                    loadQuestion();
-                } else {
-                    showResults();
-                }
+                console.error('ERROR: questionIndex exceeded questions length');
                 return;
             }
 

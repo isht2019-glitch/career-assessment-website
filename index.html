@@ -2270,7 +2270,9 @@
             currentPhase = 3;
             currentQuestion = 0;
             await showScreen('testScreen');
-            showTestGuide();
+            // Don't show guide for aptitude - go straight to questions
+            loadQuestion();
+            startTimer();
         }
 
         // Check approval status on page load

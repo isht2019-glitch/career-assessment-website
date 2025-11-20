@@ -23,6 +23,7 @@ class TestActivity : AppCompatActivity() {
     private var allPersonalityAnswers = mutableListOf<Int?>() // Store all 30 personality answers
     private var aptitudeAnswers = mutableListOf<Int?>()
     private var userEmail: String = ""
+    private var paymentScreenShown = false // Track if payment screen has been shown
     
     // RIASEC Questions (30 total - improved with distinct options)
     private val riasecQuestions = listOf(
@@ -317,12 +318,6 @@ class TestActivity : AppCompatActivity() {
     private fun startPhase(phase: Int) {
         android.util.Log.d("TestActivity", "⚡ startPhase called with phase: $phase")
         android.util.Log.d("TestActivity", "Current phase before change: $currentPhase")
-        
-        // Handle payment screen before aptitude
-        if (phase == 6 && currentPhase == 5) {
-            showPaymentScreen()
-            return
-        }
         
         currentPhase = phase
         
@@ -815,10 +810,11 @@ class TestActivity : AppCompatActivity() {
                 .setTitle("✨ Complete Personality Profile ✨")
                 .setMessage(message)
                 .setCancelable(false)
-                .setPositiveButton("Start Aptitude Test") { dialog, _ ->
+                .setPositiveButton("Continue") { dialog, _ ->
                     dialog.dismiss()
-                    android.util.Log.d("TestActivity", "Dialog dismissed, starting aptitude phase 6")
-                    startPhase(6)
+                    android.util.Log.d("TestActivity", "Dialog dismissed, showing payment screen")
+                    // Show payment screen first, then aptitude test
+                    showPaymentScreenBeforeAptitude()
                 }
                 .create()
             
@@ -964,7 +960,7 @@ class TestActivity : AppCompatActivity() {
         finish()
     }
     
-    private fun showPaymentScreen() {
+    private fun showPaymentScreenBeforeAptitude() {
         // Create payment screen between personality and aptitude tests
         val paymentView = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -1038,6 +1034,7 @@ class TestActivity : AppCompatActivity() {
             setOnClickListener {
                 // Move to aptitude test (phase 6)
                 binding.root.removeView(paymentView)
+                android.util.Log.d("TestActivity", "Payment screen dismissed, starting aptitude phase 6")
                 startPhase(6)
             }
         }
@@ -1045,6 +1042,11 @@ class TestActivity : AppCompatActivity() {
 
         // Add to main view
         binding.root.addView(paymentView)
+    }
+    
+    private fun showPaymentScreen() {
+        // Deprecated - use showPaymentScreenBeforeAptitude instead
+        showPaymentScreenBeforeAptitude()
     }
 
     override fun onDestroy() {

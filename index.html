@@ -2469,13 +2469,18 @@
                 // Initialize test if showing test screen
                 if (screenId === 'testScreen') {
                     console.log('🎯 Initializing test...');
+                    console.log('   currentPhase BEFORE check:', currentPhase);
                     // Only reset if not already in aptitude phase
                     if (currentPhase !== 3) {
+                        console.log('   Resetting to Part 1 (currentPhase !== 3)');
                         currentPhase = 0;
                         currentQuestion = 0;
                         answers = [];
+                    } else {
+                        console.log('   NOT resetting (currentPhase === 3 - Aptitude)');
                     }
                     timeLeft = 50 * 60;
+                    console.log('   currentPhase AFTER check:', currentPhase);
                     loadQuestion();
                     startTimer();
                     console.log('✅ Test initialized - Phase:', currentPhase);
@@ -2545,6 +2550,13 @@
             const phaseOffset = isAptitude ? 0 : currentPhase * 10;
             const questionIndex = isAptitude ? currentQuestion : (phaseOffset + currentQuestion);
             
+            console.log('🔍 loadQuestion() called:');
+            console.log('   currentPhase:', currentPhase);
+            console.log('   currentQuestion:', currentQuestion);
+            console.log('   isAptitude:', isAptitude);
+            console.log('   questionIndex:', questionIndex);
+            console.log('   Question:', questions[questionIndex]?.q?.substring(0, 50));
+            
             // Check if we've exceeded the questions in this phase
             const questionsInPhase = isAptitude ? 20 : 10;
             if (currentQuestion >= questionsInPhase) {
@@ -2569,6 +2581,7 @@
                 `Question ${currentPhase * 10 + currentQuestion + 1} of ${totalQuestions}`;
             document.getElementById('progressBar').style.width = overallProgress + '%';
             document.getElementById('questionText').textContent = question.q;
+            console.log('✅ Question loaded:', isAptitude ? 'APTITUDE' : `PERSONALITY PART ${currentPhase + 1}`);
 
             updateQuestionReview();
 

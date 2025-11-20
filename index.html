@@ -73,6 +73,41 @@
             50% { transform: scale(1.05); }
         }
 
+        /* Android-style loader */
+        .android-loader {
+            width: 60px;
+            height: 60px;
+            margin: 30px auto;
+            position: relative;
+        }
+
+        .android-loader::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .android-loader::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 4px solid transparent;
+            border-top: 4px solid white;
+            border-right: 4px solid white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite reverse;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         .writing-text {
             color: white;
             font-size: 48px;
@@ -1136,6 +1171,8 @@
                 <img src="assets/velly-bandaar.jpeg" alt="TheApp" onerror="this.style.display='none'">
             </div>
             <div class="writing-text">TheApp</div>
+            <div class="android-loader"></div>
+            <p style="color: white; margin-top: 20px; font-size: 14px; opacity: 0.8;">Loading your career pathway...</p>
         </div>
     </div>
 
@@ -2407,7 +2444,8 @@
                 div.className = 'option';
                 div.textContent = opt;
                 div.onclick = () => selectOption(index);
-                if (answers[questionIndex] === index) {
+                // Only show selected if answer exists (for personality questions or if user already answered this aptitude question)
+                if (answers[questionIndex] !== undefined && answers[questionIndex] !== null && answers[questionIndex] === index) {
                     div.classList.add('selected');
                 }
                 optionsContainer.appendChild(div);
@@ -2586,20 +2624,15 @@
             `;
 
             paymentCard.innerHTML = `
-                <h2 style="color: #667eea; margin-bottom: 20px; font-size: 28px;">🎯 Unlock Premium Insights</h2>
+                <h2 style="color: #667eea; margin-bottom: 20px; font-size: 28px;">🎯 Find Your Best Career Pathway</h2>
                 
                 <div style="background: #f8f9ff; padding: 20px; border-radius: 15px; margin: 20px 0;">
-                    <p style="font-size: 16px; color: #333; margin: 10px 0;">
-                        <strong>✓</strong> Complete your aptitude assessment
+                    <p style="font-size: 16px; color: #333; margin: 10px 0; font-weight: bold;">
+                        To find the best career pathway you should pay this small amount
                     </p>
-                    <p style="font-size: 16px; color: #333; margin: 10px 0;">
-                        <strong>✓</strong> Get detailed career roadmap
-                    </p>
-                    <p style="font-size: 16px; color: #333; margin: 10px 0;">
-                        <strong>✓</strong> Personalized insights & recommendations
-                    </p>
-                    <p style="font-size: 16px; color: #333; margin: 10px 0;">
-                        <strong>✓</strong> One-on-one discussion session with founder
+                    <p style="font-size: 14px; color: #666; margin: 15px 0; line-height: 1.6;">
+                        ✓ Get customised roadmap by AI<br>
+                        ✓ One on One conversation with founder and advices
                     </p>
                 </div>
 
@@ -2616,7 +2649,7 @@
                 </div>
 
                 <p style="color: #666; font-size: 14px; margin: 20px 0; line-height: 1.6;">
-                    Complete your aptitude test to unlock comprehensive career insights and connect with our founder for personalized guidance.
+                    Complete your aptitude test to unlock your personalized career insights and connect with our founder.
                 </p>
 
                 <button onclick="continueToAptitudeTest()" style="
@@ -2745,7 +2778,7 @@
             `;
             
             // Populate occupation dropdown with AI-generated careers (this will also update the list)
-            await populateOccupationDropdownAndList(dominant[0], isDualPersonality ? secondary[0] : null, typeNames);
+            await populateOccupationDropdownAndList(dominant[0], isDualPersonality ? secondary[0] : null, typeNames, aptitudePercent);
             
             // Show results screen
             console.log('📺 Showing results screen...');
@@ -3169,10 +3202,29 @@
         let allOccupationsList = [];
         
         // Get occupations from static database (no AI needed for recommendations)
-        function getOccupationsFromDatabase(primaryType, secondaryType = null) {
+        function getOccupationsFromDatabase(primaryType, secondaryType = null, aptitudePercent = 0) {
             try {
                 // Use the occupations database loaded from occupations-database.js
-                const occupations = getOccupationsByType(primaryType, secondaryType);
+                let occupations = getOccupationsByType(primaryType, secondaryType);
+                
+                // Filter by aptitude level - higher aptitude gets more demanding careers
+                if (aptitudePercent < 30) {
+                    // Low aptitude: filter to entry-level, service-oriented careers
+                    occupations = occupations.filter(occ => {
+                        const lower = occ.toLowerCase();
+                        return lower.includes('assistant') || lower.includes('helper') || lower.includes('technician') ||
+                               lower.includes('operator') || lower.includes('coordinator') || lower.includes('officer') ||
+                               lower.includes('executive') || lower.includes('specialist') || lower.includes('associate');
+                    });
+                } else if (aptitudePercent < 60) {
+                    // Medium aptitude: filter to mid-level careers
+                    occupations = occupations.filter(occ => {
+                        const lower = occ.toLowerCase();
+                        return !lower.includes('director') && !lower.includes('chief') && !lower.includes('professor') &&
+                               !lower.includes('scientist') && !lower.includes('researcher');
+                    });
+                }
+                // High aptitude (60%+): show all careers
                 
                 // Convert to format expected by UI
                 const formattedOccupations = occupations.map(name => ({
@@ -3180,7 +3232,7 @@
                     title: name
                 }));
                 
-                console.log(`✅ Loaded ${formattedOccupations.length} occupations for ${primaryType}${secondaryType ? '+' + secondaryType : ''}`);
+                console.log(`✅ Loaded ${formattedOccupations.length} occupations for ${primaryType}${secondaryType ? '+' + secondaryType : ''} (Aptitude: ${aptitudePercent}%)`);
                 return formattedOccupations;
             } catch (error) {
                 console.error('❌ Error loading occupations:', error);
@@ -3189,12 +3241,12 @@
         }
         
         // Populate both career list and dropdown with occupations from database
-        function populateOccupationDropdownAndList(primaryType, secondaryType = null, typeNames) {
+        function populateOccupationDropdownAndList(primaryType, secondaryType = null, typeNames, aptitudePercent = 0) {
             const select = document.getElementById('occupationSelect');
             const careerList = document.getElementById('careerRecommendations');
             
-            // Get occupations from static database
-            const occupations = getOccupationsFromDatabase(primaryType, secondaryType);
+            // Get occupations from static database (filtered by aptitude)
+            const occupations = getOccupationsFromDatabase(primaryType, secondaryType, aptitudePercent);
             allOccupationsList = occupations;
             
             if (occupations && occupations.length > 0) {
@@ -3433,30 +3485,52 @@
         function deleteAccount() {
             if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
                 if (confirm('This will permanently delete all your data. Continue?')) {
-                    // Delete from Firestore
-                    if (db && currentUser) {
-                        db.collection('users').doc(currentUser.uid).delete()
-                            .then(() => console.log('User data deleted'))
-                            .catch(err => console.error('Delete error:', err));
-                    }
-                    
-                    // Delete Firebase account
-                    if (auth && currentUser) {
-                        currentUser.delete().then(() => {
-                            console.log('✅ Account deleted');
-                            localStorage.clear();
-                            sessionStorage.clear();
-                            showScreen('splashScreen');
-                        }).catch(err => {
-                            console.error('Account deletion error:', err);
-                            alert('Error deleting account. Please try again.');
-                        });
-                    } else {
-                        localStorage.clear();
-                        sessionStorage.clear();
-                        showScreen('splashScreen');
+                    try {
+                        // Delete from Firestore first
+                        if (db && currentUser) {
+                            db.collection('users').doc(currentUser.uid).delete()
+                                .then(() => {
+                                    console.log('✅ User data deleted from Firestore');
+                                    // Now delete the Firebase auth account
+                                    deleteFirebaseAccount();
+                                })
+                                .catch(err => {
+                                    console.error('Firestore delete error:', err);
+                                    // Continue with auth deletion anyway
+                                    deleteFirebaseAccount();
+                                });
+                        } else {
+                            deleteFirebaseAccount();
+                        }
+                    } catch (error) {
+                        console.error('Error in deleteAccount:', error);
+                        alert('Error deleting account. Please contact support.');
                     }
                 }
+            }
+        }
+        
+        function deleteFirebaseAccount() {
+            if (auth && currentUser) {
+                currentUser.delete().then(() => {
+                    console.log('✅ Firebase account deleted');
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    alert('✅ Account deleted successfully');
+                    showScreen('splashScreen');
+                }).catch(err => {
+                    console.error('Firebase account deletion error:', err);
+                    if (err.code === 'auth/requires-recent-login') {
+                        alert('⚠️ For security, please log out and log back in before deleting your account.');
+                        logoutUser();
+                    } else {
+                        alert('Error deleting account: ' + err.message);
+                    }
+                });
+            } else {
+                localStorage.clear();
+                sessionStorage.clear();
+                showScreen('splashScreen');
             }
         }
         

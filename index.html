@@ -2448,8 +2448,9 @@
                 div.className = 'option';
                 div.textContent = opt;
                 div.onclick = () => selectOption(index);
-                // Only show selected if answer exists (for personality questions or if user already answered this aptitude question)
-                if (answers[questionIndex] !== undefined && answers[questionIndex] !== null && answers[questionIndex] === index) {
+                // NEVER pre-select options - only show selected if user explicitly answered
+                // For aptitude (phase 3), NEVER show pre-selection
+                if (currentPhase !== 3 && answers[questionIndex] === index) {
                     div.classList.add('selected');
                 }
                 optionsContainer.appendChild(div);
@@ -2600,7 +2601,12 @@
         }
 
         function showPaymentScreenBeforeAptitude() {
-            // Create payment overlay
+            // Show the full payment screen instead of overlay
+            // This ensures email collection is mandatory
+            showScreen('paymentScreen');
+            return;
+            
+            // OLD CODE - kept for reference but not used
             const overlay = document.createElement('div');
             overlay.id = 'paymentOverlay';
             overlay.style.cssText = `
@@ -2686,13 +2692,13 @@
                 return;
             }
             
-            const overlay = document.getElementById('paymentOverlay');
-            if (overlay) {
-                overlay.remove();
-            }
-            currentPhase++;
+            // Payment is approved, start aptitude test
+            currentPhase = 3; // Aptitude phase
             currentQuestion = 0;
+            answers = []; // Reset answers for fresh start
+            showScreen('testScreen');
             loadQuestion();
+            startTimer();
         }
 
         function previousQuestion() {

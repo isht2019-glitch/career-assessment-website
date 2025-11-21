@@ -1690,11 +1690,11 @@
                         }
                     }
                     
-                    // Skip to payment if already authenticated but no results yet
+                    // Skip to test if already authenticated but no results yet
                     if (document.getElementById('splashScreen').classList.contains('active') && !hasNavigatedFromSplash) {
                         hasNavigatedFromSplash = true;
                         setTimeout(() => {
-                            showScreen('paymentScreen');
+                            showScreen('testScreen');
                         }, 3500);
                     }
                 } else {

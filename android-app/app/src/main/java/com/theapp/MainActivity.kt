@@ -37,19 +37,13 @@ class MainActivity : AppCompatActivity() {
                 val isLoggedIn = checkLoginStatus()
                 
                 if (isLoggedIn) {
-                    // Check if payment is approved
-                    val isPaymentApproved = UserManager.isPaymentApproved(this)
-                    
-                    if (isPaymentApproved) {
-                        // Payment approved, check if test completed
-                        if (UserManager.hasCompletedTest(this)) {
-                            navigateToOccupationSelection()
-                        } else {
-                            navigateToTest()
-                        }
+                    // Check if test is completed
+                    if (UserManager.hasCompletedTest(this)) {
+                        // Test completed, show results
+                        navigateToOccupationSelection()
                     } else {
-                        // Payment not approved, show payment screen
-                        navigateToPayment()
+                        // Test not completed, show test (payment screen will appear after personality test)
+                        navigateToTest()
                     }
                 } else {
                     navigateToAuth()

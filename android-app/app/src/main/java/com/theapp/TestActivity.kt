@@ -352,6 +352,9 @@ class TestActivity : AppCompatActivity() {
             }
             1 -> {
                 android.util.Log.d("TestActivity", "Showing analysis after first 10")
+                // Cancel timer during analysis phase
+                timer?.cancel()
+                android.util.Log.d("TestActivity", "⏹️ Timer cancelled before first analysis")
                 binding.btnSubmit?.visibility = View.GONE
                 
                 // Show analysis in a dialog instead of overlay to avoid view conflicts
@@ -400,6 +403,9 @@ class TestActivity : AppCompatActivity() {
             }
             3 -> {
                 android.util.Log.d("TestActivity", "Showing analysis after second 10")
+                // Cancel timer during analysis phase
+                timer?.cancel()
+                android.util.Log.d("TestActivity", "⏹️ Timer cancelled before second analysis")
                 binding.btnSubmit?.visibility = View.GONE
                 showSecondAnalysisDialog()
             }
@@ -422,6 +428,9 @@ class TestActivity : AppCompatActivity() {
             }
             6 -> {
                 android.util.Log.d("TestActivity", "➡️ Loading Aptitude Questions 1-20")
+                // Cancel any existing timer before starting aptitude test
+                timer?.cancel()
+                android.util.Log.d("TestActivity", "⏹️ Timer cancelled before aptitude test")
                 Toast.makeText(this, "Loading Aptitude Test...", Toast.LENGTH_SHORT).show()
                 binding.tvProgress.text = "Aptitude Test: Questions (1-20)"
                 binding.btnSubmit?.visibility = View.VISIBLE
@@ -429,6 +438,8 @@ class TestActivity : AppCompatActivity() {
                 binding.questionsContainer.visibility = View.VISIBLE // Ensure container is visible
                 displayCurrentPhaseQuestions()
                 android.util.Log.d("TestActivity", "✅ Aptitude questions loaded: ${getCurrentPhaseQuestions().size} questions")
+                // Start fresh timer for aptitude test
+                startTimer()
             }
             7 -> {
                 android.util.Log.d("TestActivity", "Submitting final test")
@@ -805,6 +816,10 @@ class TestActivity : AppCompatActivity() {
     private fun showCompleteAnalysisDialog() {
         try {
             android.util.Log.d("TestActivity", "🔴🔴🔴 showCompleteAnalysisDialog CALLED 🔴🔴🔴")
+            // CRITICAL: Cancel timer to prevent interference
+            timer?.cancel()
+            android.util.Log.d("TestActivity", "⏹️ Timer cancelled before showing complete analysis dialog")
+            
             val riasecScores = calculatePersonalityScores()
             android.util.Log.d("TestActivity", "💡 Complete analysis dialog (Q1-30). RIASEC: $riasecScores")
             

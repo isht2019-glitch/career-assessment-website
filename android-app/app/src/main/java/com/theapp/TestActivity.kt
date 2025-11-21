@@ -597,8 +597,8 @@ class TestActivity : AppCompatActivity() {
             }
             5 -> {
                 // After viewing complete analysis, show payment screen
-                android.util.Log.d("TestActivity", "Moving to payment screen")
-                showPaymentScreen()
+                android.util.Log.d("TestActivity", "🔴 PHASE 5: Moving to payment screen")
+                showPaymentScreenBeforeAptitude()
                 // Don't call startPhase(6) yet - wait for user to click Continue
             }
             6 -> {

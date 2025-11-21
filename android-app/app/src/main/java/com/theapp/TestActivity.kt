@@ -327,7 +327,13 @@ class TestActivity : AppCompatActivity() {
         
         android.util.Log.d("TestActivity", "Current phase after change: $currentPhase")
         
-        val questions = getCurrentPhaseQuestions()
+        // Only get questions for phases that have questions (0, 2, 4, 6)
+        // Skip for analysis phases (1, 3, 5) and results phase (7)
+        val questions = if (phase in listOf(0, 2, 4, 6)) {
+            getCurrentPhaseQuestions()
+        } else {
+            emptyList()
+        }
         phaseAnswers = MutableList(questions.size) { null }
         
         android.util.Log.d("TestActivity", "✅ Starting Phase: $phase with ${questions.size} questions")
@@ -786,6 +792,7 @@ class TestActivity : AppCompatActivity() {
     
     private fun showCompleteAnalysisDialog() {
         try {
+            android.util.Log.d("TestActivity", "🔴🔴🔴 showCompleteAnalysisDialog CALLED 🔴🔴🔴")
             val riasecScores = calculatePersonalityScores()
             android.util.Log.d("TestActivity", "💡 Complete analysis dialog (Q1-30). RIASEC: $riasecScores")
             

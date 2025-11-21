@@ -1160,14 +1160,15 @@ class ResultsActivity : AppCompatActivity() {
     }
     
     private fun initializeResultsGuide() {
-        try {
-            // Create Velly Bandaar guide for results page
-            val rootView = findViewById<FrameLayout>(android.R.id.content)
-            val resultsGuide = ResultsGuideSystem(this, rootView)
-            resultsGuide.init()
-        } catch (e: Exception) {
-            // Handle guide initialization error gracefully
-            println("Guide initialization failed: ${e.message}")
-        }
+        // Guide disabled for now
+        // try {
+        //     // Create Velly Bandaar guide for results page
+        //     val rootView = findViewById<FrameLayout>(android.R.id.content)
+        //     val resultsGuide = ResultsGuideSystem(this, rootView)
+        //     resultsGuide.init()
+        // } catch (e: Exception) {
+        //     // Handle guide initialization error gracefully
+        //     println("Guide initialization failed: ${e.message}")
+        // }
     }
 }

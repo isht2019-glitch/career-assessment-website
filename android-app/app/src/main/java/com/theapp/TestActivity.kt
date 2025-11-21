@@ -182,12 +182,12 @@ class TestActivity : AppCompatActivity() {
             initializeTest()
             setupClickListeners()
             
-            // Initialize Velly Bandaar guide for test page with error handling
-            try {
-                initializeTestGuide()
-            } catch (e: Exception) {
-                android.util.Log.e("TestActivity", "Error initializing guide", e)
-            }
+            // Guide disabled for now
+            // try {
+            //     initializeTestGuide()
+            // } catch (e: Exception) {
+            //     android.util.Log.e("TestActivity", "Error initializing guide", e)
+            // }
             
             // Delay heavy operations to prevent ANR
             binding.root.postDelayed({

@@ -320,7 +320,7 @@ class TestActivity : AppCompatActivity() {
     }
     
     private fun startPhase(phase: Int) {
-        android.util.Log.d("TestActivity", "⚡ startPhase called with phase: $phase")
+        android.util.Log.d("TestActivity", "⚡⚡⚡ startPhase called with phase: $phase ⚡⚡⚡")
         android.util.Log.d("TestActivity", "Current phase before change: $currentPhase")
         
         currentPhase = phase
@@ -330,8 +330,10 @@ class TestActivity : AppCompatActivity() {
         // Only get questions for phases that have questions (0, 2, 4, 6)
         // Skip for analysis phases (1, 3, 5) and results phase (7)
         val questions = if (phase in listOf(0, 2, 4, 6)) {
+            android.util.Log.d("TestActivity", "Getting questions for phase $phase")
             getCurrentPhaseQuestions()
         } else {
+            android.util.Log.d("TestActivity", "Phase $phase is dialog/analysis phase, skipping questions")
             emptyList()
         }
         phaseAnswers = MutableList(questions.size) { null }
@@ -412,9 +414,11 @@ class TestActivity : AppCompatActivity() {
                 android.util.Log.d("TestActivity", "✅ Questions 21-30 loaded: ${getCurrentPhaseQuestions().size} questions")
             }
             5 -> {
-                android.util.Log.d("TestActivity", "Showing complete personality analysis")
+                android.util.Log.d("TestActivity", "🔴🔴🔴 PHASE 5: About to show complete personality analysis dialog 🔴🔴🔴")
                 binding.btnSubmit?.visibility = View.GONE
+                android.util.Log.d("TestActivity", "Submit button hidden, calling showCompleteAnalysisDialog()")
                 showCompleteAnalysisDialog()
+                android.util.Log.d("TestActivity", "showCompleteAnalysisDialog() returned")
             }
             6 -> {
                 android.util.Log.d("TestActivity", "➡️ Loading Aptitude Questions 1-20")
@@ -575,6 +579,8 @@ class TestActivity : AppCompatActivity() {
     
     
     private fun handlePhaseSubmission() {
+        android.util.Log.d("TestActivity", "🔴🔴🔴 handlePhaseSubmission CALLED - currentPhase: $currentPhase")
+        
         val answeredQuestions = phaseAnswers.count { it != null }
         val totalQuestions = getCurrentPhaseQuestions().size
         
@@ -582,18 +588,23 @@ class TestActivity : AppCompatActivity() {
         
         // Validate all questions are answered
         if (answeredQuestions < totalQuestions) {
+            android.util.Log.d("TestActivity", "❌ NOT ALL QUESTIONS ANSWERED: $answeredQuestions < $totalQuestions")
             Toast.makeText(this, "Please answer all questions before continuing", Toast.LENGTH_SHORT).show()
             return
         }
         
+        android.util.Log.d("TestActivity", "✅ ALL QUESTIONS ANSWERED, processing phase $currentPhase")
+        
         when (currentPhase) {
             0 -> {
+                android.util.Log.d("TestActivity", "→ PHASE 0: Storing answers 0-10, moving to phase 1")
                 // Store first 10 answers
                 storePhaseAnswers(0, 10)
                 Toast.makeText(this, "Great! Let's see your initial personality traits...", Toast.LENGTH_SHORT).show()
                 startPhase(1) // Show first analysis
             }
             2 -> {
+                android.util.Log.d("TestActivity", "→ PHASE 2: Storing answers 10-20, moving to phase 3")
                 // Store second 10 answers
                 storePhaseAnswers(10, 20)
                 Toast.makeText(this, "Excellent! Your personality is becoming clearer...", Toast.LENGTH_SHORT).show()
@@ -601,18 +612,24 @@ class TestActivity : AppCompatActivity() {
                 startPhase(3) // Show second analysis
             }
             4 -> {
+                android.util.Log.d("TestActivity", "→ PHASE 4: Storing answers 20-30, moving to phase 5")
                 // Store third 10 answers
                 storePhaseAnswers(20, 30)
                 Toast.makeText(this, "Perfect! Here's your complete personality profile...", Toast.LENGTH_SHORT).show()
-                android.util.Log.d("TestActivity", "🔴 PHASE 4 COMPLETE: Moving to phase 5 (complete analysis dialog)")
+                android.util.Log.d("TestActivity", "🔴 PHASE 4 COMPLETE: About to call startPhase(5)")
                 startPhase(5) // Show complete analysis dialog
+                android.util.Log.d("TestActivity", "🔴 PHASE 4 COMPLETE: startPhase(5) CALLED")
             }
             6 -> {
+                android.util.Log.d("TestActivity", "→ PHASE 6: Storing aptitude answers, moving to phase 7")
                 // Store aptitude answers and submit final test
                 storeAptitudeAnswers()
                 Toast.makeText(this, "Test complete! Calculating your results...", Toast.LENGTH_SHORT).show()
                 android.util.Log.d("TestActivity", "🔴 PHASE 6 COMPLETE: Moving to phase 7 (results)")
                 startPhase(7) // Submit final test
+            }
+            else -> {
+                android.util.Log.d("TestActivity", "❌ UNEXPECTED PHASE IN handlePhaseSubmission: $currentPhase")
             }
         }
     }

@@ -607,11 +607,6 @@ class TestActivity : AppCompatActivity() {
                 android.util.Log.d("TestActivity", "🔴 PHASE 4 COMPLETE: Moving to phase 5 (complete analysis dialog)")
                 startPhase(5) // Show complete analysis dialog
             }
-            5 -> {
-                // After complete analysis, show payment screen
-                android.util.Log.d("TestActivity", "🔴 PHASE 5 COMPLETE: Moving to PAYMENT SCREEN after 30 questions")
-                showPaymentScreenBeforeAptitude() // Show payment screen after all 30 questions
-            }
             6 -> {
                 // Store aptitude answers and submit final test
                 storeAptitudeAnswers()

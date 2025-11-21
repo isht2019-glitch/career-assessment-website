@@ -35,6 +35,10 @@ class PaymentActivity : AppCompatActivity() {
         paymentOptionsLayout = findViewById(R.id.layoutPaymentOptions)
         checkStatusButton = findViewById(R.id.btnCheckStatus)
         pendingMessage = findViewById(R.id.tvPendingMessage)
+        
+        // Add strikethrough to original price
+        val originalPriceView = findViewById<TextView>(R.id.tvOriginalPrice)
+        originalPriceView.paintFlags = originalPriceView.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
 
         // Check if payment is already approved
         checkIfAlreadyApproved()

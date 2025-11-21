@@ -137,6 +137,7 @@
                         android:layout_marginBottom="12dp" />
 
                     <TextView
+                        android:id="@+id/tvOriginalPrice"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="₹100"
@@ -144,8 +145,7 @@
                         android:textColor="#999999"
                         android:gravity="center"
                         android:layout_marginBottom="4dp"
-                        android:alpha="0.6"
-                        android:paintFlags="strikeThruText" />
+                        android:alpha="0.6" />
 
                     <TextView
                         android:id="@+id/tvPlanPrice"

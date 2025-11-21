@@ -593,18 +593,14 @@ class TestActivity : AppCompatActivity() {
                 // Store third 10 answers
                 storePhaseAnswers(20, 30)
                 Toast.makeText(this, "Perfect! Here's your complete personality profile...", Toast.LENGTH_SHORT).show()
-                startPhase(5) // Show complete analysis
-            }
-            5 -> {
-                // After viewing complete analysis, show payment screen
-                android.util.Log.d("TestActivity", "🔴 PHASE 5: Moving to payment screen")
-                showPaymentScreenBeforeAptitude()
-                // Don't call startPhase(6) yet - wait for user to click Continue
+                android.util.Log.d("TestActivity", "🔴 PHASE 4 COMPLETE: Moving to phase 5 (complete analysis dialog)")
+                startPhase(5) // Show complete analysis dialog
             }
             6 -> {
                 // Store aptitude answers and submit final test
                 storeAptitudeAnswers()
                 Toast.makeText(this, "Test complete! Calculating your results...", Toast.LENGTH_SHORT).show()
+                android.util.Log.d("TestActivity", "🔴 PHASE 6 COMPLETE: Moving to phase 7 (results)")
                 startPhase(7) // Submit final test
             }
         }
@@ -975,15 +971,16 @@ class TestActivity : AppCompatActivity() {
             binding.tvProgress?.visibility = View.GONE
             android.util.Log.d("TestActivity", "   ✅ Hidden other views")
             
-            // Create scrollable payment screen
+            // Create scrollable payment screen with high z-index
             val scrollView = android.widget.ScrollView(this).apply {
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT
                 )
                 setBackgroundColor(getColor(android.R.color.white))
+                elevation = 1000f // Ensure it's on top
             }
-            android.util.Log.d("TestActivity", "   ✅ Created scrollView")
+            android.util.Log.d("TestActivity", "   ✅ Created scrollView with elevation 1000f")
             
             val paymentView = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL

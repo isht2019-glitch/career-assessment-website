@@ -2675,9 +2675,13 @@
                     console.log('   → Showing analysis for phase', currentPhase);
                     showPersonalityAnalysis(currentPhase);
                 } else if (currentPhase === 2) {
-                    // After phase 2 (Q21-30), show payment screen
-                    console.log('   → 💳 SHOWING PAYMENT SCREEN NOW!');
-                    showPaymentScreenBeforeAptitude();
+                    // After phase 2 (Q21-30), show complete analysis first
+                    console.log('   → 📊 Showing complete analysis');
+                    // TODO: Show complete analysis dialog here
+                    // For now, skip to aptitude
+                    currentPhase = 3;
+                    currentQuestion = 0;
+                    loadQuestion();
                 } else if (currentPhase === 3) {
                     // Completed aptitude test
                     console.log('🎉 All tests completed! Showing results...');

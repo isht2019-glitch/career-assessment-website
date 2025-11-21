@@ -57,7 +57,7 @@ class AuthActivity : AppCompatActivity() {
                 // Simulate successful signup
                 showSuccess("Account created for $email")
                 saveLoginStatus(email)
-                navigateToPayment()
+                navigateToTest()
             }
         }
         
@@ -70,7 +70,7 @@ class AuthActivity : AppCompatActivity() {
                 // Simulate successful signin
                 showSuccess("Signed in as $email")
                 saveLoginStatus(email)
-                navigateToPayment()
+                navigateToTest()
             }
         }
         
@@ -80,7 +80,7 @@ class AuthActivity : AppCompatActivity() {
             val email = "google.user@gmail.com" // Placeholder for Google sign-in
             showSuccess("Google Sign-In successful")
             saveLoginStatus(email)
-            navigateToPayment()
+            navigateToTest()
         }
         
         // Phone OTP - simplified
@@ -90,7 +90,7 @@ class AuthActivity : AppCompatActivity() {
                 showSuccess("OTP sent to $phone")
                 // Save phone as email placeholder
                 saveLoginStatus("$phone@phone.user")
-                navigateToPayment()
+                navigateToTest()
             } else {
                 showError("Please enter your phone number")
             }
@@ -224,9 +224,9 @@ class AuthActivity : AppCompatActivity() {
         UserManager.saveUserLogin(this, email)
     }
     
-    private fun navigateToPayment() {
-        // Navigate to payment screen
-        val intent = Intent(this, PaymentActivity::class.java)
+    private fun navigateToTest() {
+        // Navigate to test screen (payment will appear after personality test)
+        val intent = Intent(this, TestActivity::class.java)
         startActivity(intent)
         finish()
     }

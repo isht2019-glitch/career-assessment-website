@@ -966,11 +966,14 @@ class TestActivity : AppCompatActivity() {
     private fun showPaymentScreenBeforeAptitude() {
         try {
             android.util.Log.d("TestActivity", "🔄 SHOWING PAYMENT SCREEN - Starting payment screen display")
+            android.util.Log.d("TestActivity", "   binding.root is null? ${binding.root == null}")
+            android.util.Log.d("TestActivity", "   binding.root visibility: ${binding.root.visibility}")
             
             // Hide all other views first
             binding.questionsContainer.visibility = View.GONE
             binding.btnSubmit?.visibility = View.GONE
             binding.tvProgress?.visibility = View.GONE
+            android.util.Log.d("TestActivity", "   ✅ Hidden other views")
             
             // Create scrollable payment screen
             val scrollView = android.widget.ScrollView(this).apply {
@@ -978,7 +981,9 @@ class TestActivity : AppCompatActivity() {
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT
                 )
+                setBackgroundColor(getColor(android.R.color.white))
             }
+            android.util.Log.d("TestActivity", "   ✅ Created scrollView")
             
             val paymentView = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
@@ -989,8 +994,10 @@ class TestActivity : AppCompatActivity() {
                 setBackgroundColor(getColor(android.R.color.white))
                 setPadding(32, 32, 32, 32)
             }
+            android.util.Log.d("TestActivity", "   ✅ Created paymentView")
             
             scrollView.addView(paymentView)
+            android.util.Log.d("TestActivity", "   ✅ Added paymentView to scrollView")
 
             // Title
             val titleView = TextView(this).apply {
@@ -1077,12 +1084,16 @@ class TestActivity : AppCompatActivity() {
             paymentView.addView(continueBtn)
 
             // Add scrollView to main view
+            android.util.Log.d("TestActivity", "   ✅ About to add scrollView to binding.root")
             binding.root.addView(scrollView)
-            android.util.Log.d("TestActivity", "✅ Payment screen displayed successfully")
+            android.util.Log.d("TestActivity", "   ✅ ScrollView added to binding.root")
+            android.util.Log.d("TestActivity", "✅✅✅ PAYMENT SCREEN DISPLAYED SUCCESSFULLY ✅✅✅")
         } catch (e: Exception) {
-            android.util.Log.e("TestActivity", "ERROR showing payment screen", e)
+            android.util.Log.e("TestActivity", "❌❌❌ ERROR showing payment screen", e)
+            android.util.Log.e("TestActivity", "Exception message: ${e.message}")
+            android.util.Log.e("TestActivity", "Exception cause: ${e.cause}")
             e.printStackTrace()
-            Toast.makeText(this, "Proceeding to aptitude test...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "ERROR: ${e.message}", Toast.LENGTH_LONG).show()
             startPhase(6)
         }
     }

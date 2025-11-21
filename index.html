@@ -2669,14 +2669,16 @@
                 loadQuestion();
             } else {
                 // Completed a phase
-                console.log('Phase completed! Current phase:', currentPhase);
+                console.log('🔴 PHASE COMPLETED! Current phase:', currentPhase, 'Total answered:', answers.filter(a => a !== undefined).length);
                 if (currentPhase < 2) {
                     // Show personality analysis after each 10 personality questions (phases 0, 1)
+                    console.log('   → Showing analysis for phase', currentPhase);
                     showPersonalityAnalysis(currentPhase);
                 } else if (currentPhase === 2) {
                     // After phase 2 (Q21-30), show payment screen
+                    console.log('   → 💳 SHOWING PAYMENT SCREEN NOW!');
                     showPaymentScreenBeforeAptitude();
-                } else {
+                } else if (currentPhase === 3) {
                     // Completed aptitude test
                     console.log('🎉 All tests completed! Showing results...');
                     alert('✅ Test completed! Calculating results...');

@@ -812,9 +812,12 @@ class TestActivity : AppCompatActivity() {
                 .setCancelable(false)
                 .setPositiveButton("Continue") { dialog, _ ->
                     dialog.dismiss()
-                    android.util.Log.d("TestActivity", "Dialog dismissed, showing payment screen")
-                    // Show payment screen first, then aptitude test
-                    showPaymentScreenBeforeAptitude()
+                    android.util.Log.d("TestActivity", "🔴 Dialog dismissed, showing payment screen")
+                    // Delay to ensure dialog is fully dismissed before showing payment screen
+                    binding.root.postDelayed({
+                        android.util.Log.d("TestActivity", "💳 NOW showing payment screen")
+                        showPaymentScreenBeforeAptitude()
+                    }, 300)
                 }
                 .create()
             

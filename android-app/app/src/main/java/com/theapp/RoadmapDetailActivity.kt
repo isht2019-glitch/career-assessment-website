@@ -102,21 +102,17 @@ class RoadmapDetailActivity : AppCompatActivity() {
         // Clean up the roadmap text - remove unrelated content
         val cleanedText = cleanRoadmapText(roadmapText)
         
-        // Show summary version first (80% of content)
-        val summaryText = if (cleanedText.length > 2000) {
-            cleanedText.substring(0, 2000) + "..."
-        } else {
-            cleanedText
-        }
+        // Show full content by default (no truncation)
+        val displayText = cleanedText
         
         // Format and display the AI-generated roadmap
-        val formattedHtml = formatRoadmapAsHtml(summaryText)
+        val formattedHtml = formatRoadmapAsHtml(displayText)
         binding.tvRoadmapContent?.text = android.text.Html.fromHtml(
             formattedHtml,
             android.text.Html.FROM_HTML_MODE_LEGACY
         )
         
-        // Add Load More button
+        // Add Load More button (for future use if needed)
         addLoadMoreButton()
     }
     
@@ -150,15 +146,8 @@ class RoadmapDetailActivity : AppCompatActivity() {
         isComprehensiveMode = !isComprehensiveMode
         
         val cleanedText = cleanRoadmapText(fullRoadmapText)
-        val displayText = if (isComprehensiveMode) {
-            cleanedText
-        } else {
-            if (cleanedText.length > 2000) {
-                cleanedText.substring(0, 2000) + "..."
-            } else {
-                cleanedText
-            }
-        }
+        // Always show full content
+        val displayText = cleanedText
         
         val formattedHtml = formatRoadmapAsHtml(displayText)
         binding.tvRoadmapContent?.text = android.text.Html.fromHtml(
@@ -168,7 +157,8 @@ class RoadmapDetailActivity : AppCompatActivity() {
         
         // Update button text
         binding.root.findViewWithTag<android.widget.Button>("loadMoreBtn")?.apply {
-            text = if (isComprehensiveMode) "Show Less" else "Load More"
+            text = "✅ Full Roadmap Loaded"
+            isEnabled = false
         }
         
         // Scroll to top

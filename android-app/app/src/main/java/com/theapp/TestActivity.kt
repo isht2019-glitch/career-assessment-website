@@ -13,6 +13,10 @@ import com.theapp.databinding.ActivityTestBinding
 
 class TestActivity : AppCompatActivity() {
     
+    companion object {
+        private const val PAYMENT_REQUEST_CODE = 1001
+    }
+    
     private lateinit var binding: ActivityTestBinding
     private var currentQuestion = 0
     private var answers = mutableListOf<Int?>()
@@ -976,9 +980,10 @@ class TestActivity : AppCompatActivity() {
             intent.putExtra("nextPhase", 6) // Next phase is aptitude (phase 6)
             
             android.util.Log.d("TestActivity", "   Intent created: ${intent.component}")
-            android.util.Log.d("TestActivity", "   Starting activity...")
+            android.util.Log.d("TestActivity", "   Starting activity for result...")
             
-            startActivity(intent)
+            // Use startActivityForResult so we can handle return properly
+            startActivityForResult(intent, PAYMENT_REQUEST_CODE)
             
             android.util.Log.d("TestActivity", "✅✅✅ PAYMENT ACTIVITY STARTED ✅✅✅")
             
@@ -989,6 +994,15 @@ class TestActivity : AppCompatActivity() {
             e.printStackTrace()
             Toast.makeText(this, "ERROR: ${e.message}", Toast.LENGTH_LONG).show()
             startPhase(6) // Continue to aptitude if payment fails
+        }
+    }
+    
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PAYMENT_REQUEST_CODE) {
+            android.util.Log.d("TestActivity", "🔄 Returned from PaymentActivity")
+            // After payment, move to aptitude test (phase 6)
+            startPhase(6)
         }
     }
     

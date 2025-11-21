@@ -587,7 +587,8 @@ class TestActivity : AppCompatActivity() {
                 // Store second 10 answers
                 storePhaseAnswers(10, 20)
                 Toast.makeText(this, "Excellent! Your personality is becoming clearer...", Toast.LENGTH_SHORT).show()
-                startPhase(3) // Show second analysis
+                android.util.Log.d("TestActivity", "🔴 PHASE 2 COMPLETE: Moving to PAYMENT SCREEN")
+                showPaymentScreenBeforeAptitude() // Show payment screen after phase 2 (20 questions)
             }
             4 -> {
                 // Store third 10 answers
@@ -963,10 +964,10 @@ class TestActivity : AppCompatActivity() {
         try {
             android.util.Log.d("TestActivity", "🔄 SHOWING PAYMENT SCREEN - Starting PaymentActivity")
             
-            // Save current state so we can return to aptitude test after payment
+            // Save current state so we can return to test after payment
             val intent = Intent(this, PaymentActivity::class.java)
             intent.putExtra("fromTest", true) // Flag to indicate we're coming from test
-            intent.putExtra("nextPhase", 6) // Next phase is aptitude (phase 6)
+            intent.putExtra("nextPhase", 4) // Next phase is questions 21-30 (phase 4)
             
             android.util.Log.d("TestActivity", "✅✅✅ PAYMENT ACTIVITY STARTED ✅✅✅")
             startActivity(intent)
@@ -976,7 +977,7 @@ class TestActivity : AppCompatActivity() {
             android.util.Log.e("TestActivity", "Exception message: ${e.message}")
             e.printStackTrace()
             Toast.makeText(this, "ERROR: ${e.message}", Toast.LENGTH_LONG).show()
-            startPhase(6)
+            startPhase(4) // Continue to phase 4 if payment fails
         }
     }
     

@@ -1,24 +1,18 @@
-// Interactive Guide System - Velly Bandaar Character
+// Guide System - COMPLETELY DISABLED
+// Velly Bandaar guide has been removed
+console.log('✅ Guide system disabled - no popups will appear');
+
 class GuideSystem {
     constructor() {
         this.currentStep = 0;
         this.userName = '';
         this.isActive = false;
-        this.init();
+        // Do NOT initialize - guide is disabled
     }
 
     init() {
-        this.createGuideElements();
-        this.bindEvents();
-        // Start guide after page loads only if not completed before
-        setTimeout(() => {
-            if (this.shouldShowGuide()) {
-                this.startGuide();
-            } else {
-                // Show character even if guide is completed, for manual restart
-                document.getElementById('guideCharacter').classList.remove('hidden');
-            }
-        }, 2000);
+        // Guide initialization disabled
+        return;
     }
 
     createGuideElements() {
@@ -218,27 +212,6 @@ class GuideSystem {
     }
 }
 
-// Initialize guide system when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.guideSystem = new GuideSystem();
-});
-
-// Fallback initialization if DOMContentLoaded already fired
-if (document.readyState === 'loading') {
-    // DOM is still loading
-} else {
-    // DOM is already loaded
-    window.guideSystem = new GuideSystem();
-}
-
-// Add keyboard support
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && window.guideSystem && window.guideSystem.isActive) {
-        window.guideSystem.hideGuide();
-    }
-    
-    // Enter key support for name input
-    if (e.key === 'Enter' && document.getElementById('userNameInput')) {
-        window.guideSystem.handleNameInput();
-    }
-});
+// Guide initialization DISABLED - no popups will appear
+// window.guideSystem = new GuideSystem(); // DISABLED
+console.log('✅ Guide system completely disabled');

@@ -2474,50 +2474,13 @@
 
         async function showScreen(screenId) {
             console.log('📺 showScreen called with:', screenId);
+            console.log('   isTestInProgress:', isTestInProgress);
+            console.log('   currentUser:', currentUser ? 'exists' : 'null');
             
-            // If trying to show payment screen, check if payment is already approved
-            // BUT ONLY if user is not actively in test (page reload scenario)
-            if (screenId === 'paymentScreen' && currentUser && db && !isTestInProgress) {
-                try {
-                    console.log('🔍 Checking payment status before showing payment screen...');
-                    let paymentSnapshot = await db.collection('paymentRequests')
-                        .where('userId', '==', currentUser.uid)
-                        .where('status', '==', 'approved')
-                        .limit(1)
-                        .get();
-                    
-                    // Also check by email
-                    if (paymentSnapshot.empty && currentUser.email) {
-                        paymentSnapshot = await db.collection('paymentRequests')
-                            .where('email', '==', currentUser.email)
-                            .where('status', '==', 'approved')
-                            .limit(1)
-                            .get();
-                    }
-                    
-                    if (!paymentSnapshot.empty) {
-                        console.log('✅ Payment already approved! Skipping payment screen...');
-                        localStorage.setItem('paymentApproved', 'true');
-                        // Skip to test screen instead
-                        screenId = 'testScreen';
-                        // Only go to aptitude if personality test was already completed
-                        // Otherwise start from Part 1
-                        const personalityAnswers = localStorage.getItem('personalityAnswers');
-                        if (personalityAnswers) {
-                            // User already completed personality test, go to aptitude
-                            currentPhase = 3;
-                            currentQuestion = 0;
-                            console.log('   Personality already complete - Setting currentPhase to 3 for aptitude test');
-                        } else {
-                            // User hasn't started yet, start from Part 1
-                            currentPhase = 0;
-                            currentQuestion = 0;
-                            console.log('   Personality not started - Starting from Part 1');
-                        }
-                    }
-                } catch (error) {
-                    console.log('Error checking payment status:', error);
-                }
+            // ALWAYS show payment screen when requested - don't skip it
+            // Payment screen should be shown after personality test completes
+            if (screenId === 'paymentScreen') {
+                console.log('✅ Showing payment screen as requested');
             }
             
             console.log('🔄 Switching to screen:', screenId);

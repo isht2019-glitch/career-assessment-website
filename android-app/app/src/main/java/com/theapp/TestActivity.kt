@@ -968,18 +968,24 @@ class TestActivity : AppCompatActivity() {
     private fun showPaymentScreenBeforeAptitude() {
         try {
             android.util.Log.d("TestActivity", "🔄 SHOWING PAYMENT SCREEN - Starting PaymentActivity")
+            android.util.Log.d("TestActivity", "   Creating intent for PaymentActivity")
             
             // Save current state so we can return to aptitude test after payment
             val intent = Intent(this, PaymentActivity::class.java)
             intent.putExtra("fromTest", true) // Flag to indicate we're coming from test
             intent.putExtra("nextPhase", 6) // Next phase is aptitude (phase 6)
             
-            android.util.Log.d("TestActivity", "✅✅✅ PAYMENT ACTIVITY STARTED ✅✅✅")
+            android.util.Log.d("TestActivity", "   Intent created: ${intent.component}")
+            android.util.Log.d("TestActivity", "   Starting activity...")
+            
             startActivity(intent)
+            
+            android.util.Log.d("TestActivity", "✅✅✅ PAYMENT ACTIVITY STARTED ✅✅✅")
             
         } catch (e: Exception) {
             android.util.Log.e("TestActivity", "❌❌❌ ERROR showing payment screen", e)
             android.util.Log.e("TestActivity", "Exception message: ${e.message}")
+            android.util.Log.e("TestActivity", "Exception type: ${e.javaClass.simpleName}")
             e.printStackTrace()
             Toast.makeText(this, "ERROR: ${e.message}", Toast.LENGTH_LONG).show()
             startPhase(6) // Continue to aptitude if payment fails

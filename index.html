@@ -2823,6 +2823,14 @@
             localStorage.setItem('personalityAnswers', JSON.stringify(answers));
             console.log('💾 Personality test complete - saved answers to localStorage');
             
+            // Stop the timer and mark test as not in progress
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            isTestInProgress = false;
+            console.log('⏹️ Test timer stopped, isTestInProgress set to false');
+            
             // Show the full payment screen instead of overlay
             // This ensures email collection is mandatory
             showScreen('paymentScreen');

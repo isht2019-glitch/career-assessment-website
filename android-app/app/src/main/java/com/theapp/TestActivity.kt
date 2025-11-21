@@ -961,134 +961,19 @@ class TestActivity : AppCompatActivity() {
     
     private fun showPaymentScreenBeforeAptitude() {
         try {
-            android.util.Log.d("TestActivity", "🔄 SHOWING PAYMENT SCREEN - Starting payment screen display")
-            android.util.Log.d("TestActivity", "   binding.root is null? ${binding.root == null}")
-            android.util.Log.d("TestActivity", "   binding.root visibility: ${binding.root.visibility}")
+            android.util.Log.d("TestActivity", "🔄 SHOWING PAYMENT SCREEN - Starting PaymentActivity")
             
-            // Hide all other views first
-            binding.questionsContainer.visibility = View.GONE
-            binding.btnSubmit?.visibility = View.GONE
-            binding.tvProgress?.visibility = View.GONE
-            android.util.Log.d("TestActivity", "   ✅ Hidden other views")
+            // Save current state so we can return to aptitude test after payment
+            val intent = Intent(this, PaymentActivity::class.java)
+            intent.putExtra("fromTest", true) // Flag to indicate we're coming from test
+            intent.putExtra("nextPhase", 6) // Next phase is aptitude (phase 6)
             
-            // Create scrollable payment screen with high z-index
-            val scrollView = android.widget.ScrollView(this).apply {
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT
-                )
-                setBackgroundColor(getColor(android.R.color.white))
-                elevation = 1000f // Ensure it's on top
-            }
-            android.util.Log.d("TestActivity", "   ✅ Created scrollView with elevation 1000f")
+            android.util.Log.d("TestActivity", "✅✅✅ PAYMENT ACTIVITY STARTED ✅✅✅")
+            startActivity(intent)
             
-            val paymentView = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                layoutParams = android.widget.FrameLayout.LayoutParams(
-                    android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
-                    android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
-                )
-                setBackgroundColor(getColor(android.R.color.white))
-                setPadding(32, 32, 32, 32)
-            }
-            android.util.Log.d("TestActivity", "   ✅ Created paymentView")
-            
-            scrollView.addView(paymentView)
-            android.util.Log.d("TestActivity", "   ✅ Added paymentView to scrollView")
-
-            // Title
-            val titleView = TextView(this).apply {
-                text = "🚀 Unlock Your Career Potential"
-                textSize = 24f
-                setTypeface(null, android.graphics.Typeface.BOLD)
-                setTextColor(getColor(R.color.purple_500))
-                setPadding(0, 0, 0, 24)
-            }
-            paymentView.addView(titleView)
-
-            // Persuasive message card
-            val messageCard = androidx.cardview.widget.CardView(this).apply {
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    setMargins(0, 0, 0, 24)
-                }
-                setCardBackgroundColor(getColor(R.color.purple_500))
-                radius = 12f
-            }
-            
-            val messageView = TextView(this).apply {
-                text = "💡 This small amount can LEVITATE YOUR CAREER with key insights that transform your future!\n\n" +
-                        "Get access to personalized career roadmaps, industry insights, and one-on-one conversation with our founder to guide your journey."
-                textSize = 14f
-                setTextColor(getColor(android.R.color.white))
-                setPadding(16, 16, 16, 16)
-                setLineSpacing(1.4f, 1.4f)
-            }
-            messageCard.addView(messageView)
-            paymentView.addView(messageCard)
-
-            // Price display
-            val priceView = TextView(this).apply {
-                text = "₹1"
-                textSize = 48f
-                setTypeface(null, android.graphics.Typeface.BOLD)
-                setTextColor(getColor(R.color.purple_500))
-                gravity = android.view.Gravity.CENTER
-                setPadding(0, 0, 0, 32)
-            }
-            paymentView.addView(priceView)
-
-            // Original price strikethrough
-            val originalView = TextView(this).apply {
-                text = "Originally ₹100"
-                textSize = 14f
-                setTextColor(getColor(android.R.color.darker_gray))
-                gravity = android.view.Gravity.CENTER
-                paintFlags = paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
-                setPadding(0, 0, 0, 48)
-            }
-            paymentView.addView(originalView)
-
-            // Continue button
-            val continueBtn = android.widget.Button(this).apply {
-                text = "Continue to Aptitude Test"
-                textSize = 16f
-                setTextColor(getColor(android.R.color.white))
-                setBackgroundColor(getColor(R.color.purple_500))
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    setMargins(0, 16, 0, 16)
-                }
-                setPadding(0, 24, 0, 24)
-                setOnClickListener {
-                    try {
-                        // Move to aptitude test (phase 6)
-                        if (scrollView.parent != null) {
-                            binding.root.removeView(scrollView)
-                        }
-                        android.util.Log.d("TestActivity", "Payment screen dismissed, starting aptitude phase 6")
-                        startPhase(6)
-                    } catch (e: Exception) {
-                        android.util.Log.e("TestActivity", "Error removing payment view", e)
-                        startPhase(6)
-                    }
-                }
-            }
-            paymentView.addView(continueBtn)
-
-            // Add scrollView to main view
-            android.util.Log.d("TestActivity", "   ✅ About to add scrollView to binding.root")
-            binding.root.addView(scrollView)
-            android.util.Log.d("TestActivity", "   ✅ ScrollView added to binding.root")
-            android.util.Log.d("TestActivity", "✅✅✅ PAYMENT SCREEN DISPLAYED SUCCESSFULLY ✅✅✅")
         } catch (e: Exception) {
             android.util.Log.e("TestActivity", "❌❌❌ ERROR showing payment screen", e)
             android.util.Log.e("TestActivity", "Exception message: ${e.message}")
-            android.util.Log.e("TestActivity", "Exception cause: ${e.cause}")
             e.printStackTrace()
             Toast.makeText(this, "ERROR: ${e.message}", Toast.LENGTH_LONG).show()
             startPhase(6)

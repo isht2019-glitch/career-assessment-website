@@ -32,12 +32,21 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun setupUI() {
+        android.util.Log.d("MainActivity", "📱 setupUI called - scheduling navigation check in 2 seconds")
+        
         // Show splash screen for 2 seconds before navigating
         binding.root.postDelayed({
+            android.util.Log.d("MainActivity", "⏰ 2 seconds passed - checking login status now")
+            
             try {
                 // Check if user is already logged in
+                android.util.Log.d("MainActivity", "🔍 About to check login status...")
                 val isLoggedIn = checkLoginStatus()
+                
+                android.util.Log.d("MainActivity", "🔍 About to check test completion...")
                 val testCompleted = UserManager.hasCompletedTest(this)
+                
+                android.util.Log.d("MainActivity", "🔍 About to get user email...")
                 val userEmail = UserManager.getUserEmail(this)
                 
                 android.util.Log.d("MainActivity", "🔍 Login Status Check:")
@@ -63,6 +72,7 @@ class MainActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 // If there's an error, stay on MainActivity and show error
                 android.util.Log.e("MainActivity", "❌ Error in setupUI", e)
+                e.printStackTrace()
                 android.widget.Toast.makeText(this, "Error: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
             }
         }, 2000)

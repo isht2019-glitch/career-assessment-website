@@ -2,6 +2,7 @@ package com.theapp
 
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.FrameLayout
@@ -25,7 +26,7 @@ class OptimizedResultsActivity : AppCompatActivity() {
         setupBasicResults()
         setupOptimizedOccupationSelection()
         
-        // Initialize guide system
+        // Initialize results guide
         initializeResultsGuide()
     }
     
@@ -507,12 +508,20 @@ Advertising agencies, design studios, in-house teams, freelancing
     
     private fun initializeResultsGuide() {
         try {
-            // Create Velly Bandaar guide for results page
-            val rootView = findViewById<FrameLayout>(android.R.id.content)
-            val resultsGuide = ResultsGuideSystem(this, rootView)
-            resultsGuide.init()
+            android.util.Log.d("OptimizedResultsActivity", "🐵 Attempting to initialize guide...")
+            // Get the root view from the activity's content view
+            val rootView = window.decorView.findViewById<ViewGroup>(android.R.id.content)
+            android.util.Log.d("OptimizedResultsActivity", "🐵 Root view obtained: ${rootView?.javaClass?.simpleName}")
+            
+            if (rootView != null) {
+                val resultsGuide = ResultsGuideSystem(this, rootView)
+                resultsGuide.init()
+                android.util.Log.d("OptimizedResultsActivity", "🐵 Guide initialized successfully")
+            } else {
+                android.util.Log.e("OptimizedResultsActivity", "❌ Root view is null")
+            }
         } catch (e: Exception) {
-            android.util.Log.e("OptimizedResultsActivity", "Error initializing guide", e)
+            android.util.Log.e("OptimizedResultsActivity", "❌ Error initializing guide: ${e.message}", e)
         }
     }
     

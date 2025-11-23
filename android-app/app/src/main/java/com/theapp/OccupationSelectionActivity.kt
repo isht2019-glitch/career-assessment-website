@@ -2,6 +2,7 @@ package com.theapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
@@ -63,6 +64,9 @@ class OccupationSelectionActivity : AppCompatActivity() {
             binding.btnDeleteAccount?.setOnClickListener {
                 showDeleteConfirmation()
             }
+            
+            // Initialize Velly Bandaar guide on occupation selection screen
+            initializeResultsGuide()
             
         } catch (e: Exception) {
             android.util.Log.e("OccupationSelection", "Error in onCreate", e)
@@ -260,6 +264,25 @@ class OccupationSelectionActivity : AppCompatActivity() {
         } catch (e: Exception) {
             android.util.Log.e("OccupationSelection", "Error deleting account", e)
             android.widget.Toast.makeText(this, "❌ Error deleting account", android.widget.Toast.LENGTH_SHORT).show()
+        }
+    }
+    
+    private fun initializeResultsGuide() {
+        try {
+            android.util.Log.d("OccupationSelectionActivity", "🐵 Attempting to initialize guide...")
+            // Get the root view from the activity's content view
+            val rootView = window.decorView.findViewById<ViewGroup>(android.R.id.content)
+            android.util.Log.d("OccupationSelectionActivity", "🐵 Root view obtained: ${rootView?.javaClass?.simpleName}")
+            
+            if (rootView != null) {
+                val resultsGuide = ResultsGuideSystem(this, rootView)
+                resultsGuide.init()
+                android.util.Log.d("OccupationSelectionActivity", "🐵 Guide initialized successfully")
+            } else {
+                android.util.Log.e("OccupationSelectionActivity", "❌ Root view is null")
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("OccupationSelectionActivity", "❌ Error initializing guide: ${e.message}", e)
         }
     }
 }

@@ -57,6 +57,14 @@ class AuthActivity : AppCompatActivity() {
                 // Simulate successful signup
                 showSuccess("Account created for $email")
                 saveLoginStatus(email)
+                
+                // Check if email is already approved for payment
+                if (ApprovedEmailManager.isEmailApproved(this, email)) {
+                    android.util.Log.d("AuthActivity", "✅ Email is approved for payment: $email")
+                    UserManager.setPaymentApproved(this, true)
+                    showSuccess("✅ Payment already approved! Proceeding to test...")
+                }
+                
                 navigateToTest()
             }
         }
@@ -70,6 +78,14 @@ class AuthActivity : AppCompatActivity() {
                 // Simulate successful signin
                 showSuccess("Signed in as $email")
                 saveLoginStatus(email)
+                
+                // Check if email is already approved for payment
+                if (ApprovedEmailManager.isEmailApproved(this, email)) {
+                    android.util.Log.d("AuthActivity", "✅ Email is approved for payment: $email")
+                    UserManager.setPaymentApproved(this, true)
+                    showSuccess("✅ Payment already approved! Proceeding to test...")
+                }
+                
                 navigateToTest()
             }
         }
@@ -247,9 +263,10 @@ class AuthActivity : AppCompatActivity() {
     }
     
     private fun initializeAuthGuide() {
+        // Guide disabled for now
         // Create Velly Bandaar guide for auth/sign-up page
-        val rootView = findViewById<FrameLayout>(android.R.id.content)
-        val authGuide = AuthGuideSystem(this, rootView)
-        authGuide.init()
+        // val rootView = findViewById<FrameLayout>(android.R.id.content)
+        // val authGuide = AuthGuideSystem(this, rootView)
+        // authGuide.init()
     }
 }

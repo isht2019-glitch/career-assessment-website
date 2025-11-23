@@ -26,18 +26,26 @@ class ResultsGuideSystem(private val context: Context, private val parentView: V
     private val handler = Handler(Looper.getMainLooper())
     
     fun init() {
+        android.util.Log.d("ResultsGuideSystem", "🐵 Initializing Results Guide System")
         createGuideElements()
+        
+        // Reset guide completion flag for results page (always show)
+        val prefs = context.getSharedPreferences("guide_prefs", Context.MODE_PRIVATE)
+        prefs.edit().putBoolean("results_guide_completed", false).apply()
         
         // Start guide automatically and immediately for results page
         handler.postDelayed({
+            android.util.Log.d("ResultsGuideSystem", "🐵 Delayed start - calling startGuide()")
             startGuide()
         }, 100)
     }
     
     private fun createGuideElements() {
+        android.util.Log.d("ResultsGuideSystem", "🐵 Creating guide elements, parentView type: ${parentView.javaClass.simpleName}")
+        
         // Create overlay
         overlay = View(context).apply {
-            layoutParams = ViewGroup.LayoutParams(
+            layoutParams = FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
@@ -46,6 +54,7 @@ class ResultsGuideSystem(private val context: Context, private val parentView: V
             setOnClickListener { hideGuide() }
         }
         parentView.addView(overlay)
+        android.util.Log.d("ResultsGuideSystem", "🐵 Overlay added to parent")
         
         // Create character
         characterView = ImageView(context).apply {
@@ -68,6 +77,7 @@ class ResultsGuideSystem(private val context: Context, private val parentView: V
             }
         }
         parentView.addView(characterView)
+        android.util.Log.d("ResultsGuideSystem", "🐵 Character view added to parent")
         
         // Create speech bubble
         createSpeechBubble()
@@ -77,6 +87,8 @@ class ResultsGuideSystem(private val context: Context, private val parentView: V
     }
     
     private fun createSpeechBubble() {
+        android.util.Log.d("ResultsGuideSystem", "🐵 Creating speech bubble")
+        
         speechBubble = LinearLayout(context).apply {
             layoutParams = FrameLayout.LayoutParams(
                 dpToPx(300),
@@ -114,6 +126,7 @@ class ResultsGuideSystem(private val context: Context, private val parentView: V
         speechBubble.addView(typingIndicator)
         
         parentView.addView(speechBubble)
+        android.util.Log.d("ResultsGuideSystem", "🐵 Speech bubble added to parent")
     }
     
     private fun createSpeechBubbleBackground(): GradientDrawable {
@@ -162,6 +175,7 @@ class ResultsGuideSystem(private val context: Context, private val parentView: V
     }
     
     private fun startGuide() {
+        android.util.Log.d("ResultsGuideSystem", "🐵 Starting Results Guide")
         isActive = true
         currentStep = 0
         showGuide()
@@ -200,24 +214,64 @@ class ResultsGuideSystem(private val context: Context, private val parentView: V
             speechContent.removeAllViews()
             
             when (step) {
-                0 -> showPerformanceStep()
-                1 -> showReportStep()
+                0 -> showIntroductionStep()
+                1 -> showSatisfactionStep()
+                2 -> showReportStep()
+                3 -> showFeedbackStep()
             }
         }
     }
     
-    private fun showPerformanceStep() {
-        // Performance evaluation text
-        addTextView("Well, it seems like you have performed! 🎯", "#FF6B35", true)
-        addTextView("If you have performed good, I knew that you are ought to be great, magnificent, smart, handsome, etc... etc... 😎", "#FFD700")
-        addTextView("Well, if you didn't do well you can try again. Or email helper@theapp.work 📧", "#FFFFFF")
+    private fun showIntroductionStep() {
+        // Introduction from Velly Bandaar
+        addTextView("Hi! I am Velly Bandaar 🐵", "#FF6B35", true)
+        addTextView("Member of Badmaash Patandaar Samajhwadi Party 💀", "#FFD700", true)
+        addTextView("Our party works on illumination of humanity ✨", "#FFFFFF")
         
         // Continue button
-        val continueBtn = createButton("Tell me about my report", "#4CAF50") {
+        val continueBtn = createButton("Continue", "#4CAF50") {
             currentStep = 1
             showStep(1)
         }
         speechContent.addView(continueBtn)
+    }
+    
+    private fun showSatisfactionStep() {
+        showTyping(800) {
+            speechContent.removeAllViews()
+            
+            addTextView("Did your result was satisfactory? 🤔", "#FF6B35", true)
+            
+            // Button container for Yes/No
+            val buttonContainer = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    topMargin = dpToPx(15)
+                }
+            }
+            
+            val yesBtn = createButton("Yes ✅", "#4CAF50") {
+                currentStep = 2
+                showStep(2)
+            }
+            yesBtn.layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
+                rightMargin = dpToPx(10)
+            }
+            
+            val noBtn = createButton("No ❌", "#FF6B35") {
+                // Show feedback message
+                currentStep = 3
+                showStep(3)
+            }
+            noBtn.layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            
+            buttonContainer.addView(yesBtn)
+            buttonContainer.addView(noBtn)
+            speechContent.addView(buttonContainer)
+        }
     }
     
     private fun showReportStep() {
@@ -233,6 +287,17 @@ class ResultsGuideSystem(private val context: Context, private val parentView: V
             }
             speechContent.addView(startBtn)
         }
+    }
+    
+    private fun showFeedbackStep() {
+        addTextView("Thank you for your feedback! 🙏", "#FF6B35", true)
+        addTextView("We appreciate your input and will work to improve! 💪", "#FFFFFF")
+        addTextView("You can email us at helper@theapp.work for detailed feedback.", "#FFD700")
+        
+        val closeBtn = createButton("Got it!", "#4CAF50") {
+            completeGuide()
+        }
+        speechContent.addView(closeBtn)
     }
     
     private fun addTextView(text: String, color: String = "#FFFFFF", bold: Boolean = false) {

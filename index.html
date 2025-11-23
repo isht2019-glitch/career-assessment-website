@@ -351,20 +351,20 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            display: none;
+            z-index: 999;
+            display: none !important;
         }
 
         .guide-overlay.active {
-            display: block;
+            display: block !important;
         }
 
         .guide-character {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
-            width: 80px;
-            height: 80px;
+            bottom: 30px;
+            left: 30px;
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
             overflow: hidden;
             cursor: pointer;
@@ -372,11 +372,11 @@
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
             border: 3px solid white;
             animation: bounce 2s infinite;
-            display: none;
+            display: none !important;
         }
 
         .guide-character.active {
-            display: block;
+            display: block !important;
         }
 
         .guide-character:hover {
@@ -396,16 +396,16 @@
 
         .speech-bubble {
             position: fixed;
-            top: 160px;
-            right: 15px;
-            max-width: 280px;
+            bottom: 200px;
+            left: 200px;
+            max-width: 320px;
             background: white;
             color: #333;
             padding: 20px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
             z-index: 1001;
-            display: none;
+            display: none !important;
             border: 3px solid #667eea;
         }
 
@@ -422,7 +422,7 @@
         }
 
         .speech-bubble.active {
-            display: block;
+            display: block !important;
             animation: slideIn 0.3s ease-out;
         }
 
@@ -1244,19 +1244,19 @@
             </div>
             <h2 id="analysisTitle">🎉 Personality Analysis</h2>
             <div class="analysis-content" id="analysisContent"></div>
-            <button class="btn-primary" style="margin-top: 20px;" id="analysisBtn" onclick="closeAnalysis()">Continue</button>
+            <button class="btn-primary" style="margin-top: 20px;" id="analysisBtn" onclick="console.log('📌 Continue button clicked!'); closeAnalysis();">Continue</button>
         </div>
     </div>
 
-    <!-- Guide System - DISABLED -->
-    <!-- <div class="guide-overlay" id="guideOverlay" onclick="closeGuide()"></div>
+    <!-- Guide System -->
+    <div class="guide-overlay" id="guideOverlay" onclick="closeGuide()"></div>
     <div class="guide-character" id="guideCharacter" onclick="toggleGuide()">
-        <img src="assets/velly-bandaar.jpeg" alt="Velly Bandaar" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%2250%22 font-size=%2260%22>🐵</text></svg>'">
+        <img id="vellyImage" src="./assets/velly-bandaar.jpeg" alt="Velly Bandaar" onload="console.log('✅ Image loaded successfully from:', this.src)" onerror="console.error('❌ Image failed to load from:', this.src); console.log('📍 Trying fallback emoji'); this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23D4A574%22/><circle cx=%2235%22 cy=%2240%22 r=%228%22 fill=%22black%22/><circle cx=%2265%22 cy=%2240%22 r=%228%22 fill=%22black%22/><ellipse cx=%2250%22 cy=%2260%22 rx=%2215%22 ry=%2210%22 fill=%22%23333%22/></svg>'">
     </div>
     <div class="speech-bubble" id="speechBubble">
         <button class="close-btn" onclick="closeGuide()">×</button>
         <div id="speechContent"></div>
-    </div> -->
+    </div>
 
     <!-- Login Screen -->
     <div id="loginScreen" class="screen">
@@ -1811,6 +1811,29 @@
         function closeGuide() {
             document.getElementById('speechBubble').classList.remove('active');
             document.getElementById('guideOverlay').classList.remove('active');
+            document.getElementById('guideCharacter').classList.remove('active');
+        }
+
+        function showVellyStep2() {
+            sessionStorage.setItem('vellyBandaarStep', '2');
+            showContextualGuide();
+        }
+
+        function showVellyStep3() {
+            sessionStorage.setItem('vellyBandaarStep', '3');
+            showContextualGuide();
+        }
+
+        function showVellyStep4() {
+            sessionStorage.setItem('vellyBandaarStep', '4');
+            showContextualGuide();
+        }
+
+        function emailSupport() {
+            // Show message instead of opening email
+            alert('Message: Please contact us at helper@theapp.work for support');
+            sessionStorage.setItem('vellyBandaarStep', '4');
+            showContextualGuide();
         }
 
         function toggleGuide() {
@@ -1828,10 +1851,12 @@
             const content = document.getElementById('speechContent');
             const bubble = document.getElementById('speechBubble');
             const overlay = document.getElementById('guideOverlay');
+            const guideCharacter = document.getElementById('guideCharacter');
             const currentScreen = document.querySelector('.screen.active').id;
 
             bubble.classList.add('active');
             overlay.classList.add('active');
+            guideCharacter.classList.add('active');
 
             if (currentScreen === 'testScreen') {
                 const totalQ = 50;
@@ -1844,12 +1869,36 @@
                     <button onclick="closeGuide()">Continue Test</button>
                 `;
             } else if (currentScreen === 'resultsScreen') {
-                content.innerHTML = `
-                    <h3>🎉 Congratulations!</h3>
-                    <p>You've completed the assessment!</p>
-                    <p>Scroll down to see your detailed career roadmaps with education paths, salary info, and top institutes! 📚</p>
-                    <button onclick="closeGuide()">Got it!</button>
-                `;
+                // Show Velly Bandaar guide on results screen
+                if (!sessionStorage.getItem('vellyBandaarStep')) {
+                    sessionStorage.setItem('vellyBandaarStep', '1');
+                    content.innerHTML = `
+                        <h3>🐵 Hi! I am Velly Bandaar</h3>
+                        <p><strong>Member of Badmaash Patandaar Samajhwadi Party 💀</strong></p>
+                        <p>Our party works on illumination of humanity ✨</p>
+                        <button onclick="showVellyStep2()">Continue</button>
+                    `;
+                } else if (sessionStorage.getItem('vellyBandaarStep') === '2') {
+                    content.innerHTML = `
+                        <h3>Did your result was satisfactory? 🤔</h3>
+                        <button onclick="showVellyStep3()" style="margin: 10px 5px; padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Yes ✅</button>
+                        <button onclick="showVellyStep4()" style="margin: 10px 5px; padding: 10px 20px; background: #FF6B35; color: white; border: none; border-radius: 5px; cursor: pointer;">No ❌</button>
+                    `;
+                } else if (sessionStorage.getItem('vellyBandaarStep') === '3') {
+                    content.innerHTML = `
+                        <h3>🎉 Congratulations!</h3>
+                        <p>You've completed the assessment!</p>
+                        <p>Scroll down to see your detailed career roadmaps with education paths, salary info, and top institutes! 📚</p>
+                        <button onclick="closeGuide()">Got it!</button>
+                    `;
+                } else if (sessionStorage.getItem('vellyBandaarStep') === '4') {
+                    content.innerHTML = `
+                        <h3>Thank you for your feedback! 🙏</h3>
+                        <p>We appreciate your input and will work to improve! 💪</p>
+                        <p>You can email us at helper@theapp.work for detailed feedback.</p>
+                        <button onclick="closeGuide()" style="margin-top: 10px; padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Got it!</button>
+                    `;
+                }
             }
         }
 
@@ -1870,7 +1919,9 @@
                 <button onclick="closeGuide(); loadQuestion(); startTimer();">Let's Start!</button>
             `;
         }
+    </script>
 
+    <script>
         function googleSignIn() {
             if (auth) {
                 // Real Firebase Google Sign-In
@@ -2259,6 +2310,15 @@
                         // User is approved!
                         clearInterval(approvalPollingInterval);
                         localStorage.setItem('paymentStatus', 'approved');
+                        
+                        // Auto-register: Add email to approved list
+                        const approvedList = JSON.parse(localStorage.getItem('approvedEmailsList') || '[]');
+                        if (!approvedList.includes(pendingEmail)) {
+                            approvedList.push(pendingEmail);
+                            localStorage.setItem('approvedEmailsList', JSON.stringify(approvedList));
+                            console.log('✅ Email auto-registered as approved:', pendingEmail);
+                        }
+                        
                         showApprovedStep();
                         alert('🎉 You\'ve been approved! You can now start the test!');
                     }
@@ -2295,6 +2355,15 @@
                     if (!snapshot.empty) {
                         // User is approved!
                         localStorage.setItem('paymentStatus', 'approved');
+                        
+                        // Auto-register: Add email to approved list
+                        const approvedList = JSON.parse(localStorage.getItem('approvedEmailsList') || '[]');
+                        if (!approvedList.includes(pendingEmail)) {
+                            approvedList.push(pendingEmail);
+                            localStorage.setItem('approvedEmailsList', JSON.stringify(approvedList));
+                            console.log('✅ Email auto-registered as approved:', pendingEmail);
+                        }
+                        
                         showApprovedStep();
                         return;
                     }
@@ -2481,6 +2550,16 @@
             // Payment screen should be shown after personality test completes
             if (screenId === 'paymentScreen') {
                 console.log('✅ Showing payment screen as requested');
+            }
+            
+            // Close guide when showing login screen
+            if (screenId === 'loginScreen') {
+                const guideChar = document.getElementById('guideCharacter');
+                const guideBubble = document.getElementById('speechBubble');
+                const guideOverlay = document.getElementById('guideOverlay');
+                if (guideChar) guideChar.classList.remove('active');
+                if (guideBubble) guideBubble.classList.remove('active');
+                if (guideOverlay) guideOverlay.classList.remove('active');
             }
             
             console.log('🔄 Switching to screen:', screenId);
@@ -2670,31 +2749,27 @@
             } else {
                 // Completed a phase
                 console.log('🔴 PHASE COMPLETED! Current phase:', currentPhase, 'Total answered:', answers.filter(a => a !== undefined).length);
-                if (currentPhase < 2) {
-                    // Show personality analysis after each 10 personality questions (phases 0, 1)
+                if (currentPhase < 3) {
+                    // Show personality analysis after each 10 personality questions (phases 0, 1, 2)
                     console.log('   → Showing analysis for phase', currentPhase);
+                    console.log('🔵 ABOUT TO CALL showPersonalityAnalysis with phase:', currentPhase);
                     showPersonalityAnalysis(currentPhase);
-                } else if (currentPhase === 2) {
-                    // After phase 2 (Q21-30), show complete analysis first
-                    console.log('   → 📊 Showing complete analysis');
-                    // TODO: Show complete analysis dialog here
-                    // For now, skip to aptitude
-                    currentPhase = 3;
-                    currentQuestion = 0;
-                    loadQuestion();
+                    console.log('🔵 RETURNED FROM showPersonalityAnalysis - ABOUT TO RETURN FROM nextQuestion');
+                    return; // STOP HERE - wait for user to click Continue
                 } else if (currentPhase === 3) {
-                    // Completed aptitude test
+                    // Completed aptitude test - show results
                     console.log('🎉 All tests completed! Showing results...');
-                    alert('✅ Test completed! Calculating results...');
                     showResults();
                 }
             }
         }
 
         function showPersonalityAnalysis(phaseNumber) {
+            console.log('🔵 showPersonalityAnalysis() called with phaseNumber:', phaseNumber);
             // phaseNumber is 0 or 1 (phase that just completed)
             // analysisNumber is 1 or 2 (for display)
             const analysisNumber = phaseNumber + 1;
+            console.log('🔵 analysisNumber calculated:', analysisNumber);
             
             // Calculate RIASEC scores for completed questions
             const startQ = phaseNumber * 10;
@@ -2772,18 +2847,33 @@
             }, 1500);
 
             // Set callback to continue
-            analysisCallback = () => {
-                currentPhase++;
-                currentQuestion = 0;
-                loadQuestion();
-            };
+            if (analysisNumber < 3) {
+                // After analysis 1 or 2, continue to next phase
+                analysisCallback = () => {
+                    console.log('🟢 Analysis callback executing for phase', phaseNumber);
+                    currentPhase++;
+                    currentQuestion = 0;
+                    loadQuestion();
+                };
+            } else {
+                // After analysis 3 (all personality complete), show payment screen
+                analysisCallback = () => {
+                    console.log('🟢 Analysis callback executing for PAYMENT SCREEN');
+                    showPaymentScreenBeforeAptitude();
+                };
+            }
+            console.log('🟡 Callback set for analysisNumber:', analysisNumber);
         }
 
         function closeAnalysis() {
+            console.log('🔵 closeAnalysis() called!');
+            console.log('🔵 analysisCallback exists:', !!analysisCallback);
             document.getElementById('analysisOverlay').classList.remove('active');
             if (analysisCallback) {
-                analysisCallback();
+                console.log('🔵 Executing analysisCallback...');
+                const callback = analysisCallback;
                 analysisCallback = null;
+                callback();
             }
         }
 
@@ -2791,6 +2881,7 @@
             // Mark personality test as complete
             localStorage.setItem('personalityAnswers', JSON.stringify(answers));
             console.log('💾 Personality test complete - saved answers to localStorage');
+            console.log('🎉🎉🎉 PAYMENT SCREEN FUNCTION CALLED! 🎉🎉🎉');
             
             // Stop the timer and mark test as not in progress
             if (timerInterval) {
@@ -2802,7 +2893,9 @@
             
             // Show the full payment screen instead of overlay
             // This ensures email collection is mandatory
+            console.log('📺 About to show payment screen...');
             showScreen('paymentScreen');
+            console.log('📺 showScreen called for paymentScreen');
             return;
             
             // OLD CODE - kept for reference but not used
@@ -3001,6 +3094,15 @@
             console.log('📺 Showing results screen...');
             showScreen('resultsScreen');
             console.log('✅ Results screen should be visible now');
+            
+            // Show Velly Bandaar guide
+            setTimeout(() => {
+                console.log('🎯 About to show Velly Bandaar guide...');
+                sessionStorage.removeItem('vellyBandaarStep');
+                console.log('🎯 Calling showContextualGuide()');
+                showContextualGuide();
+                console.log('🎯 showContextualGuide() called');
+            }, 500);
         }
 
         async function showResults() {
@@ -3410,7 +3512,7 @@
             }
 
             // Populate occupation dropdown with updated roadmaps
-            populateOccupationDropdown(dominant[0]);
+            // populateOccupationDropdown(dominant[0]); // Replaced with populateOccupationDropdownAndList
 
             showScreen('resultsScreen');
         }

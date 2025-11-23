@@ -99,9 +99,10 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun initializeMainGuide() {
+        // Guide disabled for now
         // Create Velly Bandaar guide for main page
-        val rootView = findViewById<FrameLayout>(android.R.id.content)
-        val mainGuide = MainGuideSystem(this, rootView)
-        mainGuide.init()
+        // val rootView = findViewById<FrameLayout>(android.R.id.content)
+        // val mainGuide = MainGuideSystem(this, rootView)
+        // mainGuide.init()
     }
 }

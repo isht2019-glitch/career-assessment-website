@@ -42,6 +42,8 @@ class PaymentActivity : AppCompatActivity() {
 
         // Check if payment is already approved
         checkIfAlreadyApproved()
+        
+        android.util.Log.d("PaymentActivity", "🔄 PaymentActivity created. fromTest=${intent.getBooleanExtra("fromTest", false)}")
 
         // Choose Plan button - Shows the email form
         choosePlanButton.setOnClickListener {
@@ -63,13 +65,16 @@ class PaymentActivity : AppCompatActivity() {
     }
     
     private fun checkIfAlreadyApproved() {
-        // If payment is already approved in SharedPreferences, skip to test
-        if (UserManager.isPaymentApproved(this)) {
+        // If payment is already approved in SharedPreferences AND not coming from TestActivity, skip to test
+        if (UserManager.isPaymentApproved(this) && !intent.getBooleanExtra("fromTest", false)) {
             android.util.Log.d("PaymentActivity", "✅ Payment already approved, skipping to test")
+            // Navigate to test normally
             val intent = Intent(this, TestActivity::class.java)
             startActivity(intent)
             finish()
         }
+        // If called from TestActivity, show payment screen regardless of approval status
+        // This allows user to see the payment screen as part of the flow
     }
 
     private fun submitPaymentRequest() {
@@ -195,13 +200,24 @@ class PaymentActivity : AppCompatActivity() {
                         // Mark payment as approved in UserManager
                         UserManager.setPaymentApproved(this, true)
                         UserManager.saveUserLogin(this, userEmail)
+                        
+                        // Auto-register: Add email to approved list so user doesn't need to pay again
+                        ApprovedEmailManager.addApprovedEmail(this, userEmail)
+                        android.util.Log.d("PaymentActivity", "✅ Email auto-registered as approved: $userEmail")
 
                         // Hide pending message
                         pendingMessage.visibility = View.GONE
                         checkStatusButton.visibility = View.GONE
 
-                        // If the user has already completed the test, skip directly to occupations
-                        if (UserManager.hasCompletedTest(this)) {
+                        // If called from TestActivity via startActivityForResult, return to it
+                        if (intent.getBooleanExtra("fromTest", false)) {
+                            android.util.Log.d("PaymentActivity", "✅ Payment approved, returning to TestActivity")
+                            progressBar.postDelayed({
+                                setResult(RESULT_OK)
+                                finish()
+                            }, 2000)
+                        } else if (UserManager.hasCompletedTest(this)) {
+                            // If the user has already completed the test, skip directly to occupations
                             val stored = UserManager.getStoredTestResults(this)
                             if (stored != null) {
                                 progressBar.postDelayed({

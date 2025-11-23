@@ -1069,15 +1069,15 @@
         </div>
     </div>
 
-    <!-- Guide System - DISABLED -->
-    <!-- <div class="guide-overlay" id="guideOverlay" onclick="closeGuide()"></div>
+    <!-- Guide System -->
+    <div class="guide-overlay" id="guideOverlay" onclick="closeGuide()"></div>
     <div class="guide-character" id="guideCharacter" onclick="toggleGuide()">
         <img src="assets/velly-bandaar.jpeg" alt="Velly Bandaar" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%2250%22 font-size=%2260%22>🐵</text></svg>'">
     </div>
     <div class="speech-bubble" id="speechBubble">
         <button class="close-btn" onclick="closeGuide()">×</button>
         <div id="speechContent"></div>
-    </div> -->
+    </div>
 
     <!-- Login Screen -->
     <div id="loginScreen" class="screen">
@@ -1604,14 +1604,101 @@
                     <p>💡 <strong>Tip:</strong> Click on the numbered circles to jump to any question!</p>
                     <button onclick="closeGuide()">Continue Test</button>
                 `;
+            } else if (currentScreen === 'paymentScreen') {
+                // Show Velly Bandaar guide on payment screen
+                if (!sessionStorage.getItem('vellyBandaarStep')) {
+                    sessionStorage.setItem('vellyBandaarStep', '1');
+                    content.innerHTML = `
+                        <h3>🐵 Hi! I am Velly Bandaar</h3>
+                        <p><strong>Member of Badmaash Patandaar Samajhwadi Party 💀</strong></p>
+                        <p>Our party works on illumination of humanity ✨</p>
+                        <button onclick="showVellyStep2()">Continue</button>
+                    `;
+                } else if (sessionStorage.getItem('vellyBandaarStep') === '2') {
+                    content.innerHTML = `
+                        <h3>Did your result was satisfactory? 🤔</h3>
+                        <button onclick="showVellyStep3()" style="margin: 10px 5px; padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Yes ✅</button>
+                        <button onclick="showVellyStep4()" style="margin: 10px 5px; padding: 10px 20px; background: #FF6B35; color: white; border: none; border-radius: 5px; cursor: pointer;">No ❌</button>
+                    `;
+                } else if (sessionStorage.getItem('vellyBandaarStep') === '3') {
+                    content.innerHTML = `
+                        <h3>🎉 Congratulations!</h3>
+                        <p>You've completed the assessment!</p>
+                        <p>Scroll down to see your detailed career roadmaps with education paths, salary info, and top institutes! 📚</p>
+                        <button onclick="closeGuide()">Got it!</button>
+                    `;
+                } else if (sessionStorage.getItem('vellyBandaarStep') === '4') {
+                    content.innerHTML = `
+                        <h3>Thank you for your feedback! 🙏</h3>
+                        <p>We appreciate your input and will work to improve! 💪</p>
+                        <p>You can email us at helper@theapp.work for detailed feedback.</p>
+                        <button onclick="closeGuide()" style="margin-top: 10px; padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Got it!</button>
+                    `;
+                }
             } else if (currentScreen === 'resultsScreen') {
-                content.innerHTML = `
-                    <h3>🎉 Congratulations!</h3>
-                    <p>You've completed the assessment!</p>
-                    <p>Scroll down to see your detailed career roadmaps with education paths, salary info, and top institutes! 📚</p>
-                    <button onclick="closeGuide()">Got it!</button>
-                `;
+                // Show Velly Bandaar guide on results screen
+                if (!sessionStorage.getItem('vellyBandaarStep')) {
+                    sessionStorage.setItem('vellyBandaarStep', '1');
+                    content.innerHTML = `
+                        <h3>🐵 Hi! I am Velly Bandaar</h3>
+                        <p><strong>Member of Badmaash Patandaar Samajhwadi Party 💀</strong></p>
+                        <p>Our party works on illumination of humanity ✨</p>
+                        <button onclick="showVellyStep2()">Continue</button>
+                    `;
+                } else if (sessionStorage.getItem('vellyBandaarStep') === '2') {
+                    content.innerHTML = `
+                        <h3>Did your result was satisfactory? 🤔</h3>
+                        <button onclick="showVellyStep3()" style="margin: 10px 5px; padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Yes ✅</button>
+                        <button onclick="showVellyStep4()" style="margin: 10px 5px; padding: 10px 20px; background: #FF6B35; color: white; border: none; border-radius: 5px; cursor: pointer;">No ❌</button>
+                    `;
+                } else if (sessionStorage.getItem('vellyBandaarStep') === '3') {
+                    content.innerHTML = `
+                        <h3>🎉 Congratulations!</h3>
+                        <p>You've completed the assessment!</p>
+                        <p>Scroll down to see your detailed career roadmaps with education paths, salary info, and top institutes! 📚</p>
+                        <button onclick="closeGuide()">Got it!</button>
+                    `;
+                } else if (sessionStorage.getItem('vellyBandaarStep') === '4') {
+                    content.innerHTML = `
+                        <h3>Thank you for your feedback! 🙏</h3>
+                        <p>We appreciate your input and will work to improve! 💪</p>
+                        <p>You can email us at helper@theapp.work for detailed feedback.</p>
+                        <button onclick="closeGuide()" style="margin-top: 10px; padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Got it!</button>
+                    `;
+                }
             }
+        }
+
+        function showVellyStep2() {
+            const content = document.getElementById('speechContent');
+            sessionStorage.setItem('vellyBandaarStep', '2');
+            content.innerHTML = `
+                <h3>Did your result was satisfactory? 🤔</h3>
+                <button onclick="showVellyStep3()" style="margin: 10px 5px; padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Yes ✅</button>
+                <button onclick="emailSupport()" style="margin: 10px 5px; padding: 10px 20px; background: #FF6B35; color: white; border: none; border-radius: 5px; cursor: pointer;">No ❌</button>
+            `;
+        }
+
+        function showVellyStep3() {
+            const content = document.getElementById('speechContent');
+            sessionStorage.setItem('vellyBandaarStep', '3');
+            content.innerHTML = `
+                <h3>🎉 Congratulations!</h3>
+                <p>You've completed the assessment!</p>
+                <p>Scroll down to see your detailed career roadmaps with education paths, salary info, and top institutes! 📚</p>
+                <button onclick="closeGuide()">Got it!</button>
+            `;
+        }
+
+        function showVellyStep4() {
+            const content = document.getElementById('speechContent');
+            sessionStorage.setItem('vellyBandaarStep', '4');
+            content.innerHTML = `
+                <h3>Thank you for your feedback! 🙏</h3>
+                <p>We appreciate your input and will work to improve! 💪</p>
+                <p>You can email us at helper@theapp.work for detailed feedback.</p>
+                <button onclick="closeGuide()" style="margin-top: 10px; padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Got it!</button>
+            `;
         }
 
         function showTestGuide() {
@@ -1648,7 +1735,7 @@
                         userEmail = user.email;
                         
                         console.log('Google Sign-In successful:', userName);
-                        showScreen('paymentScreen');
+                        showPaymentScreenWithGuide();
                     })
                     .catch((error) => {
                         console.error('Google Sign-In error:', error);
@@ -1669,10 +1756,19 @@
                 userEmail = email;
                 currentUser = { name: userName, email: userEmail };
                 closeAuthModal();
-                showScreen('paymentScreen');
+                showPaymentScreenWithGuide();
             } else {
                 alert('Please enter a valid email address');
             }
+        }
+
+        function showPaymentScreenWithGuide() {
+            showScreen('paymentScreen');
+            // Show Velly Bandaar guide on payment screen
+            setTimeout(() => {
+                sessionStorage.removeItem('vellyBandaarStep');
+                showContextualGuide();
+            }, 500);
         }
 
         // Phone Authentication Variables
@@ -1783,7 +1879,7 @@
                 // Close modal and proceed
                 closeAuthModal();
                 alert('✅ Phone verified successfully!');
-                showScreen('paymentScreen');
+                showPaymentScreenWithGuide();
                 
             } catch (error) {
                 console.error('Error verifying OTP:', error);
@@ -1808,11 +1904,35 @@
                 userName = "User_" + phone.slice(-4);
                 userEmail = phone + "@phone.com";
                 currentUser = { name: userName, email: userEmail };
-                closeAuthModal();
+                completeSignUp();
                 alert('✅ Demo mode: Phone verified!');
-                showScreen('paymentScreen');
+                showPaymentScreenWithGuide();
             } else {
                 alert('Please enter a valid 6-digit OTP');
+            }
+        }
+
+        function completeSignUp() {
+            document.getElementById('googleModal').classList.remove('active');
+            document.getElementById('phoneModal').classList.remove('active');
+            
+            // Reset phone modal
+            document.getElementById('otpGroup').style.display = 'none';
+            document.getElementById('phoneBtn').textContent = 'Send OTP';
+            document.getElementById('phoneBtn').onclick = sendOTP;
+            document.getElementById('phoneBtn').disabled = false;
+            document.getElementById('phoneNumber').value = '';
+            document.getElementById('otpCode').value = '';
+            
+            // Clear reCAPTCHA
+            if (recaptchaVerifier) {
+                try {
+                    recaptchaVerifier.clear();
+                } catch (e) {
+                    console.log('reCAPTCHA clear error:', e);
+                }
+                recaptchaVerifier = null;
+                document.getElementById('recaptcha-container').innerHTML = '';
             }
         }
 
@@ -1861,7 +1981,7 @@
                         }).then(() => {
                             currentUser = user;
                             console.log('Account created successfully:', userName);
-                            showScreen('paymentScreen');
+                            showPaymentScreenWithGuide();
                         });
                     })
                     .catch((error) => {
@@ -1872,7 +1992,7 @@
                                     currentUser = userCredential.user;
                                     userName = currentUser.displayName || userName;
                                     console.log('Signed in successfully:', userName);
-                                    showScreen('paymentScreen');
+                                    showPaymentScreenWithGuide();
                                 })
                                 .catch((signInError) => {
                                     alert('Email already exists. Please use correct password or try Google Sign-In.');
@@ -1885,7 +2005,7 @@
             } else {
                 // Fallback if Firebase not initialized
                 currentUser = { name: userName, email: userEmail };
-                showScreen('paymentScreen');
+                showPaymentScreenWithGuide();
             }
         }
 
@@ -1966,6 +2086,15 @@
                         // User is approved!
                         clearInterval(approvalPollingInterval);
                         localStorage.setItem('paymentStatus', 'approved');
+                        
+                        // Auto-register: Add email to approved list
+                        const approvedList = JSON.parse(localStorage.getItem('approvedEmailsList') || '[]');
+                        if (!approvedList.includes(pendingEmail)) {
+                            approvedList.push(pendingEmail);
+                            localStorage.setItem('approvedEmailsList', JSON.stringify(approvedList));
+                            console.log('✅ Email auto-registered as approved:', pendingEmail);
+                        }
+                        
                         showApprovedStep();
                         alert('🎉 You\'ve been approved! You can now start the test!');
                     }
@@ -2002,6 +2131,15 @@
                     if (!snapshot.empty) {
                         // User is approved!
                         localStorage.setItem('paymentStatus', 'approved');
+                        
+                        // Auto-register: Add email to approved list
+                        const approvedList = JSON.parse(localStorage.getItem('approvedEmailsList') || '[]');
+                        if (!approvedList.includes(pendingEmail)) {
+                            approvedList.push(pendingEmail);
+                            localStorage.setItem('approvedEmailsList', JSON.stringify(approvedList));
+                            console.log('✅ Email auto-registered as approved:', pendingEmail);
+                        }
+                        
                         showApprovedStep();
                         return;
                     }
@@ -2285,12 +2423,11 @@
                 // Completed a phase
                 console.log('Phase completed!');
                 if (currentPhase < 3) {
-                    // Show personality analysis after each 10 personality questions
+                    // Show personality analysis after each 10 personality questions (phases 0, 1, 2)
                     showPersonalityAnalysis(currentPhase + 1);
                 } else {
-                    // Completed aptitude test
+                    // Completed aptitude test - show results
                     console.log('🎉 All tests completed! Showing results...');
-                    alert('✅ Test completed! Calculating results...');
                     showResults();
                 }
             }
@@ -2366,18 +2503,26 @@
                 if (analysisNumber < 3) {
                     html += `<p style="margin-top: 20px; color: #667eea; font-weight: bold;">Let's continue! ${10 * (3 - analysisNumber)} more personality questions to go! 🚀</p>`;
                 } else {
-                    html += `<p style="margin-top: 20px; color: #667eea; font-weight: bold;">Great! Now let's test your aptitude with 20 questions! 🎯</p>`;
+                    html += `<p style="margin-top: 20px; color: #667eea; font-weight: bold;">Excellent! Your personality profile is complete. Next: Unlock premium insights with payment! 💎</p>`;
                 }
 
                 content.innerHTML = html;
             }, 1500);
 
             // Set callback to continue
-            analysisCallback = () => {
-                currentPhase++;
-                currentQuestion = 0;
-                loadQuestion();
-            };
+            if (analysisNumber < 3) {
+                // After analysis 1 or 2, continue to next phase
+                analysisCallback = () => {
+                    currentPhase++;
+                    currentQuestion = 0;
+                    loadQuestion();
+                };
+            } else {
+                // After analysis 3 (all personality complete), show payment screen
+                analysisCallback = () => {
+                    showPaymentScreenWithGuide();
+                };
+            }
         }
 
         function closeAnalysis() {
@@ -2498,6 +2643,12 @@
             console.log('📺 Showing results screen...');
             showScreen('resultsScreen');
             console.log('✅ Results screen should be visible now');
+            
+            // Show Velly Bandaar guide
+            setTimeout(() => {
+                sessionStorage.removeItem('vellyBandaarStep');
+                showGuide();
+            }, 500);
         }
 
         async function showResults() {

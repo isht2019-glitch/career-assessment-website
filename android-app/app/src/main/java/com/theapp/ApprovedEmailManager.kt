@@ -103,6 +103,21 @@ object ApprovedEmailManager {
     }
     
     /**
+     * Remove a specific email from approved list
+     */
+    fun removeApprovedEmail(context: Context, email: String) {
+        val approvedEmails = getApprovedEmails(context).toMutableSet()
+        approvedEmails.remove(email.lowercase())
+        
+        with(getPrefs(context).edit()) {
+            putStringSet(KEY_APPROVED_EMAILS, approvedEmails)
+            apply()
+        }
+        
+        Log.d("ApprovedEmailManager", "🗑️ Removed email from approved list: $email")
+    }
+    
+    /**
      * Clear all approved emails (for testing or logout)
      */
     fun clearApprovedEmails(context: Context) {

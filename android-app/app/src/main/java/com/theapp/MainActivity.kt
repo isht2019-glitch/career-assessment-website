@@ -14,6 +14,8 @@ class MainActivity : AppCompatActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        android.util.Log.d("MainActivity", "🚀 onCreate called - App starting!")
+        
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         

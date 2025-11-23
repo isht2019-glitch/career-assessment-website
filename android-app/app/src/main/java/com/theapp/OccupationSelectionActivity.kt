@@ -219,9 +219,9 @@ class OccupationSelectionActivity : AppCompatActivity() {
                 // Clear only login status, NOT test results
                 // This allows users to see their results when they log back in
                 val prefs = getSharedPreferences("theapp_prefs", MODE_PRIVATE)
-                prefs.edit().apply {
+                with(prefs.edit()) {
                     putBoolean("is_logged_in", false)
-                    putString("user_email", null)
+                    remove("user_email")
                     remove("login_date")
                     apply()
                 }

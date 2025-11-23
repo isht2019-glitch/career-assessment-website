@@ -216,14 +216,21 @@ class OccupationSelectionActivity : AppCompatActivity() {
             builder.setTitle("🚪 Logout")
             builder.setMessage("Are you sure you want to logout?")
             builder.setPositiveButton("Yes") { _, _ ->
-                // Clear all user data
-                UserManager.clearUserData(this)
+                // Clear only login status, NOT test results
+                // This allows users to see their results when they log back in
+                val prefs = getSharedPreferences("theapp_prefs", MODE_PRIVATE)
+                prefs.edit().apply {
+                    putBoolean("is_logged_in", false)
+                    putString("user_email", null)
+                    remove("login_date")
+                    apply()
+                }
                 
                 // Also clear any other SharedPreferences
-                val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
-                prefs.edit().clear().apply()
+                val appPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+                appPrefs.edit().clear().apply()
                 
-                android.util.Log.d("OccupationSelection", "✅ User logged out successfully")
+                android.util.Log.d("OccupationSelection", "✅ User logged out successfully (test results preserved)")
                 
                 // Navigate to auth
                 val intent = Intent(this, AuthActivity::class.java)

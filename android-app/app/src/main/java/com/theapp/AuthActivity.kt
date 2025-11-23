@@ -241,10 +241,35 @@ class AuthActivity : AppCompatActivity() {
     }
     
     private fun navigateToTest() {
-        // Navigate to test screen (payment will appear after personality test)
-        val intent = Intent(this, TestActivity::class.java)
-        startActivity(intent)
-        finish()
+        // Check if test is already completed
+        if (UserManager.hasCompletedTest(this)) {
+            android.util.Log.d("AuthActivity", "✅ Test already completed, navigating to OccupationSelection")
+            val stored = UserManager.getStoredTestResults(this)
+            if (stored != null) {
+                val intent = Intent(this, OccupationSelectionActivity::class.java)
+                intent.putExtra("dominant_type", stored.dominantType)
+                intent.putExtra("aptitude_score", stored.aptitudeScore)
+                intent.putExtra("r_score", stored.rScore)
+                intent.putExtra("i_score", stored.iScore)
+                intent.putExtra("a_score", stored.aScore)
+                intent.putExtra("s_score", stored.sScore)
+                intent.putExtra("e_score", stored.eScore)
+                intent.putExtra("c_score", stored.cScore)
+                startActivity(intent)
+                finish()
+            } else {
+                android.util.Log.d("AuthActivity", "⚠️ Test marked complete but no results found, going to test")
+                val intent = Intent(this, TestActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+        } else {
+            // Navigate to test screen (payment will appear after personality test)
+            android.util.Log.d("AuthActivity", "📝 Test not completed, navigating to TestActivity")
+            val intent = Intent(this, TestActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
     
     private fun showLoading(show: Boolean) {

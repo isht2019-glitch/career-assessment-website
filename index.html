@@ -1265,21 +1265,41 @@
                 <div class="logo-icon">
                     <img src="assets/velly-bandaar.jpeg" alt="Velly Bandaar" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
                     <span style="display:none; font-size:40px;">🐵</span>
-                    <span class="gun-emoji">🔫</span>
                 </div>
                 <h1>TheApp</h1>
-                <p>Join thousands of users today</p>
+                <p>Career Assessment & Guidance</p>
             </div>
-            <div class="input-group">
-                <input type="text" id="nameInput" placeholder="Full Name" required>
+            
+            <!-- Tab Toggle -->
+            <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0e0e0;">
+                <button id="signUpTab" class="tab-btn active" onclick="switchAuthTab('signup')" style="flex: 1; padding: 12px; border: none; background: none; cursor: pointer; font-weight: bold; color: #667eea; border-bottom: 3px solid #667eea;">Sign Up</button>
+                <button id="signInTab" class="tab-btn" onclick="switchAuthTab('signin')" style="flex: 1; padding: 12px; border: none; background: none; cursor: pointer; font-weight: bold; color: #999;">Sign In</button>
             </div>
-            <div class="input-group">
-                <input type="email" id="emailInput" placeholder="Email Address" required>
+            
+            <!-- Sign Up Form -->
+            <div id="signUpForm">
+                <div class="input-group">
+                    <input type="text" id="nameInput" placeholder="Full Name" required>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="emailInput" placeholder="Email Address" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="passwordInput" placeholder="Password" required>
+                </div>
+                <button class="btn-primary" onclick="startTest()">Create Account</button>
             </div>
-            <div class="input-group">
-                <input type="password" id="passwordInput" placeholder="Password" required>
+            
+            <!-- Sign In Form -->
+            <div id="signInForm" style="display: none;">
+                <div class="input-group">
+                    <input type="email" id="signInEmail" placeholder="Email Address" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="signInPassword" placeholder="Password" required>
+                </div>
+                <button class="btn-primary" onclick="signInUser()">Sign In</button>
             </div>
-            <button class="btn-primary" onclick="startTest()">Create Account</button>
             
             <div class="divider">
                 <span>or continue with</span>
@@ -2184,6 +2204,87 @@
             }
         }
 
+        // Tab switching for Sign Up / Sign In
+        function switchAuthTab(tab) {
+            const signUpForm = document.getElementById('signUpForm');
+            const signInForm = document.getElementById('signInForm');
+            const signUpTab = document.getElementById('signUpTab');
+            const signInTab = document.getElementById('signInTab');
+            
+            if (tab === 'signup') {
+                signUpForm.style.display = 'block';
+                signInForm.style.display = 'none';
+                signUpTab.style.color = '#667eea';
+                signUpTab.style.borderBottom = '3px solid #667eea';
+                signInTab.style.color = '#999';
+                signInTab.style.borderBottom = 'none';
+            } else {
+                signUpForm.style.display = 'none';
+                signInForm.style.display = 'block';
+                signUpTab.style.color = '#999';
+                signUpTab.style.borderBottom = 'none';
+                signInTab.style.color = '#667eea';
+                signInTab.style.borderBottom = '3px solid #667eea';
+            }
+        }
+
+        // Sign In function for returning users
+        function signInUser() {
+            const signInEmail = document.getElementById('signInEmail').value;
+            const signInPassword = document.getElementById('signInPassword').value;
+            
+            if (!signInEmail || !signInPassword) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            if (auth) {
+                auth.signInWithEmailAndPassword(signInEmail, signInPassword)
+                    .then((userCredential) => {
+                        currentUser = userCredential.user;
+                        userEmail = currentUser.email;
+                        userName = currentUser.displayName || signInEmail;
+                        console.log('✅ Signed in successfully:', userName);
+                        
+                        // Check if user has completed test and payment
+                        checkUserProgress();
+                    })
+                    .catch((error) => {
+                        console.error('Sign-in error:', error);
+                        alert('Sign-in failed: ' + error.message);
+                    });
+            } else {
+                alert('Firebase not initialized');
+            }
+        }
+
+        // Check user progress and navigate accordingly
+        function checkUserProgress() {
+            const approvedEmails = JSON.parse(localStorage.getItem('approvedEmailsList') || '[]');
+            const userTestResults = localStorage.getItem('userTestResults');
+            
+            if (userTestResults && approvedEmails.includes(userEmail.toLowerCase())) {
+                // User has completed test and payment - show results
+                console.log('✅ User has completed test and payment - showing results');
+                try {
+                    const results = JSON.parse(userTestResults);
+                    loadSavedResults(results);
+                    showScreen('resultsScreen');
+                } catch (e) {
+                    console.log('Error loading results:', e);
+                    showScreen('testScreen');
+                }
+            } else if (approvedEmails.includes(userEmail.toLowerCase())) {
+                // User has payment approved but not completed test
+                console.log('✅ User has payment approved - showing test');
+                showScreen('testScreen');
+            } else {
+                // User needs to pay
+                console.log('📝 User needs to pay - showing payment');
+                showScreen('paymentScreen');
+            }
+        }
+
         function startTest() {
             userName = document.getElementById('nameInput').value;
             userEmail = document.getElementById('emailInput').value;
@@ -2204,8 +2305,9 @@
                             displayName: userName
                         }).then(() => {
                             currentUser = user;
-                            console.log('Account created successfully:', userName);
-                            showScreen('testScreen');
+                            console.log('✅ Account created successfully:', userName);
+                            // Check user progress (payment status, test completion)
+                            checkUserProgress();
                         });
                     })
                     .catch((error) => {
@@ -2215,8 +2317,9 @@
                                 .then((userCredential) => {
                                     currentUser = userCredential.user;
                                     userName = currentUser.displayName || userName;
-                                    console.log('Signed in successfully:', userName);
-                                    showScreen('testScreen');
+                                    console.log('✅ Signed in successfully:', userName);
+                                    // Check user progress (payment status, test completion)
+                                    checkUserProgress();
                                 })
                                 .catch((signInError) => {
                                     alert('Email already exists. Please use correct password or try Google Sign-In.');
@@ -2229,7 +2332,8 @@
             } else {
                 // Fallback if Firebase not initialized
                 currentUser = { name: userName, email: userEmail };
-                showScreen('testScreen');
+                // Check user progress
+                checkUserProgress();
             }
         }
 

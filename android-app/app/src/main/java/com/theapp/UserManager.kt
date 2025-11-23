@@ -36,7 +36,9 @@ object UserManager {
      * Check if user is logged in
      */
     fun isLoggedIn(context: Context): Boolean {
-        return getPrefs(context).getBoolean(KEY_IS_LOGGED_IN, false)
+        val loggedIn = getPrefs(context).getBoolean(KEY_IS_LOGGED_IN, false)
+        android.util.Log.d("UserManager", "📋 isLoggedIn check: $loggedIn")
+        return loggedIn
     }
     
     /**
@@ -59,11 +61,21 @@ object UserManager {
      * Save user login information
      */
     fun saveUserLogin(context: Context, email: String) {
-        with(getPrefs(context).edit()) {
-            putBoolean(KEY_IS_LOGGED_IN, true)
-            putString(KEY_USER_EMAIL, email)
-            putLong(KEY_LOGIN_DATE, System.currentTimeMillis())
-            apply()
+        try {
+            with(getPrefs(context).edit()) {
+                putBoolean(KEY_IS_LOGGED_IN, true)
+                putString(KEY_USER_EMAIL, email)
+                putLong(KEY_LOGIN_DATE, System.currentTimeMillis())
+                apply()
+            }
+            android.util.Log.d("UserManager", "✅ Login saved - Email: $email")
+            
+            // Verify it was saved
+            val saved = getPrefs(context).getBoolean(KEY_IS_LOGGED_IN, false)
+            val savedEmail = getPrefs(context).getString(KEY_USER_EMAIL, null)
+            android.util.Log.d("UserManager", "✅ Verification - isLoggedIn: $saved, email: $savedEmail")
+        } catch (e: Exception) {
+            android.util.Log.e("UserManager", "❌ Error saving login", e)
         }
     }
     
@@ -105,17 +117,22 @@ object UserManager {
         aptitudeScore: Int,
         dominantType: String
     ) {
-        with(getPrefs(context).edit()) {
-            putBoolean(KEY_TEST_COMPLETED, true)
-            putInt(KEY_TEST_R_SCORE, riasecScores["R"] ?: 0)
-            putInt(KEY_TEST_I_SCORE, riasecScores["I"] ?: 0)
-            putInt(KEY_TEST_A_SCORE, riasecScores["A"] ?: 0)
-            putInt(KEY_TEST_S_SCORE, riasecScores["S"] ?: 0)
-            putInt(KEY_TEST_E_SCORE, riasecScores["E"] ?: 0)
-            putInt(KEY_TEST_C_SCORE, riasecScores["C"] ?: 0)
-            putInt(KEY_TEST_APTITUDE_SCORE, aptitudeScore)
-            putString(KEY_TEST_DOMINANT_TYPE, dominantType)
-            apply()
+        try {
+            with(getPrefs(context).edit()) {
+                putBoolean(KEY_TEST_COMPLETED, true)
+                putInt(KEY_TEST_R_SCORE, riasecScores["R"] ?: 0)
+                putInt(KEY_TEST_I_SCORE, riasecScores["I"] ?: 0)
+                putInt(KEY_TEST_A_SCORE, riasecScores["A"] ?: 0)
+                putInt(KEY_TEST_S_SCORE, riasecScores["S"] ?: 0)
+                putInt(KEY_TEST_E_SCORE, riasecScores["E"] ?: 0)
+                putInt(KEY_TEST_C_SCORE, riasecScores["C"] ?: 0)
+                putInt(KEY_TEST_APTITUDE_SCORE, aptitudeScore)
+                putString(KEY_TEST_DOMINANT_TYPE, dominantType)
+                apply()
+            }
+            android.util.Log.d("UserManager", "✅ Test results saved - Dominant Type: $dominantType, Aptitude: $aptitudeScore")
+        } catch (e: Exception) {
+            android.util.Log.e("UserManager", "❌ Error saving test results", e)
         }
     }
 

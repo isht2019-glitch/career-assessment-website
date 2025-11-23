@@ -278,6 +278,10 @@ class OccupationSelectionActivity : AppCompatActivity() {
             if (!userEmail.isNullOrEmpty()) {
                 ApprovedEmailManager.removeApprovedEmail(this, userEmail)
                 android.util.Log.d("OccupationSelection", "✅ Removed email from approved list: $userEmail")
+                
+                // Also delete test results from Firebase
+                TestResultsSync.deleteTestResultsFromFirebase(userEmail)
+                android.util.Log.d("OccupationSelection", "✅ Deleted test results from Firebase: $userEmail")
             }
             
             android.widget.Toast.makeText(this, "✅ Account deleted successfully", android.widget.Toast.LENGTH_SHORT).show()

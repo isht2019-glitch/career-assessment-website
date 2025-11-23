@@ -241,22 +241,12 @@ class AuthActivity : AppCompatActivity() {
     }
     
     private fun navigateToTest() {
-        // Check if test is already completed
+        // Check if test is already completed locally
         if (UserManager.hasCompletedTest(this)) {
-            android.util.Log.d("AuthActivity", "✅ Test already completed, navigating to OccupationSelection")
+            android.util.Log.d("AuthActivity", "✅ Test already completed locally, navigating to OccupationSelection")
             val stored = UserManager.getStoredTestResults(this)
             if (stored != null) {
-                val intent = Intent(this, OccupationSelectionActivity::class.java)
-                intent.putExtra("dominant_type", stored.dominantType)
-                intent.putExtra("aptitude_score", stored.aptitudeScore)
-                intent.putExtra("r_score", stored.rScore)
-                intent.putExtra("i_score", stored.iScore)
-                intent.putExtra("a_score", stored.aScore)
-                intent.putExtra("s_score", stored.sScore)
-                intent.putExtra("e_score", stored.eScore)
-                intent.putExtra("c_score", stored.cScore)
-                startActivity(intent)
-                finish()
+                navigateToOccupationSelection(stored)
             } else {
                 android.util.Log.d("AuthActivity", "⚠️ Test marked complete but no results found, going to test")
                 val intent = Intent(this, TestActivity::class.java)
@@ -264,12 +254,67 @@ class AuthActivity : AppCompatActivity() {
                 finish()
             }
         } else {
-            // Navigate to test screen (payment will appear after personality test)
-            android.util.Log.d("AuthActivity", "📝 Test not completed, navigating to TestActivity")
-            val intent = Intent(this, TestActivity::class.java)
-            startActivity(intent)
-            finish()
+            // Check if test results exist in Firebase (user completed test on web or another device)
+            val userEmail = binding.etSignInEmail.text.toString().trim()
+            if (userEmail.isNotEmpty()) {
+                android.util.Log.d("AuthActivity", "🔍 Checking Firebase for test results from other platform...")
+                TestResultsSync.fetchTestResultsFromFirebase(
+                    email = userEmail,
+                    onSuccess = { firebaseResults ->
+                        if (firebaseResults != null) {
+                            android.util.Log.d("AuthActivity", "✅ Found test results in Firebase! Saving locally...")
+                            // Save Firebase results locally
+                            UserManager.saveTestResults(
+                                context = this,
+                                riasecScores = mapOf(
+                                    "R" to firebaseResults.rScore,
+                                    "I" to firebaseResults.iScore,
+                                    "A" to firebaseResults.aScore,
+                                    "S" to firebaseResults.sScore,
+                                    "E" to firebaseResults.eScore,
+                                    "C" to firebaseResults.cScore
+                                ),
+                                aptitudeScore = firebaseResults.aptitudeScore,
+                                dominantType = firebaseResults.dominantType
+                            )
+                            navigateToOccupationSelection(firebaseResults)
+                        } else {
+                            android.util.Log.d("AuthActivity", "📝 No test results found, navigating to TestActivity")
+                            val intent = Intent(this, TestActivity::class.java)
+                            startActivity(intent)
+                            finish()
+                        }
+                    },
+                    onFailure = { e ->
+                        android.util.Log.e("AuthActivity", "❌ Error fetching from Firebase: ${e.message}")
+                        // Fallback to test activity
+                        val intent = Intent(this, TestActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }
+                )
+            } else {
+                // Navigate to test screen (payment will appear after personality test)
+                android.util.Log.d("AuthActivity", "📝 Test not completed, navigating to TestActivity")
+                val intent = Intent(this, TestActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
         }
+    }
+    
+    private fun navigateToOccupationSelection(results: TestResultsSync.TestResults) {
+        val intent = Intent(this, OccupationSelectionActivity::class.java)
+        intent.putExtra("dominant_type", results.dominantType)
+        intent.putExtra("aptitude_score", results.aptitudeScore)
+        intent.putExtra("r_score", results.rScore)
+        intent.putExtra("i_score", results.iScore)
+        intent.putExtra("a_score", results.aScore)
+        intent.putExtra("s_score", results.sScore)
+        intent.putExtra("e_score", results.eScore)
+        intent.putExtra("c_score", results.cScore)
+        startActivity(intent)
+        finish()
     }
     
     private fun showLoading(show: Boolean) {

@@ -974,6 +974,22 @@ class TestActivity : AppCompatActivity() {
             UserManager.setPaymentApproved(this, true)
             android.util.Log.d("TestActivity", "✅ Payment status marked as approved")
             
+            // Sync test results to Firebase for cross-platform access
+            val userEmail = UserManager.getUserEmail(this) ?: "unknown@example.com"
+            TestResultsSync.saveTestResultsToFirebase(
+                context = this,
+                email = userEmail,
+                dominantType = dominantType,
+                aptitudeScore = aptitudePercentage,
+                rScore = riasecScores["R"] ?: 0,
+                iScore = riasecScores["I"] ?: 0,
+                aScore = riasecScores["A"] ?: 0,
+                sScore = riasecScores["S"] ?: 0,
+                eScore = riasecScores["E"] ?: 0,
+                cScore = riasecScores["C"] ?: 0
+            )
+            android.util.Log.d("TestActivity", "☁️ Test results synced to Firebase")
+            
             // Verify results were saved
             val saved = UserManager.getStoredTestResults(this)
             if (saved != null) {

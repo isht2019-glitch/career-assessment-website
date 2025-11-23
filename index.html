@@ -3140,13 +3140,36 @@
             // Save to Firebase if user is logged in
             if (currentUser && db) {
                 try {
+                    // Save to users collection (legacy)
                     await db.collection('users').doc(currentUser.uid).set({
                         email: userEmail,
                         name: userName,
                         testResults: testResults,
                         lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
                     }, { merge: true });
-                    console.log('✅ Test results saved to Firebase');
+                    console.log('✅ Test results saved to Firebase (users collection)');
+                    
+                    // Also save to userTestResults collection for cross-platform sync with Android app
+                    const dominant = Object.entries(riasecScores).sort((a, b) => b[1] - a[1])[0];
+                    const secondary = Object.entries(riasecScores).sort((a, b) => b[1] - a[1])[1];
+                    const isDualPersonality = dominant[1] === secondary[1] || 
+                                             (dominant[1] - secondary[1] <= 1 && dominant[1] >= 7);
+                    const dominantType = isDualPersonality ? `${dominant[0]}${secondary[0]}` : dominant[0];
+                    
+                    await db.collection('userTestResults').doc(userEmail.toLowerCase()).set({
+                        email: userEmail.toLowerCase(),
+                        dominantType: dominantType,
+                        aptitudeScore: aptitudePercent,
+                        rScore: riasecScores.R,
+                        iScore: riasecScores.I,
+                        aScore: riasecScores.A,
+                        sScore: riasecScores.S,
+                        eScore: riasecScores.E,
+                        cScore: riasecScores.C,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        platform: 'web'
+                    }, { merge: true });
+                    console.log('✅ Test results synced to Firebase (userTestResults collection) for cross-platform access');
                 } catch (error) {
                     console.log('Error saving to Firebase:', error);
                 }

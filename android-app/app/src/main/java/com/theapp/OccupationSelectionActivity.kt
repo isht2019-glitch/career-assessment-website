@@ -216,12 +216,14 @@ class OccupationSelectionActivity : AppCompatActivity() {
             builder.setTitle("🚪 Logout")
             builder.setMessage("Are you sure you want to logout?")
             builder.setPositiveButton("Yes") { _, _ ->
-                // Clear user data from SharedPreferences
+                // Clear all user data
+                UserManager.clearUserData(this)
+                
+                // Also clear any other SharedPreferences
                 val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
                 prefs.edit().clear().apply()
                 
-                // Also clear UserManager data
-                UserManager.clearUserData(this)
+                android.util.Log.d("OccupationSelection", "✅ User logged out successfully")
                 
                 // Navigate to auth
                 val intent = Intent(this, AuthActivity::class.java)
@@ -256,12 +258,14 @@ class OccupationSelectionActivity : AppCompatActivity() {
             // Get user email before clearing data
             val userEmail = UserManager.getUserEmail(this)
             
-            // Clear all user data from SharedPreferences
+            android.util.Log.d("OccupationSelection", "🗑️ Deleting account for email: $userEmail")
+            
+            // Clear all UserManager data
+            UserManager.clearUserData(this)
+            
+            // Also clear any other SharedPreferences
             val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
             prefs.edit().clear().apply()
-            
-            // Also clear UserManager data
-            UserManager.clearUserData(this)
             
             // Remove email from approved emails list if it exists
             if (!userEmail.isNullOrEmpty()) {

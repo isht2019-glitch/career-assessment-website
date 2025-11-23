@@ -35,21 +35,32 @@ class MainActivity : AppCompatActivity() {
             try {
                 // Check if user is already logged in
                 val isLoggedIn = checkLoginStatus()
+                val testCompleted = UserManager.hasCompletedTest(this)
+                val userEmail = UserManager.getUserEmail(this)
+                
+                android.util.Log.d("MainActivity", "🔍 Login Status Check:")
+                android.util.Log.d("MainActivity", "  - isLoggedIn: $isLoggedIn")
+                android.util.Log.d("MainActivity", "  - testCompleted: $testCompleted")
+                android.util.Log.d("MainActivity", "  - userEmail: $userEmail")
                 
                 if (isLoggedIn) {
                     // Check if test is completed
-                    if (UserManager.hasCompletedTest(this)) {
+                    if (testCompleted) {
                         // Test completed, show results
+                        android.util.Log.d("MainActivity", "✅ Navigating to OccupationSelection (test completed)")
                         navigateToOccupationSelection()
                     } else {
                         // Test not completed, show test (payment screen will appear after personality test)
+                        android.util.Log.d("MainActivity", "📝 Navigating to Test (test not completed)")
                         navigateToTest()
                     }
                 } else {
+                    android.util.Log.d("MainActivity", "🔐 Not logged in, navigating to Auth")
                     navigateToAuth()
                 }
             } catch (e: Exception) {
                 // If there's an error, stay on MainActivity and show error
+                android.util.Log.e("MainActivity", "❌ Error in setupUI", e)
                 android.widget.Toast.makeText(this, "Error: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
             }
         }, 2000)
@@ -57,7 +68,9 @@ class MainActivity : AppCompatActivity() {
     
     private fun checkLoginStatus(): Boolean {
         // Use centralized UserManager to check login status
-        return UserManager.isLoggedIn(this)
+        val isLoggedIn = UserManager.isLoggedIn(this)
+        android.util.Log.d("MainActivity", "checkLoginStatus: $isLoggedIn")
+        return isLoggedIn
     }
     
     private fun navigateToAuth() {

@@ -317,6 +317,20 @@ class AuthActivity : AppCompatActivity() {
         finish()
     }
     
+    private fun navigateToOccupationSelection(results: UserManager.StoredTestResults) {
+        val intent = Intent(this, OccupationSelectionActivity::class.java)
+        intent.putExtra("dominant_type", results.dominantType)
+        intent.putExtra("aptitude_score", results.aptitudeScore)
+        intent.putExtra("r_score", results.rScore)
+        intent.putExtra("i_score", results.iScore)
+        intent.putExtra("a_score", results.aScore)
+        intent.putExtra("s_score", results.sScore)
+        intent.putExtra("e_score", results.eScore)
+        intent.putExtra("c_score", results.cScore)
+        startActivity(intent)
+        finish()
+    }
+    
     private fun showLoading(show: Boolean) {
         binding.progressBar.visibility = if (show) android.view.View.VISIBLE else android.view.View.GONE
         binding.btnSignUp.isEnabled = !show

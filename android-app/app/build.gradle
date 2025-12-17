@@ -9,7 +9,7 @@ android {
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.theapp"
+        applicationId "com.careerassessment.theapp"
         minSdk 24
         targetSdk 34
         versionCode 1
@@ -18,10 +18,20 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        release {
+            storeFile file('../theapp-release-key.jks')
+            storePassword 'theapp123'
+            keyAlias 'theapp-key'
+            keyPassword 'theapp123'
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {

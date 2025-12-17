@@ -3943,9 +3943,27 @@
                     try {
                         // Delete from Firestore first
                         if (db && currentUser) {
+                            const userEmail = currentUser.email || userEmail;
+                            
+                            // Delete user data
                             db.collection('users').doc(currentUser.uid).delete()
                                 .then(() => {
                                     console.log('✅ User data deleted from Firestore');
+                                    
+                                    // Delete test results from Firebase
+                                    if (userEmail) {
+                                        db.collection('userTestResults').doc(userEmail.toLowerCase()).delete()
+                                            .then(() => {
+                                                console.log('✅ Test results deleted from Firebase');
+                                            })
+                                            .catch(err => {
+                                                console.error('Error deleting test results:', err);
+                                            });
+                                    }
+                                    
+                                    // Delete payment request from Firebase (cross-platform deletion)
+                                    deletePaymentRequestFromFirebase(userEmail);
+                                    
                                     // Now delete the Firebase auth account
                                     deleteFirebaseAccount();
                                 })
@@ -3962,6 +3980,32 @@
                         alert('Error deleting account. Please contact support.');
                     }
                 }
+            }
+        }
+        
+        function deletePaymentRequestFromFirebase(email) {
+            if (!db || !email) return;
+            
+            try {
+                db.collection('paymentRequests')
+                    .where('email', '==', email.toLowerCase())
+                    .get()
+                    .then(querySnapshot => {
+                        querySnapshot.forEach(doc => {
+                            doc.ref.delete()
+                                .then(() => {
+                                    console.log('✅ Deleted payment request for email:', email);
+                                })
+                                .catch(err => {
+                                    console.error('❌ Error deleting payment request:', err);
+                                });
+                        });
+                    })
+                    .catch(err => {
+                        console.error('❌ Error querying payment requests:', err);
+                    });
+            } catch (error) {
+                console.error('❌ Error in deletePaymentRequestFromFirebase:', error);
             }
         }
         

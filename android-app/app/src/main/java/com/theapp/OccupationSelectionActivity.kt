@@ -274,10 +274,14 @@ class OccupationSelectionActivity : AppCompatActivity() {
             val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
             prefs.edit().clear().apply()
             
-            // Remove email from approved emails list if it exists
+            // Remove email from approved emails list and Firebase if it exists
             if (!userEmail.isNullOrEmpty()) {
                 ApprovedEmailManager.removeApprovedEmail(this, userEmail)
                 android.util.Log.d("OccupationSelection", "✅ Removed email from approved list: $userEmail")
+                
+                // Delete payment request from Firebase (cross-platform deletion)
+                deletePaymentRequestFromFirebase(userEmail)
+                android.util.Log.d("OccupationSelection", "✅ Deleted payment request from Firebase: $userEmail")
                 
                 // Also delete test results from Firebase
                 TestResultsSync.deleteTestResultsFromFirebase(userEmail)
@@ -294,6 +298,31 @@ class OccupationSelectionActivity : AppCompatActivity() {
         } catch (e: Exception) {
             android.util.Log.e("OccupationSelection", "Error deleting account", e)
             android.widget.Toast.makeText(this, "❌ Error deleting account", android.widget.Toast.LENGTH_SHORT).show()
+        }
+    }
+    
+    private fun deletePaymentRequestFromFirebase(email: String) {
+        try {
+            val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+            db.collection("paymentRequests")
+                .whereEqualTo("email", email.lowercase())
+                .get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
+                        document.reference.delete()
+                            .addOnSuccessListener {
+                                android.util.Log.d("OccupationSelection", "✅ Deleted payment request: ${document.id}")
+                            }
+                            .addOnFailureListener { e ->
+                                android.util.Log.e("OccupationSelection", "❌ Error deleting payment request: ${e.message}")
+                            }
+                    }
+                }
+                .addOnFailureListener { e ->
+                    android.util.Log.e("OccupationSelection", "❌ Error querying payment requests: ${e.message}")
+                }
+        } catch (e: Exception) {
+            android.util.Log.e("OccupationSelection", "❌ Error deleting payment request: ${e.message}")
         }
     }
     
